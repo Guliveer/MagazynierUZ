@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: magazynieruz
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://aws-1-eu-west-1.pooler.supabase.com:5432/postgres
+    username: postgres.mfrvbobzbqekwusyvkgi
+    password: ${db.password}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
