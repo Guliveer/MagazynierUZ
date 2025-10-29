@@ -1,4 +1,4 @@
-package org.example.magazynieruz.security;
+package org.example.magazynieruz.data;
 
 import org.example.magazynieruz.model.Role;
 import org.example.magazynieruz.repository.RoleRepository;
