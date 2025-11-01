@@ -1,0 +1,95 @@
+name: Frontend Check
+
+on:
+  pull_request:
+    paths:
+      - "apps/frontend/**"
+      - ".github/workflows/frontend-ci.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Next.js (/apps/frontend)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: apps/frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect Node version
+        id: nodever
+        shell: bash
+        run: |
+          if [[ -f "apps/frontend/.nvmrc" ]]; then
+            echo "version=$(cat apps/frontend/.nvmrc)" >> $GITHUB_OUTPUT
+          elif [[ -f ".nvmrc" ]]; then
+            echo "version=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+          else
+            echo "version=20" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.nodever.outputs.version }}
+          check-latest: true
+
+      - name: Enable Corepack (for yarn/pnpm)
+        run: corepack enable
+
+      - name: Detect package manager
+        id: pm
+        shell: bash
+        run: |
+          if [[ -f "pnpm-lock.yaml" ]]; then
+            echo "name=pnpm" >> $GITHUB_OUTPUT
+            echo "cache=pnpm" >> $GITHUB_OUTPUT
+          elif [[ -f "yarn.lock" ]]; then
+            echo "name=yarn" >> $GITHUB_OUTPUT
+            echo "cache=yarn" >> $GITHUB_OUTPUT
+          else
+            echo "name=npm" >> $GITHUB_OUTPUT
+            echo "cache=npm" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Node cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.nodever.outputs.version }}
+          cache: ${{ steps.pm.outputs.cache }}
+          cache-dependency-path: |
+            apps/frontend/pnpm-lock.yaml
+            apps/frontend/yarn.lock
+            apps/frontend/package-lock.json
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          PM="${{ steps.pm.outputs.name }}"
+          if [[ "$PM" == "pnpm" ]]; then
+            pnpm i --frozen-lockfile
+          elif [[ "$PM" == "yarn" ]]; then
+            yarn install --frozen-lockfile
+          else
+            npm ci
+          fi
+
+      - name: Build
+        shell: bash
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+          CI: "true"
+        run: |
+          if [[ "${{ steps.pm.outputs.name }}" == "pnpm" ]]; then pnpm build;
+          elif [[ "${{ steps.pm.outputs.name }}" == "yarn" ]]; then yarn build;
+          else npm run build; fi
