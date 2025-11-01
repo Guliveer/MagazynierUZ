@@ -38,12 +38,6 @@ jobs:
             echo "version=20" >> $GITHUB_OUTPUT
           fi
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ steps.nodever.outputs.version }}
-          check-latest: true
-
       - name: Enable Corepack (for yarn/pnpm)
         run: corepack enable
 
@@ -66,11 +60,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ steps.nodever.outputs.version }}
+          check-latest: true
           cache: ${{ steps.pm.outputs.cache }}
-          cache-dependency-path: |
-            apps/frontend/pnpm-lock.yaml
-            apps/frontend/yarn.lock
-            apps/frontend/package-lock.json
+          cache-dependency-path: ${{ steps.pm.outputs.name == 'pnpm' && 'apps/frontend/pnpm-lock.yaml' || steps.pm.outputs.name == 'yarn' && 'apps/frontend/yarn.lock' || 'apps/frontend/package-lock.json' }}
 
       - name: Install dependencies
         shell: bash
