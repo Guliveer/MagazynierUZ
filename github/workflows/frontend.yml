@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - "apps/frontend/**"
-      - ".github/workflows/frontend-ci.yml"
+      - ".github/workflows/frontend.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -30,10 +30,10 @@ jobs:
         id: nodever
         shell: bash
         run: |
-          if [[ -f "apps/frontend/.nvmrc" ]]; then
-            echo "version=$(cat apps/frontend/.nvmrc)" >> $GITHUB_OUTPUT
-          elif [[ -f ".nvmrc" ]]; then
+          if [[ -f ".nvmrc" ]]; then
             echo "version=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+          elif [[ -f "../../.nvmrc" ]]; then
+            echo "version=$(cat ../../.nvmrc)" >> $GITHUB_OUTPUT
           else
             echo "version=20" >> $GITHUB_OUTPUT
           fi
