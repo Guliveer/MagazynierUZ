@@ -3,9 +3,11 @@ package org.example.magazynieruz.service;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.example.magazynieruz.model.User;
 import org.springframework.cglib.core.internal.Function;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -18,14 +20,16 @@ import java.util.Map;
 @Service
 public class JwtService {
 
-    private String secretKey ="9fc7ea0afeb9141ee6ba7a7dc71cb711c6d020e5bd38efee65258e1fbf1a2f0be125b5dd70cc02595932dc422beea0562b5e61a04a13137ffceef974b98ddd6d";
+    @Value("${security.jwt.secret-key}")
+    private String secretKey;
 
-    private long jwtExpiration;
+    private long jwtExpiration = 5;
 
     private SecretKey signInKey;
 
-    public JwtService () {
-        signInKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+    @PostConstruct
+    public void init() {
+        this.signInKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
     }
 
     public String extractUsername(String token) {
@@ -46,15 +50,15 @@ public class JwtService {
     }
 
     public long getExpirationTimeInMinutes() {
-        return System.currentTimeMillis() + 1000 * 60 * 30;
+        return jwtExpiration;
     }
 
-    public boolean isTokenValid(String token, User userDetails) {
+    public boolean isTokenValid(String token, UserDetails userDetails) {
         try {
             final String username = extractUsername(token);
 
-            return username.equals(userDetails.getUsername());
 
+            return username.equals(userDetails.getUsername());
         } catch (JwtException e) {
             return false;
         }

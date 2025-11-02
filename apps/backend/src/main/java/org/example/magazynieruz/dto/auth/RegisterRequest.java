@@ -1,4 +1,4 @@
-package org.example.magazynieruz.dto;
+package org.example.magazynieruz.dto.auth;
 
 import java.io.Serializable;
 
