@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Button } from "shadcn/button";
 import { Input } from "shadcn/input";
-import { Label } from "shadcn/label";
 import {
   Card,
   CardHeader,
