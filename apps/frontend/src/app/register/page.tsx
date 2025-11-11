@@ -24,7 +24,7 @@ export default function RegisterPage() {
       alert("Hasła muszą się zgadzać!");
       return;
     }
-    console.log("Rejestracja:", { email, password });
+    console.log("Registration:", { email, password });
   };
 
   return(

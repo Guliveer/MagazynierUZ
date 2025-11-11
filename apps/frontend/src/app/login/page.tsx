@@ -19,7 +19,7 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Logowanie:", { email, password });
+    console.log("Login:", { email, password });
   };
 
   return (
