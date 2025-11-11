@@ -82,7 +82,7 @@ export default function RegisterPage() {
         </CardContent>
 
         <CardFooter className="text-sm text-muted-foreground text-center flex justify-center">
-          Alreay have an account?{" "}
+          Already have an account?{" "}
           <Link href="/login" className="ml-1 text-primary hover:underline">
             Log in
           </Link>
