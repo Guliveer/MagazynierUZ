@@ -27,7 +27,7 @@ export default function RegisterPage() {
     console.log("Registration:", { email, password });
   };
 
-  return(
+  return (
     <div
       className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat p-4"
       style={{ backgroundImage: "url('/warehouse-bg.png')" }}
