@@ -11,19 +11,27 @@ import {
   CardContent,
   CardFooter,
 } from "shadcn/card";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "shadcn/alert"
+import { AlertCircleIcon, CheckCircle2Icon } from "lucide-react";
 import Link from "next/link";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [alert, setAlert] = useState<{ type: "error" | "success"; message: string } | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      alert("Hasła muszą się zgadzać!");
+      setAlert({ type: "error", message: "Passwords need to match!" });
       return;
     }
+    setAlert({ type: "success", message: "Registration was successful!" });
     console.log("Registration:", { email, password });
   };
 
@@ -40,7 +48,26 @@ export default function RegisterPage() {
           </CardDescription>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="space-y-4">
+          {alert && (
+            <Alert
+              variant={alert.type === "error" ? "destructive" : "default"}
+              className="flex items-start space-x-2"
+            >
+              {alert.type === "error" ? (
+                <AlertCircleIcon className="h-5 w-5 mt-0.5" />
+              ) : (
+                <CheckCircle2Icon className="h-5 w-5 mt-0.5" />
+              )}
+              <div>
+                <AlertTitle>
+                  {alert.type === "error" ? "Error" : "Success"}
+                </AlertTitle>
+                <AlertDescription>{alert.message}</AlertDescription>
+              </div>
+            </Alert>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Input
