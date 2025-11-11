@@ -36,7 +36,7 @@ export default function RegisterPage() {
         <CardHeader>
           <CardTitle className="text-center">Registration</CardTitle>
           <CardDescription className="text-center">
-            Make new account
+            Create your account
           </CardDescription>
         </CardHeader>
 
