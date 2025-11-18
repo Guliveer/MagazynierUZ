@@ -8,7 +8,7 @@ export default function HomePage() {
       style={{ backgroundImage: "url('/warehouse-bg.png')" }}
     >
 
-      <div className="absolute inset-0 bg-black/50"></div>
+      <div className="absolute inset-0 bg-black/50" />
 
       <div className="relative z-10 text-center">
         <h1 className="text-3xl font-bold text-white mb-6">
