@@ -31,7 +31,7 @@ export default function RegisterPage() {
       return;
     }
     setAlert({ type: "success", message: "Registration was successful!" });
-    console.log("Registration:", { email, password });
+    console.log("Registration:", { email });
   };
 
   return (
@@ -68,38 +68,35 @@ export default function RegisterPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Input
-                id="email"
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+            <Input
+              id="email"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={"space-y-2"}
+              required
+            />
 
-            <div className="space-y-2">
-              <Input
-                id="password"
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={"space-y-2"}
+              required
+            />
 
-            <div className="space-y-2">
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="Confirm password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
+            <Input
+              id="confirmPassword"
+              type="password"
+              placeholder="Confirm password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className={"space-y-2"}
+              required
               />
-            </div>
 
             <Button type="submit" className="w-full">
               Register

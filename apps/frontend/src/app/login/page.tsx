@@ -17,7 +17,7 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login:", { email, password });
+    console.log("Login:", { email });
   };
 
   return (
@@ -32,27 +32,25 @@ export default function LoginPage() {
 
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
               <Input
                 id="email"
                 type="email"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className={"space-y-2"}
                 required
               />
-            </div>
 
-            <div className="space-y-2">
               <Input
                 id="password"
                 type="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className={"space-y-2"}
                 required
               />
-            </div>
 
             <Button type="submit" className="w-full">
               Login
