@@ -12,19 +12,19 @@ export default function HomePage() {
 
       <div className="relative z-10 text-center">
         <h1 className="text-3xl font-bold text-white mb-6">
-          Witaj w MagazynierUZ
+          Welcome to MagazynierUZ
         </h1>
 
         <h3 className="text-lg font-medium text-gray-200 mb-8">
-          Magazynuj z nami
+          Smart storage starts with MagazynierUZ.
         </h3>
 
         <div className="space-x-4">
           <Button asChild>
-            <Link href="/login">Logowanie</Link>
+            <Link href="/login">Login</Link>
           </Button>
           <Button asChild variant="secondary">
-            <Link href="/register">Rejestracja</Link>
+            <Link href="/register">Registration</Link>
           </Button>
         </div>
       </div>
