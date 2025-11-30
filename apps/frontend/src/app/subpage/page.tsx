@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { Button } from "shadcn/button";
+import Link from 'next/link';
+import { Button } from 'shadcn/button';
 
 export default function Subpage() {
     return (
@@ -9,7 +9,7 @@ export default function Subpage() {
                 <p className="text-lg text-zinc-700 dark:text-zinc-400 mb-6">
                     This is an example subpage in a Next.js application using the App Router.
                 </p>
-                <Button variant={"default"} asChild>
+                <Button variant={'default'} asChild>
                     <Link href="/">Go back to Home</Link>
                 </Button>
             </main>
