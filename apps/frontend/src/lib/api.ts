@@ -1,12 +1,16 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_HOST || 'http://localhost:8080';
+import type { LoginResponse } from '@/types';
+
+const API_BASE_URL = (() => {
+    const url = process.env.NEXT_PUBLIC_BACKEND_HOST;
+    if (!url && process.env.NODE_ENV === 'production') {
+        throw new Error('NEXT_PUBLIC_BACKEND_HOST environment variable is required in production');
+    }
+    return url || 'http://localhost:8080';
+})();
 
 export interface AuthRequest {
     username: string;
     password: string;
-}
-
-export interface LoginResponse {
-    token: string;
 }
 
 export class ApiError extends Error {
@@ -16,40 +20,39 @@ export class ApiError extends Error {
     }
 }
 
-export async function login(email: string, password: string): Promise<LoginResponse> {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
+async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            ...options.headers
         },
-        body: JSON.stringify({
-            username: email,
-            password: password
-        } as AuthRequest)
+        ...options
     });
 
     if (!response.ok) {
-        const errorMessage = await response.text().catch(() => 'Login failed');
-        throw new ApiError(response.status, errorMessage || 'Login failed');
+        const errorData = await response.text().catch(() => '');
+        throw new ApiError(response.status, errorData || 'Request failed');
     }
 
     return response.json();
 }
 
-export async function register(email: string, password: string): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+export async function login(email: string, password: string): Promise<LoginResponse> {
+    return await fetchApi<LoginResponse>('/auth/login', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
         body: JSON.stringify({
             username: email,
             password: password
         } as AuthRequest)
     });
+}
 
-    if (!response.ok) {
-        const errorMessage = await response.text().catch(() => 'Registration failed');
-        throw new ApiError(response.status, errorMessage || 'Registration failed');
-    }
+export async function register(email: string, password: string): Promise<void> {
+    await fetchApi<void>('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({
+            username: email,
+            password: password
+        } as AuthRequest)
+    });
 }

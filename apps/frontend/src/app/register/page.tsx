@@ -10,6 +10,10 @@ import Link from 'next/link';
 import HCaptchaWrapper, { HCaptchaRef } from '@/components/HCaptcha';
 import { register, login, ApiError } from '@/lib/api';
 import { setToken } from '@/lib/auth';
+import { z } from 'zod/v4';
+
+// Password validation schema
+const passwordSchema = z.string().min(8, 'Password must be at least 8 characters long').regex(/[A-Z]/, 'Password must contain at least one uppercase letter').regex(/[a-z]/, 'Password must contain at least one lowercase letter').regex(/[0-9]/, 'Password must contain at least one digit');
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -18,8 +22,29 @@ export default function RegisterPage() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [alert, setAlert] = useState<{ type: 'error' | 'success'; message: string } | null>(null);
+    const [passwordError, setPasswordError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const captchaRef = useRef<HCaptchaRef>(null);
+
+    const validatePassword = (value: string): boolean => {
+        const result = passwordSchema.safeParse(value);
+        if (!result.success) {
+            setPasswordError(result.error.issues[0].message);
+            return false;
+        }
+        setPasswordError(null);
+        return true;
+    };
+
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setPassword(value);
+        if (value) {
+            validatePassword(value);
+        } else {
+            setPasswordError(null);
+        }
+    };
 
     const handleCaptchaVerify = (token: string) => {
         setCaptchaToken(token);
@@ -40,6 +65,12 @@ export default function RegisterPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Validate password strength
+        if (!validatePassword(password)) {
+            setAlert({ type: 'error', message: passwordError || 'Password does not meet requirements' });
+            return;
+        }
 
         if (password !== confirmPassword) {
             setAlert({ type: 'error', message: 'Passwords need to match!' });
@@ -116,7 +147,10 @@ export default function RegisterPage() {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <Input id="email" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className={'space-y-2'} disabled={isLoading} required />
 
-                        <Input id="password" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className={'space-y-2'} disabled={isLoading} required />
+                        <div className="space-y-1">
+                            <Input id="password" type="password" placeholder="Password" value={password} onChange={handlePasswordChange} className={passwordError ? 'border-red-500' : ''} disabled={isLoading} required />
+                            {passwordError && <p className="text-sm text-red-500">{passwordError}</p>}
+                        </div>
 
                         <Input id="confirmPassword" type="password" placeholder="Confirm password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className={'space-y-2'} disabled={isLoading} required />
 
