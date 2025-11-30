@@ -62,7 +62,7 @@ jobs:
           node-version: ${{ steps.nodever.outputs.version }}
           check-latest: true
           cache: ${{ steps.pm.outputs.cache }}
-          cache-dependency-path: ${{ steps.pm.outputs.name == 'pnpm' && 'apps/frontend/pnpm-lock.yaml' || steps.pm.outputs.name == 'yarn' && 'apps/frontend/yarn.lock' || 'apps/frontend/package-lock.json' }}
+          cache-dependency-path: ${{ steps.pm.outputs.name == 'pnpm' ? 'apps/frontend/pnpm-lock.yaml' : steps.pm.outputs.name == 'yarn' ? 'apps/frontend/yarn.lock' : 'apps/frontend/package-lock.json' }}
 
       - name: Install dependencies
         shell: bash
