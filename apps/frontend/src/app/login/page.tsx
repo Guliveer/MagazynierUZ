@@ -13,7 +13,7 @@ import { Input } from 'shadcn/input';
 
 export default function LoginPage() {
     const router = useRouter();
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -46,7 +46,7 @@ export default function LoginPage() {
         setError(null);
 
         try {
-            const response = await login(email, password);
+            const response = await login(username, password);
             setToken(response.token);
 
             // Reset captcha after submission
@@ -58,7 +58,7 @@ export default function LoginPage() {
         } catch (err) {
             if (err instanceof ApiError) {
                 if (err.statusCode === 401) {
-                    setError('Invalid email or password');
+                    setError('Invalid username or password');
                 } else {
                     setError(err.message || 'Login failed. Please try again.');
                 }
@@ -75,8 +75,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat p-4"
-            style={{backgroundImage: "url('/warehouse-bg.png')"}}>
+        <div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat p-4" style={{ backgroundImage: "url('/warehouse-bg.png')" }}>
             <Card className="w-full max-w-sm">
                 <CardHeader>
                     <CardTitle className="text-center">Login</CardTitle>
@@ -85,7 +84,7 @@ export default function LoginPage() {
                 <CardContent className="space-y-4">
                     {error && (
                         <Alert variant="destructive" className="flex items-start space-x-2">
-                            <AlertCircleIcon className="h-5 w-5 mt-0.5"/>
+                            <AlertCircleIcon className="h-5 w-5 mt-0.5" />
                             <div>
                                 <AlertTitle>Error</AlertTitle>
                                 <AlertDescription>{error}</AlertDescription>
@@ -94,24 +93,19 @@ export default function LoginPage() {
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <Input id="email" type="email" placeholder="Email" value={email}
-                            onChange={(e) => setEmail(e.target.value)} className={'space-y-2'} disabled={isLoading}
-                            required/>
+                        <Input id="username" type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} className={'space-y-2'} disabled={isLoading} required />
 
-                        <Input id="password" type="password" placeholder="Password" value={password}
-                            onChange={(e) => setPassword(e.target.value)} className={'space-y-2'}
-                            disabled={isLoading} required/>
+                        <Input id="password" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className={'space-y-2'} disabled={isLoading} required />
 
                         <div className="flex justify-center">
-                            <HCaptchaWrapper ref={captchaRef} onVerify={handleCaptchaVerify}
-                                onExpire={handleCaptchaExpire} onError={handleCaptchaError}/>
+                            <HCaptchaWrapper ref={captchaRef} onVerify={handleCaptchaVerify} onExpire={handleCaptchaExpire} onError={handleCaptchaError} />
                         </div>
 
                         <Button type="submit" className="w-full" disabled={isLoading}>
                             {isLoading ? (
                                 <>
-                                    <Loader2Icon className="mr-2 h-4 w-4 animate-spin"/>
-                                    Logging in...
+                                    <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                  Logging in...
                                 </>
                             ) : (
                                 'Login'
@@ -121,9 +115,9 @@ export default function LoginPage() {
                 </CardContent>
 
                 <CardFooter className="text-sm text-muted-foreground text-center flex justify-center">
-                    Don&#39;t have an account?{' '}
+          Don&#39;t have an account?{' '}
                     <Link href="/register" className="ml-1 text-primary hover:underline">
-                        Register now
+            Register now
                     </Link>
                 </CardFooter>
             </Card>

@@ -9,8 +9,8 @@ const API_BASE_URL = (() => {
 })();
 
 export interface AuthRequest {
-    username: string;
-    password: string;
+  username: string;
+  password: string;
 }
 
 export class ApiError extends Error {
@@ -37,22 +37,22 @@ async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise
     return response.json();
 }
 
-export async function login(email: string, password: string): Promise<LoginResponse> {
+export async function login(username: string, password: string): Promise<LoginResponse> {
     return await fetchApi<LoginResponse>('/auth/login', {
         method: 'POST',
         body: JSON.stringify({
-            username: email,
-            password: password
+            username,
+            password
         } as AuthRequest)
     });
 }
 
-export async function register(email: string, password: string): Promise<void> {
+export async function register(username: string, password: string): Promise<void> {
     await fetchApi<void>('/auth/register', {
         method: 'POST',
         body: JSON.stringify({
-            username: email,
-            password: password
+            username,
+            password
         } as AuthRequest)
     });
 }

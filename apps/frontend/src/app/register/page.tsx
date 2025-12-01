@@ -13,11 +13,11 @@ import { setToken } from '@/lib/auth';
 import { z } from 'zod/v4';
 
 // Password validation schema
-const passwordSchema = z.string().min(8, 'Password must be at least 8 characters long').regex(/[A-Z]/, 'Password must contain at least one uppercase letter').regex(/[a-z]/, 'Password must contain at least one lowercase letter').regex(/[0-9]/, 'Password must contain at least one digit');
+const passwordSchema = z.string().min(6, 'Password must be at least 6 characters long').max(500, 'Password must be at most 500 characters long');
 
 export default function RegisterPage() {
     const router = useRouter();
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
@@ -86,7 +86,7 @@ export default function RegisterPage() {
         setAlert(null);
 
         try {
-            await register(email, password);
+            await register(username, password);
 
             setAlert({ type: 'success', message: 'Registration was successful! Logging you in...' });
 
@@ -96,7 +96,7 @@ export default function RegisterPage() {
 
             // Auto-login after successful registration
             try {
-                const loginResponse = await login(email, password);
+                const loginResponse = await login(username, password);
                 setToken(loginResponse.token);
                 router.push('/dashboard');
             } catch {
@@ -109,7 +109,7 @@ export default function RegisterPage() {
         } catch (err) {
             if (err instanceof ApiError) {
                 if (err.statusCode === 409) {
-                    setAlert({ type: 'error', message: 'An account with this email already exists' });
+                    setAlert({ type: 'error', message: 'An account with this username already exists' });
                 } else {
                     setAlert({ type: 'error', message: err.message || 'Registration failed. Please try again.' });
                 }
@@ -145,7 +145,7 @@ export default function RegisterPage() {
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <Input id="email" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className={'space-y-2'} disabled={isLoading} required />
+                        <Input id="username" type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} className={'space-y-2'} disabled={isLoading} required />
 
                         <div className="space-y-1">
                             <Input id="password" type="password" placeholder="Password" value={password} onChange={handlePasswordChange} className={passwordError ? 'border-red-500' : ''} disabled={isLoading} required />
