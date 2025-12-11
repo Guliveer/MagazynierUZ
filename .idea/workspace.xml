@@ -11,7 +11,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="1462" />
+    <option name="totalTimeSeconds" value="1995" />
   </component>
   <component name="FormatOnSaveOptions">
     <option name="myRunOnSave" value="true" />
@@ -131,7 +131,7 @@
       <updated>1763816811570</updated>
       <workItem from="1763816818377" duration="871000" />
       <workItem from="1763822950566" duration="647000" />
-      <workItem from="1765467227946" duration="1328000" />
+      <workItem from="1765467227946" duration="2113000" />
     </task>
     <task id="LOCAL-00001" summary="Split frontend &amp; backend into separate repos">
       <option name="closed" value="true" />
@@ -141,7 +141,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765468529590</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Split frontend &amp; backend into separate repos">
+      <option name="closed" value="true" />
+      <created>1765468658795</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1765468658795</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
