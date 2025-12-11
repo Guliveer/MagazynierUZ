@@ -1,189 +1,42 @@
-# .gitignore file created for free with Tower (https://www.git-tower.com/)
-# For suggestions or improvements please contact us using support@git-tower.com
-# Generated on 2025-10-23
-# Includes: intellij, vscode, macos, windows
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-### Universal ###
-# Common files that should be ignored in all projects
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
-# Logs
-*.log
-# Temporary files
-*.tmp
-*~
+# testing
+/coverage
 
-*.bak
-# Environment files (containing secrets, API keys, credentials)
-.env
-*.env
-.env.*
+# next.js
+/.next/
+/out/
 
-# Local configuration that shouldn't be shared
-*.local
+# production
+/build
 
-### Intellij ###
-# IntelliJ IDEA editor files and settings
-
-# IntelliJ IDEA and Other JetBrains IDEs
-.idea/
-*.iml
-*.iws
-*.ipr
-
-.idea_modules/
-out/
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/dictionaries
-
-.idea/shelf/
-.idea/contentModel.xml
-.idea/dataSources/
-.idea/dataSources.xml
-.idea/dataSources.ids
-
-.idea/dataSources.local.xml
-.idea/sqlDataSources.xml
-.idea/dynamic.xml
-.idea/uiDesigner.xml
-.idea/gradle.xml
-
-.idea/libraries
-.idea/deployment.xml
-.idea/mongoSettings.xml
-.idea/httpRequests
-.idea/caches/
-
-.idea/modules.xml
-.idea/compiler.xml
-.idea/jarRepositories.xml
-.idea/artifacts
-.idea/sonarlint/
-
-*.iml.bak
-*.ipr.bak
-*.iws.bak
-.idea_backup/
-.idea/replstate.xml
-
-.idea/checkstyle-idea.xml
-.idea/encodings.xml
-.idea/misc.xml
-.idea/vcs.xml
-.idea/jsLibraryMappings.xml
-
-.idea/assetWizardSettings.xml
-.idea/kotlinc.xml
-.idea/inspectionProfiles/
-.idea/codestream.xml
-.idea/aws.xml
-
-.idea/sonarIssues.xml
-.idea/.gitignore
-.idea/remote-mappings.xml
-.idea/**/usage.statistics.xml
-.idea/**/contentModel.xml
-
-.idea/**/dbnavigator.xml
-.idea/**/markdown-navigator.xml
-.idea/**/markdown-navigator-enh.xml
-.idea/**/markdown-navigator/
-.idea/$CACHE_FILE$
-
-.idea/**/azureSettings.xml
-com_crashlytics_export_strings.xml
-crashlytics.properties
-crashlytics-build.properties
-fabric.properties
-
-### Vscode ###
-# Visual Studio Code editor settings and workspace files
-
-# Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-
-!.vscode/extensions.json
-!.vscode/*.code-snippets
-.history/
-*.vsix
-.ionide
-
-.vs/
-*.code-workspace
-.vscode-test
-.vscodeignore
-.vscode/chrome
-
-.vscode-server/
-.vscode/sftp.json
-.vscode/tags
-.devcontainer/
-
-### Macos ###
-# macOS operating system specific files
-
+# misc
 .DS_Store
-.AppleDouble
-.LSOverride
-Icon
-._*
+*.pem
 
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-.AppleDB
-.AppleDesktop
-Network Trash Folder
+# env files (can opt-in for committing if needed)
+.env*
+!*.example
 
-Temporary Items
-.apdisk
-*.icloud
-.AppleDB/
-.AppleDesktop/
+# vercel
+.vercel
 
-*.AppleDouble
-*.AppleDB
-.Spotlight-V100/
-.Trashes/
-*.swp
-
-Network Trash Folder/
-.DS_Store?
-
-### Windows ###
-# Windows operating system specific files
-
-Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
-*.stackdump
-
-[Dd]esktop.ini
-$RECYCLE.BIN/
-*.cab
-*.msi
-*.msix
-
-*.msm
-*.msp
-*.lnk
-
-System Volume Information/
-[Tt]emp/
-$Recycle.Bin/
-~$*
-
-hiberfil.sys
-pagefile.sys
-*.db
-Desktop.ini
-ntuser.dat*
+# typescript
+*.tsbuildinfo
+next-env.d.ts
