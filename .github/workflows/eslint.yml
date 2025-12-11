@@ -1,52 +1,89 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-# ESLint is a tool for identifying and reporting on patterns
-# found in ECMAScript/JavaScript code.
-# More details at https://github.com/eslint/eslint
-# and https://eslint.org
-
 name: ESLint
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ "main" ]
-  schedule:
-    - cron: '40 3 * * 1'
+    paths:
+      - "apps/frontend/**"
+      - ".github/workflows/eslint.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   eslint:
-    name: Run eslint scanning
+    name: Lint Frontend (/apps/frontend)
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+
+    defaults:
+      run:
+        working-directory: apps/frontend
+
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install ESLint
+      - name: Detect Node version
+        id: nodever
+        shell: bash
         run: |
-          npm install eslint@8.10.0
-          npm install @microsoft/eslint-formatter-sarif@3.1.0
+          if [[ -f ".nvmrc" ]]; then
+            echo "version=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+          elif [[ -f "../../.nvmrc" ]]; then
+            echo "version=$(cat ../../.nvmrc)" >> $GITHUB_OUTPUT
+          else
+            echo "version=20" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Detect package manager
+        id: pm
+        shell: bash
+        run: |
+          if [[ -f "pnpm-lock.yaml" ]]; then
+            echo "name=pnpm" >> $GITHUB_OUTPUT
+            echo "cache=pnpm" >> $GITHUB_OUTPUT
+          elif [[ -f "yarn.lock" ]]; then
+            echo "name=yarn" >> $GITHUB_OUTPUT
+            echo "cache=yarn" >> $GITHUB_OUTPUT
+          else
+            echo "name=npm" >> $GITHUB_OUTPUT
+            echo "cache=npm" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Enable Corepack (for yarn/pnpm)
+        run: corepack enable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.nodever.outputs.version }}
+          check-latest: true
+          cache: ${{ steps.pm.outputs.cache }}
+          cache-dependency-path: "${{ steps.pm.outputs.name == 'pnpm' && 'apps/frontend/pnpm-lock.yaml' || steps.pm.outputs.name == 'yarn' && 'apps/frontend/yarn.lock' || 'apps/frontend/package-lock.json' }}"
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          PM="${{ steps.pm.outputs.name }}"
+          if [[ "$PM" == "pnpm" ]]; then
+            pnpm i --frozen-lockfile
+          elif [[ "$PM" == "yarn" ]]; then
+            yarn install --frozen-lockfile
+          else
+            npm ci
+          fi
 
       - name: Run ESLint
-        env:
-          SARIF_ESLINT_IGNORE_SUPPRESSED: "true"
-        run: npx eslint .
-          --config .eslintrc.js
-          --ext .js,.jsx,.ts,.tsx
-          --format @microsoft/eslint-formatter-sarif
-          --output-file eslint-results.sarif
-        continue-on-error: true
-
-      - name: Upload analysis results to GitHub
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: eslint-results.sarif
-          wait-for-processing: true
+        shell: bash
+        run: |
+          PM="${{ steps.pm.outputs.name }}"
+          if [[ "$PM" == "pnpm" ]]; then
+            pnpm lint
+          elif [[ "$PM" == "yarn" ]]; then
+            yarn lint
+          else
+            npm run lint
+          fi
