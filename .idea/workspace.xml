@@ -11,7 +11,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="996" />
+    <option name="totalTimeSeconds" value="1462" />
   </component>
   <component name="FormatOnSaveOptions">
     <option name="myRunOnSave" value="true" />
@@ -39,6 +39,9 @@
   <component name="OptimizeOnSaveOptions">
     <option name="myRunOnSave" value="true" />
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 1
@@ -59,6 +62,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
     "code.cleanup.on.save": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
@@ -75,6 +79,7 @@
     "npm.build.executor": "Run",
     "npm.dev.executor": "Run",
     "npm.install.executor": "Run",
+    "npm.lint&fix.executor": "Run",
     "rearrange.code.on.save": "true",
     "settings.editor.selected.configurable": "preferences.pluginManager",
     "settings.editor.splitter.proportion": "0.19115646",
@@ -126,12 +131,25 @@
       <updated>1763816811570</updated>
       <workItem from="1763816818377" duration="871000" />
       <workItem from="1763822950566" duration="647000" />
-      <workItem from="1765467227946" duration="866000" />
+      <workItem from="1765467227946" duration="1328000" />
     </task>
+    <task id="LOCAL-00001" summary="Split frontend &amp; backend into separate repos">
+      <option name="closed" value="true" />
+      <created>1765468529590</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1765468529590</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Split frontend &amp; backend into separate repos" />
+    <option name="LAST_COMMIT_MESSAGE" value="Split frontend &amp; backend into separate repos" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
