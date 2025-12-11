@@ -1,10 +1,10 @@
-name: ESLint
+name: Frontend Check
 
 on:
   pull_request:
     paths:
       - "apps/frontend/**"
-      - ".github/workflows/eslint.yml"
+      - ".github/workflows/frontend.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -14,8 +14,8 @@ permissions:
   contents: read
 
 jobs:
-  eslint:
-    name: Lint Frontend (/apps/frontend)
+  build:
+    name: Build Next.js (/apps/frontend)
     runs-on: ubuntu-latest
 
     defaults:
@@ -38,6 +38,9 @@ jobs:
             echo "version=20" >> $GITHUB_OUTPUT
           fi
 
+      - name: Enable Corepack (for yarn/pnpm)
+        run: corepack enable
+
       - name: Detect package manager
         id: pm
         shell: bash
@@ -53,10 +56,7 @@ jobs:
             echo "cache=npm" >> $GITHUB_OUTPUT
           fi
 
-      - name: Enable Corepack (for yarn/pnpm)
-        run: corepack enable
-
-      - name: Setup Node
+      - name: Setup Node cache
         uses: actions/setup-node@v4
         with:
           node-version: ${{ steps.nodever.outputs.version }}
@@ -76,14 +76,12 @@ jobs:
             npm ci
           fi
 
-      - name: Run ESLint
+      - name: Build
         shell: bash
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+          CI: "true"
         run: |
-          PM="${{ steps.pm.outputs.name }}"
-          if [[ "$PM" == "pnpm" ]]; then
-            pnpm lint
-          elif [[ "$PM" == "yarn" ]]; then
-            yarn lint
-          else
-            npm run lint
-          fi
+          if [[ "${{ steps.pm.outputs.name }}" == "pnpm" ]]; then pnpm build;
+          elif [[ "${{ steps.pm.outputs.name }}" == "yarn" ]]; then yarn build;
+          else npm run build; fi

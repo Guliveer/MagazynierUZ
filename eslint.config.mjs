@@ -45,7 +45,6 @@ const eslintConfig = defineConfig([
 
             // Functions
             "require-await": "error",
-            "func-call-spacing": ["warn", "never"],
 
             // Spacing
             "space-before-blocks": ["warn", "always"],
