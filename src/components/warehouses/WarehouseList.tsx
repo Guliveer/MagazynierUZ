@@ -1,20 +1,20 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Plus, Pencil, Trash2, Building2, MapPin } from 'lucide-react';
-import { toast } from 'sonner';
-
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/components/ui/empty';
 
-import { WarehouseDialog } from './WarehouseDialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+
+import { ApiError, createWarehouse, deleteWarehouse, getWarehouses, updateWarehouse } from '@/lib/api';
+import type { CreateWarehouseRequest, Warehouse } from '@/types';
+import { Building2, MapPin, Pencil, Plus, Trash2 } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { DeleteWarehouseDialog } from './DeleteWarehouseDialog';
 
-import { getWarehouses, createWarehouse, updateWarehouse, deleteWarehouse, ApiError } from '@/lib/api';
-import type { Warehouse, CreateWarehouseRequest } from '@/types';
+import { WarehouseDialog } from './WarehouseDialog';
 
 export function WarehouseList() {
     const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
@@ -107,8 +107,8 @@ export function WarehouseList() {
         return (
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <Skeleton className="h-8 w-48" />
-                    <Skeleton className="h-9 w-36" />
+                    <Skeleton className="h-8 w-48"/>
+                    <Skeleton className="h-9 w-36"/>
                 </div>
                 <div className="rounded-md border">
                     <Table>
@@ -126,24 +126,24 @@ export function WarehouseList() {
                             {[...Array(5)].map((_, i) => (
                                 <TableRow key={i}>
                                     <TableCell>
-                                        <Skeleton className="h-4 w-8" />
+                                        <Skeleton className="h-4 w-8"/>
                                     </TableCell>
                                     <TableCell>
-                                        <Skeleton className="h-4 w-32" />
+                                        <Skeleton className="h-4 w-32"/>
                                     </TableCell>
                                     <TableCell>
-                                        <Skeleton className="h-4 w-16" />
+                                        <Skeleton className="h-4 w-16"/>
                                     </TableCell>
                                     <TableCell>
-                                        <Skeleton className="h-5 w-20" />
+                                        <Skeleton className="h-5 w-20"/>
                                     </TableCell>
                                     <TableCell>
-                                        <Skeleton className="h-4 w-24" />
+                                        <Skeleton className="h-4 w-24"/>
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
-                                            <Skeleton className="h-8 w-8" />
-                                            <Skeleton className="h-8 w-8" />
+                                            <Skeleton className="h-8 w-8"/>
+                                            <Skeleton className="h-8 w-8"/>
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -162,14 +162,14 @@ export function WarehouseList() {
                 <div className="flex items-center justify-between">
                     <h2 className="text-2xl font-bold tracking-tight">Warehouses</h2>
                     <Button onClick={handleAddClick}>
-                        <Plus className="mr-2 h-4 w-4" />
-            Add Warehouse
+                        <Plus className="mr-2 h-4 w-4"/>
+                        Add Warehouse
                     </Button>
                 </div>
                 <div className="rounded-md border border-destructive/50 bg-destructive/10 p-6 text-center">
                     <p className="text-destructive">{error}</p>
                     <Button variant="outline" className="mt-4" onClick={fetchWarehouses}>
-            Try Again
+                        Try Again
                     </Button>
                 </div>
             </div>
@@ -183,25 +183,27 @@ export function WarehouseList() {
                 <div className="flex items-center justify-between">
                     <h2 className="text-2xl font-bold tracking-tight">Warehouses</h2>
                     <Button onClick={handleAddClick}>
-                        <Plus className="mr-2 h-4 w-4" />
-            Add Warehouse
+                        <Plus className="mr-2 h-4 w-4"/>
+                        Add Warehouse
                     </Button>
                 </div>
                 <Empty className="border rounded-lg py-12">
                     <EmptyHeader>
                         <EmptyMedia variant="icon">
-                            <Building2 />
+                            <Building2/>
                         </EmptyMedia>
                         <EmptyTitle>No warehouses</EmptyTitle>
-                        <EmptyDescription>You don't have any warehouses yet. Add your first warehouse to start managing locations and products.</EmptyDescription>
+                        <EmptyDescription>You don&#39;`t have any warehouses yet. Add your first warehouse to start
+                            managing locations and products.</EmptyDescription>
                     </EmptyHeader>
                     <Button onClick={handleAddClick}>
-                        <Plus className="mr-2 h-4 w-4" />
-            Add First Warehouse
+                        <Plus className="mr-2 h-4 w-4"/>
+                        Add First Warehouse
                     </Button>
                 </Empty>
 
-                <WarehouseDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} warehouse={selectedWarehouse} onSubmit={handleSubmit} isLoading={isSaving} />
+                <WarehouseDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} warehouse={selectedWarehouse}
+                    onSubmit={handleSubmit} isLoading={isSaving}/>
             </div>
         );
     }
@@ -212,8 +214,8 @@ export function WarehouseList() {
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold tracking-tight">Warehouses</h2>
                 <Button onClick={handleAddClick}>
-                    <Plus className="mr-2 h-4 w-4" />
-          Add Warehouse
+                    <Plus className="mr-2 h-4 w-4"/>
+                    Add Warehouse
                 </Button>
             </div>
 
@@ -238,21 +240,24 @@ export function WarehouseList() {
                                     <code className="rounded bg-muted px-1.5 py-0.5 text-sm">{warehouse.code}</code>
                                 </TableCell>
                                 <TableCell>
-                                    <Badge variant={warehouse.isActive ? 'default' : 'secondary'}>{warehouse.isActive ? 'Active' : 'Inactive'}</Badge>
+                                    <Badge
+                                        variant={warehouse.isActive ? 'default' : 'secondary'}>{warehouse.isActive ? 'Active' : 'Inactive'}</Badge>
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex items-center gap-1 text-muted-foreground">
-                                        <MapPin className="h-3.5 w-3.5" />
+                                        <MapPin className="h-3.5 w-3.5"/>
                                         {warehouse.address.city}
                                     </div>
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <div className="flex justify-end gap-2">
-                                        <Button variant="ghost" size="icon-sm" onClick={() => handleEditClick(warehouse)} title="Edit">
-                                            <Pencil className="h-4 w-4" />
+                                        <Button variant="ghost" size="icon-sm"
+                                            onClick={() => handleEditClick(warehouse)} title="Edit">
+                                            <Pencil className="h-4 w-4"/>
                                         </Button>
-                                        <Button variant="ghost" size="icon-sm" onClick={() => handleDeleteClick(warehouse)} title="Delete">
-                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                        <Button variant="ghost" size="icon-sm"
+                                            onClick={() => handleDeleteClick(warehouse)} title="Delete">
+                                            <Trash2 className="h-4 w-4 text-destructive"/>
                                         </Button>
                                     </div>
                                 </TableCell>
@@ -262,9 +267,12 @@ export function WarehouseList() {
                 </Table>
             </div>
 
-            <WarehouseDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} warehouse={selectedWarehouse} onSubmit={handleSubmit} isLoading={isSaving} />
+            <WarehouseDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} warehouse={selectedWarehouse}
+                onSubmit={handleSubmit} isLoading={isSaving}/>
 
-            <DeleteWarehouseDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} warehouse={selectedWarehouse} onConfirm={handleDeleteConfirm} isLoading={isDeleting} />
+            <DeleteWarehouseDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}
+                warehouse={selectedWarehouse} onConfirm={handleDeleteConfirm}
+                isLoading={isDeleting}/>
         </div>
     );
 }

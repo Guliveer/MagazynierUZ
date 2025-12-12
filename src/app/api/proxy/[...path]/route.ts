@@ -5,7 +5,7 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_HOST || 'http://localhost:80
 /**
  * Bezpieczne parsowanie odpowiedzi - obsługuje JSON, puste odpowiedzi i błędy
  */
-async function safeParseResponse(response: Response, url: string): Promise<{ data: unknown; error?: string }> {
+async function safeParseResponse(response: Response, url: string, method: string = 'GET'): Promise<{ data: unknown; error?: string }> {
     const contentType = response.headers.get('content-type') || '';
     const responseText = await response.text();
 
@@ -15,11 +15,16 @@ async function safeParseResponse(response: Response, url: string): Promise<{ dat
     console.log(`[Proxy]   Body length: ${responseText.length}`);
     console.log(`[Proxy]   Body preview: ${responseText.substring(0, 200)}${responseText.length > 200 ? '...' : ''}`);
 
-    // Pusta odpowiedź - zwróć pustą tablicę dla endpointów listowych (GET)
+    // Pusta odpowiedź - zwróć odpowiednią wartość w zależności od metody HTTP
     // Backend może zwracać pustą odpowiedź zamiast [] gdy nie ma danych
     if (!responseText || responseText.trim() === '') {
-        console.log('[Proxy]   Empty response body - returning empty array');
-        return { data: [] };
+        if (method === 'GET') {
+            console.log('[Proxy]   Empty response body - returning empty array');
+            return { data: [] };
+        }
+        console.log('[Proxy]   Empty response body - returning null');
+        return { data: null };
+
     }
 
     // Próbuj sparsować jako JSON niezależnie od Content-Type
@@ -58,7 +63,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const authHeader = request.headers.get('Authorization');
     if (authHeader) {
         headers['Authorization'] = authHeader;
-        console.log(`[Proxy]   Authorization: Bearer ${authHeader.substring(7, 20)}...`);
+        console.log('[Proxy]   Authorization header present');
     } else {
         console.log('[Proxy]   No Authorization header');
     }
@@ -69,7 +74,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             headers
         });
 
-        const { data, error } = await safeParseResponse(response, url);
+        const { data, error } = await safeParseResponse(response, url, 'GET');
 
         if (error) {
             console.error(`[Proxy]   Parse error: ${error}`);
@@ -98,7 +103,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const authHeader = request.headers.get('Authorization');
     if (authHeader) {
         headers['Authorization'] = authHeader;
-        console.log(`[Proxy]   Authorization: Bearer ${authHeader.substring(7, 20)}...`);
+        console.log('[Proxy]   Authorization header present');
     } else {
         console.log('[Proxy]   No Authorization header');
     }
@@ -113,7 +118,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             body: JSON.stringify(body)
         });
 
-        const { data, error } = await safeParseResponse(response, url);
+        const { data, error } = await safeParseResponse(response, url, 'POST');
 
         if (error) {
             console.error(`[Proxy]   Parse error: ${error}`);
@@ -142,7 +147,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const authHeader = request.headers.get('Authorization');
     if (authHeader) {
         headers['Authorization'] = authHeader;
-        console.log(`[Proxy]   Authorization: Bearer ${authHeader.substring(7, 20)}...`);
+        console.log('[Proxy]   Authorization header present');
     } else {
         console.log('[Proxy]   No Authorization header');
     }
@@ -157,7 +162,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
             body: JSON.stringify(body)
         });
 
-        const { data, error } = await safeParseResponse(response, url);
+        const { data, error } = await safeParseResponse(response, url, 'PUT');
 
         if (error) {
             console.error(`[Proxy]   Parse error: ${error}`);
@@ -186,7 +191,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     const authHeader = request.headers.get('Authorization');
     if (authHeader) {
         headers['Authorization'] = authHeader;
-        console.log(`[Proxy]   Authorization: Bearer ${authHeader.substring(7, 20)}...`);
+        console.log('[Proxy]   Authorization header present');
     } else {
         console.log('[Proxy]   No Authorization header');
     }
@@ -203,7 +208,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
             return new NextResponse(null, { status: 204 });
         }
 
-        const { data, error } = await safeParseResponse(response, url);
+        const { data, error } = await safeParseResponse(response, url, 'DELETE');
 
         if (error) {
             console.error(`[Proxy]   Parse error: ${error}`);

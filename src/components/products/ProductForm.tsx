@@ -81,7 +81,22 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: 
                             <FormItem>
                                 <FormLabel>Price (PLN) *</FormLabel>
                                 <FormControl>
-                                    <Input type="number" step="0.01" min="0.01" placeholder="e.g. 4999.99" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} />
+                                    <Input
+                                        type="number"
+                                        step="0.01"
+                                        min="0.1"
+                                        placeholder="e.g. 4999.99"
+                                        {...field}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (value === '') {
+                                                field.onChange(undefined);
+                                            } else {
+                                                const parsed = parseFloat(value);
+                                                field.onChange(isNaN(parsed) ? value : parsed);
+                                            }
+                                        }}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -95,7 +110,22 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: 
                             <FormItem>
                                 <FormLabel>Quantity *</FormLabel>
                                 <FormControl>
-                                    <Input type="number" step="1" min="0" placeholder="e.g. 10" {...field} onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)} />
+                                    <Input
+                                        type="number"
+                                        step="1"
+                                        min="0"
+                                        placeholder="e.g. 10"
+                                        {...field}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (value === '') {
+                                                field.onChange(undefined);
+                                            } else {
+                                                const parsed = parseInt(value, 10);
+                                                field.onChange(isNaN(parsed) ? value : parsed);
+                                            }
+                                        }}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

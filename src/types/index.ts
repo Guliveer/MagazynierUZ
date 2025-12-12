@@ -1,14 +1,14 @@
 // API Response types
 
 /**
- * Odpowiedź z endpointu logowania
+ * Response from the login endpoint
  */
 export interface LoginResponse {
   token: string;
 }
 
 /**
- * Standardowa odpowiedź błędu API
+ * Standard API error response
  */
 export interface ApiErrorResponse {
   message: string;
@@ -18,7 +18,7 @@ export interface ApiErrorResponse {
 // JWT Payload type
 
 /**
- * Payload tokenu JWT
+ * JWT token payload
  */
 export interface JwtPayload {
   sub: string;
@@ -32,22 +32,22 @@ export interface JwtPayload {
 // ============================================
 
 /**
- * Adres magazynu
+ * Warehouse address
  */
 export interface Address {
-  /** Nazwa ulicy */
+  /** Street name */
   street: string;
-  /** Numer domu */
+  /** House number */
   houseNumber: string;
-  /** Numer mieszkania (opcjonalny) */
+  /** Apartment number (optional) */
   apartmentNumber: string;
-  /** Miasto */
+  /** City */
   city: string;
-  /** Kod pocztowy */
+  /** Postal code */
   postcode: string;
-  /** Szerokość geograficzna */
+  /** Latitude */
   latitude: number;
-  /** Długość geograficzna */
+  /** Longitude */
   longitude: number;
 }
 
@@ -56,37 +56,37 @@ export interface Address {
 // ============================================
 
 /**
- * Odpowiedź API z danymi produktu
+ * API response with product data
  */
 export interface ProductResponse {
-  /** Unikalny identyfikator produktu (int64) */
+  /** Unique product identifier (int64) */
   id: number;
-  /** Nazwa produktu */
+  /** Product name */
   name: string;
-  /** Opis produktu */
+  /** Product description */
   description: string;
-  /** Cena produktu (minimum 0.1) */
+  /** Product price (minimum 0.1) */
   price: number;
-  /** Ilość produktu w magazynie (int32) */
+  /** Product quantity in warehouse (int32) */
   quantity: number;
 }
 
 /**
- * Dane wymagane do utworzenia nowego produktu
+ * Data required to create a new product
  */
 export interface CreateProductRequest {
-  /** Nazwa produktu */
+  /** Product name */
   name: string;
-  /** Opis produktu */
+  /** Product description */
   description: string;
-  /** Cena produktu (minimum 0.1) */
+  /** Product price (minimum 0.1) */
   price: number;
-  /** Ilość produktu (int32) */
+  /** Product quantity (int32) */
   quantity: number;
 }
 
 /**
- * Alias dla ProductResponse - reprezentuje produkt w systemie
+ * Alias for ProductResponse - represents a product in the system
  */
 export type Product = ProductResponse;
 
@@ -95,37 +95,37 @@ export type Product = ProductResponse;
 // ============================================
 
 /**
- * Odpowiedź API z danymi magazynu
+ * API response with warehouse data
  */
 export interface WarehouseResponse {
-  /** Unikalny identyfikator magazynu (int64) */
+  /** Unique warehouse identifier (int64) */
   id: number;
-  /** Nazwa magazynu */
+  /** Warehouse name */
   name: string;
-  /** Kod magazynu */
+  /** Warehouse code */
   code: string;
-  /** Czy magazyn jest aktywny */
+  /** Whether the warehouse is active */
   isActive: boolean;
-  /** Adres magazynu */
+  /** Warehouse address */
   address: Address;
 }
 
 /**
- * Dane wymagane do utworzenia nowego magazynu
+ * Data required to create a new warehouse
  */
 export interface CreateWarehouseRequest {
-  /** Nazwa magazynu */
+  /** Warehouse name */
   name: string;
-  /** Kod magazynu */
+  /** Warehouse code */
   code: string;
-  /** Opis magazynu */
+  /** Warehouse description */
   description: string;
-  /** Adres magazynu */
+  /** Warehouse address */
   address: Address;
 }
 
 /**
- * Alias dla WarehouseResponse - reprezentuje magazyn w systemie
+ * Alias for WarehouseResponse - represents a warehouse in the system
  */
 export type Warehouse = WarehouseResponse;
 
@@ -134,42 +134,42 @@ export type Warehouse = WarehouseResponse;
 // ============================================
 
 /**
- * Typ lokalizacji w magazynie
+ * Location type in warehouse
  */
 export type LocationType = 'PICKING' | 'BULK' | 'RECEIVING' | 'SHIPPING' | 'RETURNS';
 
 /**
- * Odpowiedź API z danymi lokalizacji
+ * API response with location data
  */
 export interface LocationResponse {
-  /** Unikalny identyfikator lokalizacji */
+  /** Unique location identifier */
   id: number;
-  /** Kod lokalizacji */
+  /** Location code */
   locationCode: string;
-  /** Nazwa strefy */
+  /** Zone name */
   zoneName: string;
-  /** Typ lokalizacji */
+  /** Location type */
   locationType: LocationType;
-  /** Czy lokalizacja jest aktywna */
+  /** Whether the location is active */
   isActive: boolean;
-  /** Czy lokalizacja jest zablokowana */
+  /** Whether the location is locked */
   isLocked: boolean;
 }
 
 /**
- * Dane wymagane do utworzenia nowej lokalizacji
+ * Data required to create a new location
  */
 export interface CreateLocationRequest {
-  /** Kod lokalizacji */
+  /** Location code */
   locationCode: string;
-  /** Nazwa strefy */
+  /** Zone name */
   zoneName: string;
-  /** Typ lokalizacji */
+  /** Location type */
   locationType: LocationType;
 }
 
 /**
- * Alias dla LocationResponse - reprezentuje lokalizację w systemie
+ * Alias for LocationResponse - represents a location in the system
  */
 export type Location = LocationResponse;
 
@@ -178,22 +178,22 @@ export type Location = LocationResponse;
 // ============================================
 
 /**
- * Generyczny typ dla odpowiedzi z paginacją
- * @template T - Typ elementów w liście
+ * Generic type for paginated responses
+ * @template T - Type of elements in the list
  */
 export interface PaginatedResponse<T> {
-  /** Lista elementów na bieżącej stronie */
+  /** List of elements on the current page */
   content: T[];
-  /** Numer bieżącej strony (0-indexed) */
+  /** Current page number (0-indexed) */
   page: number;
-  /** Rozmiar strony */
+  /** Page size */
   size: number;
-  /** Całkowita liczba elementów */
+  /** Total number of elements */
   totalElements: number;
-  /** Całkowita liczba stron */
+  /** Total number of pages */
   totalPages: number;
-  /** Czy jest to pierwsza strona */
+  /** Whether this is the first page */
   first: boolean;
-  /** Czy jest to ostatnia strona */
+  /** Whether this is the last page */
   last: boolean;
 }

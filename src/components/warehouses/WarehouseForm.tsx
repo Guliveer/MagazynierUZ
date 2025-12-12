@@ -39,7 +39,7 @@ interface WarehouseFormProps {
 }
 
 // Helper function to parse coordinates from string
-function parseCoordinates(coordString: string): { latitude: number; longitude: number } {
+function parseCoordinates(coordString: string): { latitude: number; longitude: number } | null {
     const parts = coordString.split(',').map((s) => s.trim());
     if (parts.length === 2) {
         const lat = parseFloat(parts[0]);
@@ -48,7 +48,7 @@ function parseCoordinates(coordString: string): { latitude: number; longitude: n
             return { latitude: lat, longitude: lng };
         }
     }
-    return { latitude: 0, longitude: 0 };
+    return null;
 }
 
 // Helper function to format coordinates to string
@@ -77,7 +77,9 @@ export function WarehouseForm({ warehouse, onSubmit, onCancel, isLoading = false
 
     const handleSubmit = form.handleSubmit(async (data) => {
         const { coordinates, ...rest } = data;
-        const { latitude, longitude } = parseCoordinates(coordinates ?? '');
+        const parsedCoords = parseCoordinates(coordinates ?? '');
+        const latitude = parsedCoords?.latitude ?? 0;
+        const longitude = parsedCoords?.longitude ?? 0;
         await onSubmit({ ...rest, latitude, longitude });
     });
 

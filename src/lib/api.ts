@@ -68,7 +68,7 @@ export async function register(username: string, password: string): Promise<void
 async function fetchApiAuth<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const token = getToken();
     if (!token) {
-        throw new ApiError(401, 'Brak tokenu autoryzacji');
+        throw new ApiError(401, 'Missing authorization token');
     }
 
     return await fetchApi<T>(endpoint, {
