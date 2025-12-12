@@ -20,6 +20,8 @@ const eslintConfig = defineConfig([
         "lib/**",
         "src/components/ui/**",
         "scripts/**",
+        ".idea/**",
+        ".vscode/**",
         // Config files
         "*.config.mjs",
         "*.config.js",
