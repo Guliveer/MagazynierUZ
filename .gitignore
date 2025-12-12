@@ -42,5 +42,5 @@ yarn-error.log*
 next-env.d.ts
 
 # IDEs and editors
-.idea/
-.vscode/
+/.idea
+/.vscode
