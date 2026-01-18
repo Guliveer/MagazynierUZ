@@ -8,6 +8,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/components/ui/empty';
+import { Input } from '@/components/ui/input';
 
 import { ProductFilters } from './ProductFilters';
 import { ProductDialog } from './ProductDialog';
@@ -29,6 +30,7 @@ export function ProductList() {
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [search, setSearch] = useState('');
 
     // Filter states
     const [selectedWarehouseId, setSelectedWarehouseId] = useState<number | null>(null);
@@ -60,6 +62,16 @@ export function ProductList() {
             setIsLoading(false);
         }
     }, [selectedWarehouseId, selectedLocationId]);
+
+        const filteredProducts = products.filter(product => {
+    const query = search.toLowerCase();
+
+    return (
+        product.name.toLowerCase().includes(query) ||
+        product.description?.toLowerCase().includes(query) ||
+        product.id.toString().includes(query)
+    );
+    });
 
     useEffect(() => {
         fetchProducts();
@@ -219,7 +231,7 @@ export function ProductList() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {products.map((product) => (
+                    {filteredProducts.map((product) => (
                         <TableRow key={product.id}>
                             <TableCell className="font-mono text-muted-foreground">{product.id}</TableCell>
                             <TableCell className="font-medium">{product.name}</TableCell>
@@ -251,6 +263,12 @@ export function ProductList() {
             {/* Header with Add button */}
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold tracking-tight">Products</h2>
+                    <Input
+                        placeholder="Search products..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="max-w-sm"
+                        />
                 <Button onClick={handleAddClick} disabled={!canShowProducts}>
                     <Plus className="mr-2 h-4 w-4" />
           Add Product

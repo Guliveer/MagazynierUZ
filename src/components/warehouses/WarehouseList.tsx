@@ -13,6 +13,7 @@ import { Building2, MapPin, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { DeleteWarehouseDialog } from './DeleteWarehouseDialog';
+import { WarehouseMapDialog } from './WarehouseMapDialog';
 
 import { WarehouseDialog } from './WarehouseDialog';
 
@@ -20,6 +21,7 @@ export function WarehouseList() {
     const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isMapOpen, setIsMapOpen] = useState(false);
 
     // Dialog states
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -213,6 +215,10 @@ export function WarehouseList() {
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold tracking-tight">Warehouses</h2>
+                <Button variant="outline" onClick={() => setIsMapOpen(true)}>
+                    <MapPin className="mr-2 h-4 w-4" />
+                    View map
+                </Button>
                 <Button onClick={handleAddClick}>
                     <Plus className="mr-2 h-4 w-4"/>
                     Add Warehouse
@@ -273,6 +279,11 @@ export function WarehouseList() {
             <DeleteWarehouseDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}
                 warehouse={selectedWarehouse} onConfirm={handleDeleteConfirm}
                 isLoading={isDeleting}/>
+
+            <WarehouseMapDialog
+                open={isMapOpen}
+                onOpenChange={setIsMapOpen}
+                warehouses={warehouses}/>
         </div>
     );
 }
