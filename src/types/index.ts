@@ -152,7 +152,7 @@ export type Warehouse = WarehouseResponse;
 /**
  * Location type in warehouse
  */
-export type LocationType = 'PICKING' | 'BULK' | 'RECEIVING' | 'SHIPPING' | 'RETURNS';
+export type LocationType = "PICKING" | "BULK" | "RECEIVING" | "SHIPPING" | "RETURNS";
 
 /**
  * API response with location data
@@ -213,3 +213,42 @@ export interface PaginatedResponse<T> {
   /** Whether this is the last page */
   last: boolean;
 }
+
+// ============================================
+// Statistics Types
+// ============================================
+
+/**
+ * Summary statistics for the dashboard
+ */
+export interface SummaryStatistics {
+  /** Total number of products */
+  totalProducts: number;
+  /** Total inventory value (sum of all products value) */
+  totalInventoryValue: number;
+  /** Average product price */
+  averagePrice: number;
+  /** Number of warehouses */
+  warehousesCount: number;
+  /** Number of products with low stock */
+  lowStockCount: number;
+}
+
+/**
+ * Warehouse distribution data for pie chart
+ */
+export interface WarehouseDistribution {
+  /** Warehouse ID */
+  warehouseId: number;
+  /** Warehouse name */
+  warehouseName: string;
+  /** Number of products in warehouse */
+  productCount: number;
+  /** Total value of products in warehouse */
+  totalValue: number;
+}
+
+/**
+ * Chart view type
+ */
+export type ChartViewType = "quantity" | "price" | "totalValue" | "comparison";
