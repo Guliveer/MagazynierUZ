@@ -152,7 +152,7 @@ export type Warehouse = WarehouseResponse;
 /**
  * Location type in warehouse
  */
-export type LocationType = "PICKING" | "BULK" | "RECEIVING" | "SHIPPING" | "RETURNS";
+export type LocationType = 'PICKING' | 'BULK' | 'RECEIVING' | 'SHIPPING' | 'RETURNS';
 
 /**
  * API response with location data
@@ -251,4 +251,4 @@ export interface WarehouseDistribution {
 /**
  * Chart view type
  */
-export type ChartViewType = "quantity" | "price" | "totalValue" | "comparison";
+export type ChartViewType = 'quantity' | 'price' | 'totalValue' | 'comparison';
