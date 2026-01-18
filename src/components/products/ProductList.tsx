@@ -63,14 +63,14 @@ export function ProductList() {
         }
     }, [selectedWarehouseId, selectedLocationId]);
 
-        const filteredProducts = products.filter(product => {
-    const query = search.toLowerCase();
+    const filteredProducts = products.filter(product => {
+        const query = search.toLowerCase();
 
-    return (
-        product.name.toLowerCase().includes(query) ||
+        return (
+            product.name.toLowerCase().includes(query) ||
         product.description?.toLowerCase().includes(query) ||
         product.id.toString().includes(query)
-    );
+        );
     });
 
     useEffect(() => {
@@ -263,12 +263,12 @@ export function ProductList() {
             {/* Header with Add button */}
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold tracking-tight">Products</h2>
-                    <Input
-                        placeholder="Search products..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="max-w-sm"
-                        />
+                <Input
+                    placeholder="Search products..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="max-w-sm"
+                />
                 <Button onClick={handleAddClick} disabled={!canShowProducts}>
                     <Plus className="mr-2 h-4 w-4" />
           Add Product

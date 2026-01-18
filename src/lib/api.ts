@@ -1,4 +1,4 @@
-import type { LoginResponse, Warehouse, CreateWarehouseRequest, Location, CreateLocationRequest, Product, CreateProductRequest } from '@/types';
+import type { LoginResponse, Warehouse, CreateWarehouseRequest, Location, CreateLocationRequest, Product, CreateProductRequest, Top10Product } from '@/types';
 import { getToken } from '@/lib/auth';
 
 // Używamy lokalnego proxy API, aby obejść problem CORS
@@ -11,7 +11,10 @@ export interface AuthRequest {
 }
 
 export class ApiError extends Error {
-    constructor(public statusCode: number, message: string) {
+    constructor(
+    public statusCode: number,
+    message: string
+    ) {
         super(message);
         this.name = 'ApiError';
     }
@@ -230,4 +233,45 @@ export async function updateProduct(warehouseId: number, locationId: number, pro
 export async function deleteProduct(warehouseId: number, locationId: number, productId: number): Promise<void> {
     console.warn(`[MOCK] deleteProduct(${warehouseId}/${locationId}/${productId}) - endpoint nie istnieje w API`);
     await new Promise((resolve) => setTimeout(resolve, 500));
+}
+
+// ============================================
+// Statistics API
+// ============================================
+
+export interface Top10ProductsParams {
+  sortBy?: 'quantity' | 'price' | 'name';
+  sortDirection?: 'asc' | 'desc';
+  warehouseId?: number;
+  locationId?: number;
+  isAvailable?: boolean;
+}
+
+/**
+ * Pobiera top 10 produktów na podstawie kryteriów
+ * @param params - Parametry filtrowania i sortowania
+ */
+export async function getTop10Products(params?: Top10ProductsParams): Promise<Top10Product[]> {
+    const queryParams = new URLSearchParams();
+
+    if (params?.sortBy) {
+        queryParams.append('sortBy', params.sortBy);
+    }
+    if (params?.sortDirection) {
+        queryParams.append('sortDirection', params.sortDirection);
+    }
+    if (params?.warehouseId !== undefined) {
+        queryParams.append('warehouseId', params.warehouseId.toString());
+    }
+    if (params?.locationId !== undefined) {
+        queryParams.append('locationId', params.locationId.toString());
+    }
+    if (params?.isAvailable !== undefined) {
+        queryParams.append('isAvailable', params.isAvailable.toString());
+    }
+
+    const queryString = queryParams.toString();
+    const endpoint = `/api/v1/products/top10${queryString ? `?${queryString}` : ''}`;
+
+    return await fetchApiAuth<Top10Product[]>(endpoint);
 }

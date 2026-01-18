@@ -90,6 +90,22 @@ export interface CreateProductRequest {
  */
 export type Product = ProductResponse;
 
+/**
+ * Top 10 product statistics response
+ */
+export interface Top10Product {
+  /** Product ID */
+  id: number;
+  /** Product name */
+  name: string;
+  /** Product description */
+  description: string;
+  /** Product price */
+  price: number;
+  /** Total quantity across all locations */
+  quantity: number;
+}
+
 // ============================================
 // Warehouse Types
 // ============================================

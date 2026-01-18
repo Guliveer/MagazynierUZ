@@ -5,8 +5,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import type { Warehouse } from '@/types';
 
 const WarehouseMap = dynamic(
-  () => import('./WarehouseMap'),
-  { ssr: false }
+    () => import('./WarehouseMap'),
+    { ssr: false }
 );
 
 type Props = {
@@ -16,15 +16,15 @@ type Props = {
 };
 
 export function WarehouseMapDialog({ open, onOpenChange, warehouses }: Props) {
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl">
-        <DialogHeader>
-          <DialogTitle>Warehouse map</DialogTitle>
-        </DialogHeader>
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-4xl">
+                <DialogHeader>
+                    <DialogTitle>Warehouse map</DialogTitle>
+                </DialogHeader>
 
-        <WarehouseMap warehouses={warehouses} />
-      </DialogContent>
-    </Dialog>
-  );
+                <WarehouseMap warehouses={warehouses} />
+            </DialogContent>
+        </Dialog>
+    );
 }

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Building2, Package, LogOut } from 'lucide-react';
+import { LayoutDashboard, Building2, Package, BarChart3, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { removeToken } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,8 @@ import { Separator } from '@/components/ui/separator';
 const navItems = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/dashboard/warehouses', label: 'Warehouses', icon: Building2 },
-    { href: '/dashboard/products', label: 'Products', icon: Package }
+    { href: '/dashboard/products', label: 'Products', icon: Package },
+    { href: '/dashboard/statistics', label: 'Statistics', icon: BarChart3 }
 ];
 
 export function DashboardNav() {
