@@ -1,9 +1,9 @@
-import type { LoginResponse, Warehouse, CreateWarehouseRequest, Location, CreateLocationRequest, Product, CreateProductRequest, Top10Product, PaginatedResponse } from "@/types";
-import { getToken } from "@/lib/auth";
+import type { LoginResponse, Warehouse, CreateWarehouseRequest, Location, CreateLocationRequest, Product, CreateProductRequest, Top10Product, PaginatedResponse } from '@/types';
+import { getToken } from '@/lib/auth';
 
 // Używamy lokalnego proxy API, aby obejść problem CORS
 // Backend URL jest konfigurowany po stronie serwera w src/app/api/proxy/[...path]/route.ts
-const API_BASE_URL = "/api/proxy";
+const API_BASE_URL = '/api/proxy';
 
 export interface AuthRequest {
   username: string;
@@ -11,50 +11,50 @@ export interface AuthRequest {
 }
 
 export class ApiError extends Error {
-  constructor(
+    constructor(
     public statusCode: number,
-    message: string,
-  ) {
-    super(message);
-    this.name = "ApiError";
-  }
+    message: string
+    ) {
+        super(message);
+        this.name = 'ApiError';
+    }
 }
 
 async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-    ...options,
-  });
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        },
+        ...options
+    });
 
-  if (!response.ok) {
-    const errorData = await response.text().catch(() => "");
-    throw new ApiError(response.status, errorData || "Request failed");
-  }
+    if (!response.ok) {
+        const errorData = await response.text().catch(() => '');
+        throw new ApiError(response.status, errorData || 'Request failed');
+    }
 
-  return response.json();
+    return response.json();
 }
 
 export async function login(username: string, password: string): Promise<LoginResponse> {
-  return await fetchApi<LoginResponse>("/auth/login", {
-    method: "POST",
-    body: JSON.stringify({
-      username,
-      password,
-    } as AuthRequest),
-  });
+    return await fetchApi<LoginResponse>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({
+            username,
+            password
+        } as AuthRequest)
+    });
 }
 
 export async function register(username: string, password: string): Promise<void> {
-  await fetchApi<void>("/auth/register", {
-    method: "POST",
-    body: JSON.stringify({
-      username,
-      password,
-    } as AuthRequest),
-  });
+    await fetchApi<void>('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({
+            username,
+            password
+        } as AuthRequest)
+    });
 }
 
 // ============================================
@@ -69,19 +69,19 @@ export async function register(username: string, password: string): Promise<void
  * @throws ApiError gdy brak tokenu lub błąd API
  */
 async function fetchApiAuth<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const token = getToken();
-  if (!token) {
-    throw new ApiError(401, "Missing authorization token");
-  }
+    const token = getToken();
+    if (!token) {
+        throw new ApiError(401, 'Missing authorization token');
+    }
 
-  return await fetchApi<T>(endpoint, {
-    ...options,
-    headers: {
-      ...options.headers,
-      Authorization: `Bearer ${token}`,
-    },
-    signal: options.signal, // Pass through AbortSignal for request cancellation
-  });
+    return await fetchApi<T>(endpoint, {
+        ...options,
+        headers: {
+            ...options.headers,
+            Authorization: `Bearer ${token}`
+        },
+        signal: options.signal // Pass through AbortSignal for request cancellation
+    });
 }
 
 // ============================================
@@ -92,7 +92,7 @@ async function fetchApiAuth<T>(endpoint: string, options: RequestInit = {}): Pro
  * Pobiera listę magazynów użytkownika
  */
 export async function getWarehouses(): Promise<Warehouse[]> {
-  return await fetchApiAuth<Warehouse[]>("/api/v1/warehouses");
+    return await fetchApiAuth<Warehouse[]>('/api/v1/warehouses');
 }
 
 /**
@@ -100,7 +100,7 @@ export async function getWarehouses(): Promise<Warehouse[]> {
  * @param id - ID magazynu
  */
 export async function getWarehouse(id: number): Promise<Warehouse> {
-  return await fetchApiAuth<Warehouse>(`/api/v1/warehouses/${id}`);
+    return await fetchApiAuth<Warehouse>(`/api/v1/warehouses/${id}`);
 }
 
 /**
@@ -108,10 +108,10 @@ export async function getWarehouse(id: number): Promise<Warehouse> {
  * @param data - Dane magazynu
  */
 export async function createWarehouse(data: CreateWarehouseRequest): Promise<Warehouse> {
-  return await fetchApiAuth<Warehouse>("/api/v1/warehouses", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
+    return await fetchApiAuth<Warehouse>('/api/v1/warehouses', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    });
 }
 
 /**
@@ -120,10 +120,10 @@ export async function createWarehouse(data: CreateWarehouseRequest): Promise<War
  * @param data - Dane magazynu
  */
 export async function updateWarehouse(id: number, data: CreateWarehouseRequest): Promise<Warehouse> {
-  return await fetchApiAuth<Warehouse>(`/api/v1/warehouses/${id}`, {
-    method: "PATCH",
-    body: JSON.stringify(data),
-  });
+    return await fetchApiAuth<Warehouse>(`/api/v1/warehouses/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data)
+    });
 }
 
 /**
@@ -131,9 +131,9 @@ export async function updateWarehouse(id: number, data: CreateWarehouseRequest):
  * @param id - ID magazynu
  */
 export async function deleteWarehouse(id: number): Promise<void> {
-  await fetchApiAuth<void>(`/api/v1/warehouses/${id}`, {
-    method: "DELETE",
-  });
+    await fetchApiAuth<void>(`/api/v1/warehouses/${id}`, {
+        method: 'DELETE'
+    });
 }
 
 // ============================================
@@ -145,7 +145,7 @@ export async function deleteWarehouse(id: number): Promise<void> {
  * @param warehouseId - ID magazynu
  */
 export async function getLocations(warehouseId: number): Promise<Location[]> {
-  return await fetchApiAuth<Location[]>(`/api/v1/warehouses/${warehouseId}/locations`);
+    return await fetchApiAuth<Location[]>(`/api/v1/warehouses/${warehouseId}/locations`);
 }
 
 /**
@@ -155,7 +155,7 @@ export async function getLocations(warehouseId: number): Promise<Location[]> {
  * @note Available for future use - location detail view may be implemented later
  */
 export async function getLocation(warehouseId: number, locationId: number): Promise<Location> {
-  return await fetchApiAuth<Location>(`/api/v1/warehouses/${warehouseId}/locations/${locationId}`);
+    return await fetchApiAuth<Location>(`/api/v1/warehouses/${warehouseId}/locations/${locationId}`);
 }
 
 /**
@@ -164,10 +164,10 @@ export async function getLocation(warehouseId: number, locationId: number): Prom
  * @param data - Dane lokalizacji
  */
 export async function createLocation(warehouseId: number, data: CreateLocationRequest): Promise<Location> {
-  return await fetchApiAuth<Location>(`/api/v1/warehouses/${warehouseId}/locations`, {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
+    return await fetchApiAuth<Location>(`/api/v1/warehouses/${warehouseId}/locations`, {
+        method: 'POST',
+        body: JSON.stringify(data)
+    });
 }
 
 /**
@@ -177,10 +177,10 @@ export async function createLocation(warehouseId: number, data: CreateLocationRe
  * @param data - Dane lokalizacji
  */
 export async function updateLocation(warehouseId: number, locationId: number, data: CreateLocationRequest): Promise<Location> {
-  return await fetchApiAuth<Location>(`/api/v1/warehouses/${warehouseId}/locations/${locationId}`, {
-    method: "PATCH",
-    body: JSON.stringify(data),
-  });
+    return await fetchApiAuth<Location>(`/api/v1/warehouses/${warehouseId}/locations/${locationId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data)
+    });
 }
 
 /**
@@ -189,9 +189,9 @@ export async function updateLocation(warehouseId: number, locationId: number, da
  * @param locationId - ID lokalizacji
  */
 export async function deleteLocation(warehouseId: number, locationId: number): Promise<void> {
-  await fetchApiAuth<void>(`/api/v1/warehouses/${warehouseId}/locations/${locationId}`, {
-    method: "DELETE",
-  });
+    await fetchApiAuth<void>(`/api/v1/warehouses/${warehouseId}/locations/${locationId}`, {
+        method: 'DELETE'
+    });
 }
 
 // ============================================
@@ -204,7 +204,7 @@ export async function deleteLocation(warehouseId: number, locationId: number): P
  * @param locationId - ID lokalizacji
  */
 export async function getProducts(warehouseId: number, locationId: number): Promise<Product[]> {
-  return await fetchApiAuth<Product[]>(`/api/v1/warehouses/${warehouseId}/${locationId}/products`);
+    return await fetchApiAuth<Product[]>(`/api/v1/warehouses/${warehouseId}/${locationId}/products`);
 }
 
 /**
@@ -214,7 +214,7 @@ export async function getProducts(warehouseId: number, locationId: number): Prom
  * @param productId - ID produktu
  */
 export async function getProduct(warehouseId: number, locationId: number, productId: number): Promise<Product> {
-  return await fetchApiAuth<Product>(`/api/v1/warehouses/${warehouseId}/${locationId}/products/${productId}`);
+    return await fetchApiAuth<Product>(`/api/v1/warehouses/${warehouseId}/${locationId}/products/${productId}`);
 }
 
 /**
@@ -224,10 +224,10 @@ export async function getProduct(warehouseId: number, locationId: number, produc
  * @param data - Dane produktu
  */
 export async function createProduct(warehouseId: number, locationId: number, data: CreateProductRequest): Promise<Product> {
-  return await fetchApiAuth<Product>(`/api/v1/warehouses/${warehouseId}/${locationId}/products`, {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
+    return await fetchApiAuth<Product>(`/api/v1/warehouses/${warehouseId}/${locationId}/products`, {
+        method: 'POST',
+        body: JSON.stringify(data)
+    });
 }
 
 /**
@@ -238,10 +238,10 @@ export async function createProduct(warehouseId: number, locationId: number, dat
  * @param data - Dane produktu
  */
 export async function updateProduct(warehouseId: number, locationId: number, productId: number, data: CreateProductRequest): Promise<Product> {
-  return await fetchApiAuth<Product>(`/api/v1/warehouses/${warehouseId}/${locationId}/products/${productId}`, {
-    method: "PATCH",
-    body: JSON.stringify(data),
-  });
+    return await fetchApiAuth<Product>(`/api/v1/warehouses/${warehouseId}/${locationId}/products/${productId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data)
+    });
 }
 
 /**
@@ -251,9 +251,9 @@ export async function updateProduct(warehouseId: number, locationId: number, pro
  * @param productId - ID produktu
  */
 export async function deleteProduct(warehouseId: number, locationId: number, productId: number): Promise<void> {
-  await fetchApiAuth<void>(`/api/v1/warehouses/${warehouseId}/${locationId}/products/${productId}`, {
-    method: "DELETE",
-  });
+    await fetchApiAuth<void>(`/api/v1/warehouses/${warehouseId}/${locationId}/products/${productId}`, {
+        method: 'DELETE'
+    });
 }
 
 // ============================================
@@ -261,8 +261,8 @@ export async function deleteProduct(warehouseId: number, locationId: number, pro
 // ============================================
 
 export interface Top10ProductsParams {
-  sortBy?: "quantity" | "price" | "name";
-  sortDirection?: "asc" | "desc";
+  sortBy?: 'quantity' | 'price' | 'name';
+  sortDirection?: 'asc' | 'desc';
   warehouseId?: number;
   locationId?: number;
   isAvailable?: boolean;
@@ -273,28 +273,28 @@ export interface Top10ProductsParams {
  * @param params - Parametry filtrowania i sortowania
  */
 export async function getTop10Products(params?: Top10ProductsParams): Promise<Top10Product[]> {
-  const queryParams = new URLSearchParams();
+    const queryParams = new URLSearchParams();
 
-  if (params?.sortBy) {
-    queryParams.append("sortBy", params.sortBy);
-  }
-  if (params?.sortDirection) {
-    queryParams.append("sortDirection", params.sortDirection);
-  }
-  if (params?.warehouseId !== undefined) {
-    queryParams.append("warehouseId", params.warehouseId.toString());
-  }
-  if (params?.locationId !== undefined) {
-    queryParams.append("locationId", params.locationId.toString());
-  }
-  if (params?.isAvailable !== undefined) {
-    queryParams.append("isAvailable", params.isAvailable.toString());
-  }
+    if (params?.sortBy) {
+        queryParams.append('sortBy', params.sortBy);
+    }
+    if (params?.sortDirection) {
+        queryParams.append('sortDirection', params.sortDirection);
+    }
+    if (params?.warehouseId !== undefined) {
+        queryParams.append('warehouseId', params.warehouseId.toString());
+    }
+    if (params?.locationId !== undefined) {
+        queryParams.append('locationId', params.locationId.toString());
+    }
+    if (params?.isAvailable !== undefined) {
+        queryParams.append('isAvailable', params.isAvailable.toString());
+    }
 
-  const queryString = queryParams.toString();
-  const endpoint = `/api/v1/products/top10${queryString ? `?${queryString}` : ""}`;
+    const queryString = queryParams.toString();
+    const endpoint = `/api/v1/products/top10${queryString ? `?${queryString}` : ''}`;
 
-  return await fetchApiAuth<Top10Product[]>(endpoint);
+    return await fetchApiAuth<Top10Product[]>(endpoint);
 }
 
 export interface ProductSearchParams {
@@ -308,8 +308,8 @@ export interface ProductSearchParams {
   isAvailable?: boolean;
   page?: number;
   size?: number;
-  sortBy?: "name" | "price" | "quantity" | "id";
-  sortDirection?: "asc" | "desc";
+  sortBy?: 'name' | 'price' | 'quantity' | 'id';
+  sortDirection?: 'asc' | 'desc';
 }
 
 /**
@@ -318,49 +318,49 @@ export interface ProductSearchParams {
  * @returns Paginated response with products
  */
 export async function searchProducts(params?: ProductSearchParams): Promise<PaginatedResponse<Product>> {
-  const queryParams = new URLSearchParams();
+    const queryParams = new URLSearchParams();
 
-  if (params?.name) {
-    queryParams.append("name", params.name);
-  }
-  if (params?.warehouseId !== undefined) {
-    queryParams.append("warehouseId", params.warehouseId.toString());
-  }
-  if (params?.locationId !== undefined) {
-    queryParams.append("locationId", params.locationId.toString());
-  }
-  if (params?.minPrice !== undefined) {
-    queryParams.append("minPrice", params.minPrice.toString());
-  }
-  if (params?.maxPrice !== undefined) {
-    queryParams.append("maxPrice", params.maxPrice.toString());
-  }
-  if (params?.minQuantity !== undefined) {
-    queryParams.append("minQuantity", params.minQuantity.toString());
-  }
-  if (params?.maxQuantity !== undefined) {
-    queryParams.append("maxQuantity", params.maxQuantity.toString());
-  }
-  if (params?.isAvailable !== undefined) {
-    queryParams.append("isAvailable", params.isAvailable.toString());
-  }
-  if (params?.page !== undefined) {
-    queryParams.append("page", params.page.toString());
-  }
-  if (params?.size !== undefined) {
-    queryParams.append("size", params.size.toString());
-  }
-  if (params?.sortBy) {
-    queryParams.append("sortBy", params.sortBy);
-  }
-  if (params?.sortDirection) {
-    queryParams.append("sortDirection", params.sortDirection);
-  }
+    if (params?.name) {
+        queryParams.append('name', params.name);
+    }
+    if (params?.warehouseId !== undefined) {
+        queryParams.append('warehouseId', params.warehouseId.toString());
+    }
+    if (params?.locationId !== undefined) {
+        queryParams.append('locationId', params.locationId.toString());
+    }
+    if (params?.minPrice !== undefined) {
+        queryParams.append('minPrice', params.minPrice.toString());
+    }
+    if (params?.maxPrice !== undefined) {
+        queryParams.append('maxPrice', params.maxPrice.toString());
+    }
+    if (params?.minQuantity !== undefined) {
+        queryParams.append('minQuantity', params.minQuantity.toString());
+    }
+    if (params?.maxQuantity !== undefined) {
+        queryParams.append('maxQuantity', params.maxQuantity.toString());
+    }
+    if (params?.isAvailable !== undefined) {
+        queryParams.append('isAvailable', params.isAvailable.toString());
+    }
+    if (params?.page !== undefined) {
+        queryParams.append('page', params.page.toString());
+    }
+    if (params?.size !== undefined) {
+        queryParams.append('size', params.size.toString());
+    }
+    if (params?.sortBy) {
+        queryParams.append('sortBy', params.sortBy);
+    }
+    if (params?.sortDirection) {
+        queryParams.append('sortDirection', params.sortDirection);
+    }
 
-  const queryString = queryParams.toString();
-  const endpoint = `/api/v1/products/search${queryString ? `?${queryString}` : ""}`;
+    const queryString = queryParams.toString();
+    const endpoint = `/api/v1/products/search${queryString ? `?${queryString}` : ''}`;
 
-  return await fetchApiAuth<PaginatedResponse<Product>>(endpoint);
+    return await fetchApiAuth<PaginatedResponse<Product>>(endpoint);
 }
 
 /**
@@ -368,36 +368,36 @@ export async function searchProducts(params?: ProductSearchParams): Promise<Pagi
  * @param params - Parametry wyszukiwania
  * @returns Array of products
  */
-export async function searchProductsUnpaginated(params?: Omit<ProductSearchParams, "page" | "size" | "sortBy" | "sortDirection">): Promise<Product[]> {
-  const queryParams = new URLSearchParams();
+export async function searchProductsUnpaginated(params?: Omit<ProductSearchParams, 'page' | 'size' | 'sortBy' | 'sortDirection'>): Promise<Product[]> {
+    const queryParams = new URLSearchParams();
 
-  if (params?.name) {
-    queryParams.append("name", params.name);
-  }
-  if (params?.warehouseId !== undefined) {
-    queryParams.append("warehouseId", params.warehouseId.toString());
-  }
-  if (params?.locationId !== undefined) {
-    queryParams.append("locationId", params.locationId.toString());
-  }
-  if (params?.minPrice !== undefined) {
-    queryParams.append("minPrice", params.minPrice.toString());
-  }
-  if (params?.maxPrice !== undefined) {
-    queryParams.append("maxPrice", params.maxPrice.toString());
-  }
-  if (params?.minQuantity !== undefined) {
-    queryParams.append("minQuantity", params.minQuantity.toString());
-  }
-  if (params?.maxQuantity !== undefined) {
-    queryParams.append("maxQuantity", params.maxQuantity.toString());
-  }
-  if (params?.isAvailable !== undefined) {
-    queryParams.append("isAvailable", params.isAvailable.toString());
-  }
+    if (params?.name) {
+        queryParams.append('name', params.name);
+    }
+    if (params?.warehouseId !== undefined) {
+        queryParams.append('warehouseId', params.warehouseId.toString());
+    }
+    if (params?.locationId !== undefined) {
+        queryParams.append('locationId', params.locationId.toString());
+    }
+    if (params?.minPrice !== undefined) {
+        queryParams.append('minPrice', params.minPrice.toString());
+    }
+    if (params?.maxPrice !== undefined) {
+        queryParams.append('maxPrice', params.maxPrice.toString());
+    }
+    if (params?.minQuantity !== undefined) {
+        queryParams.append('minQuantity', params.minQuantity.toString());
+    }
+    if (params?.maxQuantity !== undefined) {
+        queryParams.append('maxQuantity', params.maxQuantity.toString());
+    }
+    if (params?.isAvailable !== undefined) {
+        queryParams.append('isAvailable', params.isAvailable.toString());
+    }
 
-  const queryString = queryParams.toString();
-  const endpoint = `/api/v1/products/search${queryString ? `?${queryString}` : ""}`;
+    const queryString = queryParams.toString();
+    const endpoint = `/api/v1/products/search${queryString ? `?${queryString}` : ''}`;
 
-  return await fetchApiAuth<Product[]>(endpoint);
+    return await fetchApiAuth<Product[]>(endpoint);
 }

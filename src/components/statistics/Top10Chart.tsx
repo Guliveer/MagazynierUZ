@@ -35,7 +35,7 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick }: Top10
     // Colors for pie chart
     const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))', 'hsl(220, 70%, 50%)', 'hsl(280, 70%, 50%)', 'hsl(340, 70%, 50%)', 'hsl(40, 70%, 50%)', 'hsl(160, 70%, 50%)'];
 
-    const handleBarClick = (data: any) => {
+    const handleBarClick = (data: { product?: Top10Product }) => {
         if (onBarClick && data.product) {
             onBarClick(data.product);
         }
