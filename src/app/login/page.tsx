@@ -2,23 +2,49 @@
 import HCaptchaWrapper, { HCaptchaRef } from '@/components/HCaptcha';
 import { ApiError, login } from '@/lib/api';
 import { setToken } from '@/lib/auth';
-import { AlertCircleIcon, Loader2Icon } from 'lucide-react';
+import { storeEncryptedCredentials } from '@/lib/crypto';
+import { AlertCircleIcon, InfoIcon, Loader2Icon } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from 'shadcn/alert';
 import { Button } from 'shadcn/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from 'shadcn/card';
 import { Input } from 'shadcn/input';
+import { Checkbox } from 'shadcn/checkbox';
+import { Label } from 'shadcn/label';
+import { Spinner } from '@/components/ui/spinner';
 
-export default function LoginPage() {
+function LoginForm() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+    const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [sessionExpiredMessage, setSessionExpiredMessage] = useState<string | null>(null);
+    const [sessionExtendMessage, setSessionExtendMessage] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const captchaRef = useRef<HCaptchaRef>(null);
+
+    // Check for session expiration or extension message
+    useEffect(() => {
+        const expired = searchParams.get('expired');
+        const extend = searchParams.get('extend');
+        const sessionExpired = typeof window !== 'undefined' && sessionStorage.getItem('session_expired');
+        const storedMessage = typeof window !== 'undefined' && sessionStorage.getItem('session_expired_message');
+
+        if (expired === 'true' || sessionExpired === 'true') {
+            setSessionExpiredMessage(storedMessage || 'Your session has expired. Please log in again.');
+            if (typeof window !== 'undefined') {
+                sessionStorage.removeItem('session_expired');
+                sessionStorage.removeItem('session_expired_message');
+            }
+        } else if (extend === 'true') {
+            setSessionExtendMessage('Please log in again to extend your session and continue where you left off.');
+        }
+    }, [searchParams]);
 
     const handleCaptchaVerify = (token: string) => {
         setCaptchaToken(token);
@@ -44,17 +70,34 @@ export default function LoginPage() {
 
         setIsLoading(true);
         setError(null);
+        setSessionExpiredMessage(null);
 
         try {
             const response = await login(username, password);
             setToken(response.token);
 
+            // Store credentials if "Remember me" is checked
+            if (rememberMe) {
+                try {
+                    await storeEncryptedCredentials(username, password);
+                } catch (error) {
+                    console.error('Failed to store credentials:', error);
+                    // Continue with login even if credential storage fails
+                }
+            }
+
             // Reset captcha after submission
             captchaRef.current?.resetCaptcha();
             setCaptchaToken(null);
 
-            // Redirect to dashboard after successful login
-            router.push('/dashboard');
+            // Check for redirect parameter
+            const redirectUrl = searchParams.get('redirect');
+            if (redirectUrl && redirectUrl.startsWith('/')) {
+                router.push(redirectUrl);
+            } else {
+                // Redirect to dashboard after successful login
+                router.push('/dashboard');
+            }
         } catch (err) {
             if (err instanceof ApiError) {
                 if (err.statusCode === 401) {
@@ -82,6 +125,26 @@ export default function LoginPage() {
                 </CardHeader>
 
                 <CardContent className="space-y-4">
+                    {sessionExpiredMessage && (
+                        <Alert variant="default" className="flex items-start space-x-2 border-yellow-500 bg-yellow-50 dark:bg-yellow-950">
+                            <InfoIcon className="h-5 w-5 mt-0.5 text-yellow-600 dark:text-yellow-400" />
+                            <div>
+                                <AlertTitle className="text-yellow-800 dark:text-yellow-200">Session Expired</AlertTitle>
+                                <AlertDescription className="text-yellow-700 dark:text-yellow-300">{sessionExpiredMessage}</AlertDescription>
+                            </div>
+                        </Alert>
+                    )}
+
+                    {sessionExtendMessage && (
+                        <Alert variant="default" className="flex items-start space-x-2 border-blue-500 bg-blue-50 dark:bg-blue-950">
+                            <InfoIcon className="h-5 w-5 mt-0.5 text-blue-600 dark:text-blue-400" />
+                            <div>
+                                <AlertTitle className="text-blue-800 dark:text-blue-200">Extend Session</AlertTitle>
+                                <AlertDescription className="text-blue-700 dark:text-blue-300">{sessionExtendMessage}</AlertDescription>
+                            </div>
+                        </Alert>
+                    )}
+
                     {error && (
                         <Alert variant="destructive" className="flex items-start space-x-2">
                             <AlertCircleIcon className="h-5 w-5 mt-0.5" />
@@ -96,6 +159,13 @@ export default function LoginPage() {
                         <Input id="username" type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} className={'space-y-2'} disabled={isLoading} required />
 
                         <Input id="password" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className={'space-y-2'} disabled={isLoading} required />
+
+                        <div className="flex items-center space-x-2">
+                            <Checkbox id="remember-me" checked={rememberMe} onCheckedChange={(checked) => setRememberMe(checked === true)} disabled={isLoading} />
+                            <Label htmlFor="remember-me" className="text-sm font-normal cursor-pointer">
+                Remember me for automatic session extension
+                            </Label>
+                        </div>
 
                         <div className="flex justify-center">
                             <HCaptchaWrapper ref={captchaRef} onVerify={handleCaptchaVerify} onExpire={handleCaptchaExpire} onError={handleCaptchaError} />
@@ -122,5 +192,18 @@ export default function LoginPage() {
                 </CardFooter>
             </Card>
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense
+            fallback={
+                <div className="min-h-screen flex items-center justify-center">
+                    <Spinner className="h-8 w-8" />
+                </div>
+            }>
+            <LoginForm />
+        </Suspense>
     );
 }

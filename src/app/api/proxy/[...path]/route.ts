@@ -24,7 +24,6 @@ async function safeParseResponse(response: Response, url: string, method: string
         }
         console.log('[Proxy]   Empty response body - returning null');
         return { data: null };
-
     }
 
     // Próbuj sparsować jako JSON niezależnie od Content-Type
@@ -73,6 +72,22 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             method: 'GET',
             headers
         });
+
+        // Check if response is binary (PDF, images, etc.)
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/pdf') || contentType.includes('image/') || contentType.includes('application/octet-stream')) {
+            console.log(`[Proxy]   Binary response detected (${contentType}), passing through`);
+
+            // Pass through binary data directly
+            const blob = await response.blob();
+            return new NextResponse(blob, {
+                status: response.status,
+                headers: {
+                    'Content-Type': contentType,
+                    'Content-Disposition': response.headers.get('Content-Disposition') || ''
+                }
+            });
+        }
 
         const { data, error } = await safeParseResponse(response, url, 'GET');
 
@@ -163,6 +178,50 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         });
 
         const { data, error } = await safeParseResponse(response, url, 'PUT');
+
+        if (error) {
+            console.error(`[Proxy]   Parse error: ${error}`);
+            return NextResponse.json({ error }, { status: response.status >= 400 ? response.status : 502 });
+        }
+
+        return NextResponse.json(data, { status: response.status });
+    } catch (error) {
+        console.error('[Proxy] Fetch error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        return NextResponse.json({ error: `Proxy error: ${errorMessage}` }, { status: 500 });
+    }
+}
+
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+    const { path } = await params;
+    const pathString = path.join('/');
+    const url = `${BACKEND_URL}/${pathString}`;
+
+    console.log(`[Proxy] PATCH ${url}`);
+
+    const headers: HeadersInit = {
+        'Content-Type': 'application/json'
+    };
+
+    const authHeader = request.headers.get('Authorization');
+    if (authHeader) {
+        headers['Authorization'] = authHeader;
+        console.log('[Proxy]   Authorization header present');
+    } else {
+        console.log('[Proxy]   No Authorization header');
+    }
+
+    try {
+        const body = await request.json();
+        console.log('[Proxy]   Request body:', JSON.stringify(body).substring(0, 200));
+
+        const response = await fetch(url, {
+            method: 'PATCH',
+            headers,
+            body: JSON.stringify(body)
+        });
+
+        const { data, error } = await safeParseResponse(response, url, 'PATCH');
 
         if (error) {
             console.error(`[Proxy]   Parse error: ${error}`);

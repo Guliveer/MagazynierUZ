@@ -1,36 +1,127 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MagazynierUZ - Warehouse Management System
 
-## Getting Started
+A modern, full-featured warehouse management system built with Next.js 16, React 19, and TypeScript.
 
-First, run the development server:
+## 🚀 Features
+
+- **User Authentication & Authorization** - Secure JWT-based authentication with role-based access control
+- **hCaptcha Integration** - Bot protection on login and registration
+- **Remember Me** - Encrypted credential storage for persistent login
+- **Admin Panel** - Comprehensive admin interface for managing users and organisations
+- **Warehouse Management** - Create, edit, and manage warehouses with interactive maps
+- **Warehouse Caching** - Optimized performance with data caching
+- **Location Management** - Organize warehouse storage with flexible location types
+- **Product Management** - Advanced product search, filtering, and CRUD operations
+- **Search History** - Track and display recent product searches
+- **Token Refresh** - Proactive session management with user-friendly warnings
+- **Statistics & Reporting** - Real-time dashboards and PDF export capabilities
+- **CSV Export** - Export statistics data to CSV format
+- **Auto-Refresh Statistics** - Real-time data updates every 30 seconds
+- **Multiple Chart Views** - Bar and pie chart visualizations
+- **Responsive Design** - Mobile-friendly interface with modern UI components
+
+## 🛠️ Technology Stack
+
+### Frontend
+
+- **Framework**: Next.js 16 (App Router)
+- **UI Library**: React 19
+- **Language**: TypeScript 5
+- **Styling**: Tailwind CSS 4
+- **Components**: shadcn/ui
+- **Icons**: Lucide React
+- **Forms**: React Hook Form + Zod
+- **Charts**: Recharts
+- **Maps**: Leaflet
+- **Security**: @hcaptcha/react-hcaptcha
+- **Date Handling**: date-fns
+- **Notifications**: Sonner (toast notifications)
+
+### Backend API
+
+- RESTful API with JWT authentication
+- Comprehensive Swagger documentation
+- 45 endpoints (30 implemented in UI)
+
+## 🚦 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- Backend API running at the URL specified in NEXT_PUBLIC_BACKEND_HOST environment variable
+
+### Installation
+
+1. Clone the repository:
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Create environment file:
+
+```bash
+cp .env.example .env.local
+```
+
+4. Configure environment variables:
+
+```env
+NEXT_PUBLIC_HCAPTCHA_SITE_KEY=your_hcaptcha_site_key_here
+HCAPTCHA_SECRET_KEY=your_hcaptcha_secret_key_here
+NEXT_PUBLIC_BACKEND_HOST=http://localhost:8080
+```
+
+5. Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+6. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Building for Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm run start
+```
 
-## Learn More
+## 📖 Usage
 
-To learn more about Next.js, take a look at the following resources:
+### Key Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+#### For Regular Users
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Search and filter products across warehouses
+- View warehouse details and locations
+- Manage products within assigned warehouses
+- Export inventory reports to PDF
+- View statistics and top products
 
-## Deploy on Vercel
+#### For Administrators
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Manage users (create, edit, delete, assign roles)
+- Manage organisations (create, edit, delete with dependency checking)
+- View system-wide statistics
+- Access all user features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Quick Test
+
+```bash
+npm run build
+```
+
+All tests should pass with no TypeScript errors.
+
+## 🎨 UI Components
+
+Built with [shadcn/ui](https://ui.shadcn.com/) components:
+
+- Forms, Dialogs, Tables
+- Cards, Badges, Buttons
+- Alerts, Toasts, Skeletons
+- Charts, Maps, Navigation

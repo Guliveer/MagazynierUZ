@@ -10,7 +10,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/components/ui/empty';
 import { Input } from '@/components/ui/input';
 
-import { ProductFilters } from './ProductFilters';
 import { ProductDialog } from './ProductDialog';
 import { DeleteProductDialog } from './DeleteProductDialog';
 
@@ -22,19 +21,22 @@ const formatPrice = (price: number) => new Intl.NumberFormat('pl-PL', { style: '
 
 // Truncate description to 50 characters
 const truncateDescription = (description?: string) => {
-    if (!description) { return '-'; }
+    if (!description) {
+        return '-';
+    }
     return description.length > 50 ? `${description.substring(0, 50)}...` : description;
 };
 
-export function ProductList() {
+interface ProductListProps {
+  warehouseId: number;
+  locationId: number;
+}
+
+export function ProductList({ warehouseId, locationId }: ProductListProps) {
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [search, setSearch] = useState('');
-
-    // Filter states
-    const [selectedWarehouseId, setSelectedWarehouseId] = useState<number | null>(null);
-    const [selectedLocationId, setSelectedLocationId] = useState<number | null>(null);
 
     // Dialog states
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -44,15 +46,10 @@ export function ProductList() {
     const [isDeleting, setIsDeleting] = useState(false);
 
     const fetchProducts = useCallback(async () => {
-        if (!selectedWarehouseId || !selectedLocationId) {
-            setProducts([]);
-            return;
-        }
-
         try {
             setIsLoading(true);
             setError(null);
-            const data = await getProducts(selectedWarehouseId, selectedLocationId);
+            const data = await getProducts(warehouseId, locationId);
             setProducts(data);
         } catch (err) {
             const message = err instanceof ApiError ? err.message : 'An error occurred while fetching products';
@@ -61,32 +58,17 @@ export function ProductList() {
         } finally {
             setIsLoading(false);
         }
-    }, [selectedWarehouseId, selectedLocationId]);
+    }, [warehouseId, locationId]);
 
-        const filteredProducts = products.filter(product => {
-    const query = search.toLowerCase();
+    const filteredProducts = products.filter((product) => {
+        const query = search.toLowerCase();
 
-    return (
-        product.name.toLowerCase().includes(query) ||
-        product.description?.toLowerCase().includes(query) ||
-        product.id.toString().includes(query)
-    );
+        return product.name.toLowerCase().includes(query) || product.description?.toLowerCase().includes(query) || product.id.toString().includes(query);
     });
 
     useEffect(() => {
         fetchProducts();
     }, [fetchProducts]);
-
-    const handleWarehouseChange = (warehouseId: number | null) => {
-        setSelectedWarehouseId(warehouseId);
-        setSelectedLocationId(null);
-        setProducts([]);
-        setError(null);
-    };
-
-    const handleLocationChange = (locationId: number | null) => {
-        setSelectedLocationId(locationId);
-    };
 
     const handleAddClick = () => {
         setSelectedProduct(null);
@@ -104,15 +86,13 @@ export function ProductList() {
     };
 
     const handleSubmit = async (data: CreateProductRequest) => {
-        if (!selectedWarehouseId || !selectedLocationId) { return; }
-
         try {
             setIsSaving(true);
             if (selectedProduct) {
-                await updateProduct(selectedWarehouseId, selectedLocationId, selectedProduct.id, data);
+                await updateProduct(warehouseId, locationId, selectedProduct.id, data);
                 toast.success('Product has been updated');
             } else {
-                await createProduct(selectedWarehouseId, selectedLocationId, data);
+                await createProduct(warehouseId, locationId, data);
                 toast.success('Product has been added');
             }
             setIsDialogOpen(false);
@@ -126,11 +106,13 @@ export function ProductList() {
     };
 
     const handleDeleteConfirm = async () => {
-        if (!selectedProduct || !selectedWarehouseId || !selectedLocationId) { return; }
+        if (!selectedProduct) {
+            return;
+        }
 
         try {
             setIsDeleting(true);
-            await deleteProduct(selectedWarehouseId, selectedLocationId, selectedProduct.id);
+            await deleteProduct(warehouseId, locationId, selectedProduct.id);
             toast.success('Product has been deleted');
             setIsDeleteDialogOpen(false);
             await fetchProducts();
@@ -141,8 +123,6 @@ export function ProductList() {
             setIsDeleting(false);
         }
     };
-
-    const canShowProducts = selectedWarehouseId && selectedLocationId;
 
     // Loading state
     const renderLoadingState = () => (
@@ -257,44 +237,18 @@ export function ProductList() {
 
     return (
         <div className="space-y-6">
-            {/* Filters */}
-            <ProductFilters selectedWarehouseId={selectedWarehouseId} selectedLocationId={selectedLocationId} onWarehouseChange={handleWarehouseChange} onLocationChange={handleLocationChange} />
-
             {/* Header with Add button */}
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold tracking-tight">Products</h2>
-                    <Input
-                        placeholder="Search products..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="max-w-sm"
-                        />
-                <Button onClick={handleAddClick} disabled={!canShowProducts}>
+                <Input placeholder="Search products..." value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-sm" />
+                <Button onClick={handleAddClick}>
                     <Plus className="mr-2 h-4 w-4" />
           Add Product
                 </Button>
             </div>
 
             {/* Content */}
-            {!canShowProducts ? (
-                <Empty className="border rounded-lg py-12">
-                    <EmptyHeader>
-                        <EmptyMedia variant="icon">
-                            <Package />
-                        </EmptyMedia>
-                        <EmptyTitle>Select warehouse and location</EmptyTitle>
-                        <EmptyDescription>Please select a warehouse and location from the filters above to view and manage products.</EmptyDescription>
-                    </EmptyHeader>
-                </Empty>
-            ) : isLoading ? (
-                renderLoadingState()
-            ) : error ? (
-                renderErrorState()
-            ) : products.length === 0 ? (
-                renderEmptyState()
-            ) : (
-                renderProductsTable()
-            )}
+            {isLoading ? renderLoadingState() : error ? renderErrorState() : products.length === 0 ? renderEmptyState() : renderProductsTable()}
 
             {/* Dialogs */}
             <ProductDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} product={selectedProduct} onSubmit={handleSubmit} isLoading={isSaving} />

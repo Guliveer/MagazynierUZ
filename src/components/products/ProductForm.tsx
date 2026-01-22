@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -38,8 +39,22 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: 
         }
     });
 
+    // Reset form when product prop changes
+    useEffect(() => {
+        form.reset({
+            name: product?.name ?? '',
+            description: product?.description ?? '',
+            price: product?.price ?? 0,
+            quantity: product?.quantity ?? 0
+        });
+    }, [product, form]);
+
     const handleSubmit = form.handleSubmit(async (data) => {
-        await onSubmit(data);
+        try {
+            await onSubmit(data);
+        } catch (error) {
+            throw error;
+        }
     });
 
     return (
