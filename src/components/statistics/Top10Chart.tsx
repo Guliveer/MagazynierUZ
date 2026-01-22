@@ -32,8 +32,19 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick }: Top10
         }
     };
 
-    // Colors for pie chart
-    const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))', 'hsl(220, 70%, 50%)', 'hsl(280, 70%, 50%)', 'hsl(340, 70%, 50%)', 'hsl(40, 70%, 50%)', 'hsl(160, 70%, 50%)'];
+    // Colors for charts - 10 distinct, accessible colors
+    const CHART_COLORS = [
+        'hsl(0, 84%, 60%)', // Red
+        'hsl(30, 100%, 55%)', // Orange
+        'hsl(60, 100%, 50%)', // Yellowś
+        'hsl(120, 76%, 44%)', // Lime
+        'hsl(180, 100%, 35%)', // Cyan
+        'hsl(210, 100%, 40%)', // Sky Blue
+        'hsl(240, 100%, 50%)', // Blue
+        'hsl(280, 65%, 47%)', // Purple
+        'hsl(328, 85%, 70%)', // Magenta
+        'hsl(0, 0%, 100%)' // White
+    ];
 
     const handleBarClick = (data: { product?: Top10Product }) => {
         if (onBarClick && data.product) {
@@ -45,14 +56,14 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick }: Top10
         const pieData = chartData.map((item, index) => ({
             name: item.name,
             value: item.totalValue,
-            fill: COLORS[index % COLORS.length]
+            fill: CHART_COLORS[index % CHART_COLORS.length]
         }));
 
         return (
             <div className="h-[400px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                        <Pie data={pieData} cx="50%" cy="50%" labelLine={false} label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`} outerRadius={120} fill="#8884d8" dataKey="value">
+                        <Pie data={pieData} cx="50%" cy="50%" labelLine={false} label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`} outerRadius={120} dataKey="value">
                             {pieData.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.fill} />
                             ))}
@@ -121,7 +132,11 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick }: Top10
                             />
                         }
                     />
-                    <Bar dataKey="value" fill="var(--color-value)" radius={[8, 8, 0, 0]} onClick={handleBarClick} className="cursor-pointer" />
+                    <Bar dataKey="value" radius={[8, 8, 0, 0]} onClick={handleBarClick} className="cursor-pointer">
+                        {chartData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                        ))}
+                    </Bar>
                 </BarChart>
             </ResponsiveContainer>
         </ChartContainer>

@@ -11,8 +11,8 @@ import { ProductFilters, type ProductFilterValues } from '@/components/products/
 import { ProductSearchResults, type SortField, type SortDirection, type ViewMode } from '@/components/products/ProductSearchResults';
 import { ProductDialog } from '@/components/products/ProductDialog';
 import { DeleteProductDialog } from '@/components/products/DeleteProductDialog';
-import { searchProducts, createProduct, updateProduct, deleteProduct, ApiError } from '@/lib/api';
-import type { Product, CreateProductRequest, PaginatedResponse } from '@/types';
+import { searchProducts, createProduct, updateProduct, deleteProduct, ApiError, getWarehouse, getLocation } from '@/lib/api';
+import type { Product, ProductWithContext, CreateProductRequest, PaginatedResponse, Warehouse, Location } from '@/types';
 import { useDebounce } from '@/hooks/useDebounce';
 
 export default function ProductsPage() {
@@ -32,9 +32,13 @@ export default function ProductsPage() {
     });
 
     const [filters, setFilters] = useState<ProductFilterValues>(getInitialFilters);
-    const [paginatedData, setPaginatedData] = useState<PaginatedResponse<Product> | null>(null);
+    const [paginatedData, setPaginatedData] = useState<PaginatedResponse<ProductWithContext> | null>(null);
     const [isSearching, setIsSearching] = useState(false);
-    const [hasSearched, setHasSearched] = useState(false);
+    const [hasSearched, setHasSearched] = useState(true); // Changed to true to load all products on mount
+
+    // Cache for warehouse and location data
+    const [warehouseCache, setWarehouseCache] = useState<Map<number, Warehouse>>(new Map());
+    const [locationCache, setLocationCache] = useState<Map<string, Location>>(new Map());
 
     // Pagination and sorting - now handled server-side
     const [page, setPage] = useState(parseInt(searchParams.get('page') || '1', 10));
@@ -104,6 +108,77 @@ export default function ProductsPage() {
         [router]
     );
 
+    // Enrich products with warehouse and location context
+    const enrichProductsWithContext = useCallback(
+        async (products: Product[]): Promise<ProductWithContext[]> => {
+            // First, extract IDs from nested objects if present
+            const productsWithIds = products.map((p) => ({
+                ...p,
+                warehouseId: p.warehouseId || p.warehouse?.id,
+                locationId: p.locationId || p.location?.id
+            }));
+
+            if (!filters.warehouseId || !filters.locationId) {
+                // No filter context - use product's own context if available
+                return productsWithIds.map((p) => ({
+                    ...p,
+                    warehouseId: p.warehouseId || 0,
+                    locationId: p.locationId || 0,
+                    warehouseName: p.warehouse?.name,
+                    warehouseCode: p.warehouse?.code,
+                    locationCode: p.location?.locationCode,
+                    zoneName: p.location?.zoneName,
+                    locationType: p.location?.locationType
+                }));
+            }
+
+            try {
+                // Check cache first
+                const cacheKey = `${filters.warehouseId}-${filters.locationId}`;
+                let warehouse = warehouseCache.get(filters.warehouseId);
+                let location = locationCache.get(cacheKey);
+
+                // Fetch if not in cache
+                if (!warehouse || !location) {
+                    const [warehouseData, locationData] = await Promise.all([warehouse ? Promise.resolve(warehouse) : getWarehouse(filters.warehouseId), location ? Promise.resolve(location) : getLocation(filters.warehouseId, filters.locationId)]);
+
+                    warehouse = warehouseData;
+                    location = locationData;
+
+                    // Update cache
+                    setWarehouseCache((prev) => new Map(prev).set(filters.warehouseId!, warehouse!));
+                    setLocationCache((prev) => new Map(prev).set(cacheKey, location!));
+                }
+
+                // Enrich products with context from filters
+                return productsWithIds.map((product) => ({
+                    ...product,
+                    warehouseId: filters.warehouseId!,
+                    locationId: filters.locationId!,
+                    warehouseName: warehouse!.name,
+                    warehouseCode: warehouse!.code,
+                    locationCode: location!.locationCode,
+                    zoneName: location!.zoneName,
+                    locationType: location!.locationType
+                }));
+            } catch (err) {
+                console.error('Failed to enrich products with context:', err);
+                // Return products with basic context on error
+                return productsWithIds.map((p) => ({
+                    ...p,
+                    warehouseId: filters.warehouseId || p.warehouseId || 0,
+                    locationId: filters.locationId || p.locationId || 0,
+                    warehouseName: p.warehouse?.name,
+                    warehouseCode: p.warehouse?.code,
+                    locationCode: p.location?.locationCode,
+                    zoneName: p.location?.zoneName,
+                    locationType: p.location?.locationType
+                }));
+            }
+        },
+        [filters.warehouseId, filters.locationId, warehouseCache, locationCache]
+    );
+
     // Perform search with server-side pagination
     const performSearch = useCallback(async () => {
         try {
@@ -143,7 +218,14 @@ export default function ProductsPage() {
             }
 
             const data = await searchProducts(params);
-            setPaginatedData(data);
+
+            // Enrich products with full warehouse and location context
+            const enrichedProducts = await enrichProductsWithContext(data.content);
+
+            setPaginatedData({
+                ...data,
+                content: enrichedProducts
+            });
 
             // Update URL with current filters
             updateURL(filters, page, pageSize, sortBy, sortDirection, viewMode);
@@ -154,7 +236,7 @@ export default function ProductsPage() {
         } finally {
             setIsSearching(false);
         }
-    }, [filters, page, pageSize, sortBy, sortDirection, viewMode, updateURL]);
+    }, [filters, page, pageSize, sortBy, sortDirection, viewMode, updateURL, enrichProductsWithContext]);
 
     // Auto-search when debounced query changes
     useEffect(() => {
@@ -226,32 +308,67 @@ export default function ProductsPage() {
         setIsDialogOpen(true);
     };
 
-    // Handle edit product
+    // Handle edit product - fetch full context if needed
     const handleEditClick = (product: Product) => {
-        setSelectedProduct(product);
-        setIsDialogOpen(true);
+    // Check if product already has warehouse and location IDs
+        const warehouseId = product.warehouseId || product.warehouse?.id;
+        const locationId = product.locationId || product.location?.id;
+
+        if (warehouseId && locationId) {
+            // Product has context, use it directly
+            setSelectedProduct({
+                ...product,
+                warehouseId,
+                locationId
+            });
+            setIsDialogOpen(true);
+        } else {
+            // Product missing context - try to fetch it
+            toast.error('Cannot edit product: missing warehouse/location information');
+            console.error('Product missing context:', product);
+        }
     };
 
-    // Handle delete product
+    // Handle delete product - ensure context is available
     const handleDeleteClick = (product: Product) => {
-        setSelectedProduct(product);
-        setIsDeleteDialogOpen(true);
+    // Check if product has warehouse and location IDs
+        const warehouseId = product.warehouseId || product.warehouse?.id;
+        const locationId = product.locationId || product.location?.id;
+
+        if (warehouseId && locationId) {
+            setSelectedProduct({
+                ...product,
+                warehouseId,
+                locationId
+            });
+            setIsDeleteDialogOpen(true);
+        } else {
+            toast.error('Cannot delete product: missing warehouse/location information');
+            console.error('Product missing context:', product);
+        }
     };
 
     // Handle product submission
     const handleSubmit = async (data: CreateProductRequest) => {
-        if (!filters.warehouseId || !filters.locationId) {
+        const isEditing = !!selectedProduct;
+
+        // Get warehouse and location IDs from the product (if editing) or filters (if creating)
+        const warehouseId = isEditing && selectedProduct?.warehouseId ? selectedProduct.warehouseId : filters.warehouseId;
+        const locationId = isEditing && selectedProduct?.locationId ? selectedProduct.locationId : filters.locationId;
+
+        // Validate that we have the required IDs
+        if (!warehouseId || !locationId) {
             toast.error('Please select a warehouse and location first');
             return;
         }
 
         try {
             setIsSaving(true);
-            if (selectedProduct) {
-                await updateProduct(filters.warehouseId, filters.locationId, selectedProduct.id, data);
+            if (isEditing) {
+                await updateProduct(warehouseId, locationId, selectedProduct.id, data);
                 toast.success('Product has been updated');
             } else {
-                await createProduct(filters.warehouseId, filters.locationId, data);
+                await createProduct(warehouseId, locationId, data);
                 toast.success('Product has been added');
             }
             setIsDialogOpen(false);
@@ -266,13 +383,22 @@ export default function ProductsPage() {
 
     // Handle product deletion
     const handleDeleteConfirm = async () => {
-        if (!selectedProduct || !filters.warehouseId || !filters.locationId) {
+        if (!selectedProduct) {
+            return;
+        }
+
+        // Get warehouse and location IDs from the product
+        const warehouseId = selectedProduct.warehouseId || selectedProduct.warehouse?.id;
+        const locationId = selectedProduct.locationId || selectedProduct.location?.id;
+
+        if (!warehouseId || !locationId) {
+            toast.error('Cannot delete product: missing warehouse/location information');
             return;
         }
 
         try {
             setIsDeleting(true);
-            await deleteProduct(filters.warehouseId, filters.locationId, selectedProduct.id);
+            await deleteProduct(warehouseId, locationId, selectedProduct.id);
             toast.success('Product has been deleted');
             setIsDeleteDialogOpen(false);
             await performSearch(); // Refresh results
@@ -304,10 +430,10 @@ export default function ProductsPage() {
             {/* Search results */}
             {hasSearched && paginatedData && <ProductSearchResults products={paginatedData.content} isLoading={isSearching} searchTerm={filters.searchQuery} sortBy={sortBy} sortDirection={sortDirection} viewMode={viewMode} page={page} pageSize={pageSize} totalResults={paginatedData.totalElements} onSort={handleSort} onViewModeChange={handleViewModeChange} onPageChange={handlePageChange} onPageSizeChange={handlePageSizeChange} onEdit={handleEditClick} onDelete={handleDeleteClick} />}
 
-            {/* Initial state - no search performed yet */}
-            {!hasSearched && (
+            {/* No results state */}
+            {hasSearched && paginatedData && paginatedData.content.length === 0 && (
                 <div className="text-center py-12 border rounded-lg bg-muted/50">
-                    <p className="text-muted-foreground">Enter search criteria and click &quot;Search&quot; to find products</p>
+                    <p className="text-muted-foreground">No products found matching your search criteria</p>
                 </div>
             )}
 

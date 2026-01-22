@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import './css/globals.css';
 import React from 'react';
 import ThemeProviderWrapper from './themeProvider';
+import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
     title: 'MagazynierUZ',
@@ -20,7 +21,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <html lang="en" suppressHydrationWarning>
             <body className={'antialiased'}>
                 <Analytics />
-                <ThemeProviderWrapper>{children}</ThemeProviderWrapper>
+                <ThemeProviderWrapper>
+                    {children}
+                    <Toaster />
+                </ThemeProviderWrapper>
             </body>
         </html>
     );

@@ -1,6 +1,6 @@
 'use client';
 
-import { Pencil, Trash2, Package, Grid3x3, List, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Pencil, Trash2, Package, Grid3x3, List, ArrowUpDown, ArrowUp, ArrowDown, AlertCircle } from 'lucide-react';
 
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/components/ui/empty';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { Product } from '@/types';
 
 // Format price as PLN currency
@@ -69,6 +69,13 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
     const totalPages = Math.ceil(totalResults / pageSize);
     const startIndex = (page - 1) * pageSize + 1;
     const endIndex = Math.min(page * pageSize, totalResults);
+
+    // Helper function to check if product has context
+    const hasContext = (product: Product): boolean => {
+        const warehouseId = product.warehouseId || product.warehouse?.id;
+        const locationId = product.locationId || product.location?.id;
+        return !!(warehouseId && locationId);
+    };
 
     // Helper function to render sort icon
     const renderSortIcon = (field: SortField) => {
@@ -251,14 +258,53 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                                         <Badge variant={product.quantity > 0 ? 'default' : 'destructive'}>{product.quantity}</Badge>
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="icon-sm" onClick={() => onEdit(product)} title="Edit">
-                                                <Pencil className="h-4 w-4" />
-                                            </Button>
-                                            <Button variant="ghost" size="icon-sm" onClick={() => onDelete(product)} title="Delete">
-                                                <Trash2 className="h-4 w-4 text-destructive" />
-                                            </Button>
-                                        </div>
+                                        <TooltipProvider>
+                                            <div className="flex justify-end gap-2">
+                                                {hasContext(product) ? (
+                                                    <>
+                                                        <Button variant="ghost" size="icon-sm" onClick={() => onEdit(product)} title="Edit">
+                                                            <Pencil className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button variant="ghost" size="icon-sm" onClick={() => onDelete(product)} title="Delete">
+                                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                                        </Button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <span className="inline-block">
+                                                                    <Button variant="ghost" size="icon-sm" disabled title="Edit unavailable">
+                                                                        <Pencil className="h-4 w-4" />
+                                                                    </Button>
+                                                                </span>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p className="flex items-center gap-1">
+                                                                    <AlertCircle className="h-3 w-3" />
+                                  Missing warehouse/location info
+                                                                </p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <span className="inline-block">
+                                                                    <Button variant="ghost" size="icon-sm" disabled title="Delete unavailable">
+                                                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                                                    </Button>
+                                                                </span>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p className="flex items-center gap-1">
+                                                                    <AlertCircle className="h-3 w-3" />
+                                  Missing warehouse/location info
+                                                                </p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </TooltipProvider>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -283,14 +329,53 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                                     <p className="text-sm text-muted-foreground line-clamp-2">{product.description ? highlightText(product.description, searchTerm) : 'No description'}</p>
                                     <div className="flex items-center justify-between pt-2 border-t">
                                         <span className="text-lg font-bold">{formatPrice(product.price)}</span>
-                                        <div className="flex gap-2">
-                                            <Button variant="outline" size="icon-sm" onClick={() => onEdit(product)} title="Edit">
-                                                <Pencil className="h-4 w-4" />
-                                            </Button>
-                                            <Button variant="outline" size="icon-sm" onClick={() => onDelete(product)} title="Delete">
-                                                <Trash2 className="h-4 w-4 text-destructive" />
-                                            </Button>
-                                        </div>
+                                        <TooltipProvider>
+                                            <div className="flex gap-2">
+                                                {hasContext(product) ? (
+                                                    <>
+                                                        <Button variant="outline" size="icon-sm" onClick={() => onEdit(product)} title="Edit">
+                                                            <Pencil className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button variant="outline" size="icon-sm" onClick={() => onDelete(product)} title="Delete">
+                                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                                        </Button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <span className="inline-block">
+                                                                    <Button variant="outline" size="icon-sm" disabled title="Edit unavailable">
+                                                                        <Pencil className="h-4 w-4" />
+                                                                    </Button>
+                                                                </span>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p className="flex items-center gap-1">
+                                                                    <AlertCircle className="h-3 w-3" />
+                                  Missing warehouse/location info
+                                                                </p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <span className="inline-block">
+                                                                    <Button variant="outline" size="icon-sm" disabled title="Delete unavailable">
+                                                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                                                    </Button>
+                                                                </span>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p className="flex items-center gap-1">
+                                                                    <AlertCircle className="h-3 w-3" />
+                                  Missing warehouse/location info
+                                                                </p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </TooltipProvider>
                                     </div>
                                 </div>
                             </CardContent>

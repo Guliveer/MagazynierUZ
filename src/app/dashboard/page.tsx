@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Package, Warehouse as WarehouseIcon, TrendingUp, AlertTriangle, Plus, Search, BarChart3, ArrowRight } from 'lucide-react';
+import { Package, Warehouse as WarehouseIcon, TrendingUp, AlertTriangle, Plus, Search, BarChart3, ArrowRight, RefreshCw } from 'lucide-react';
 import { getWarehouses, searchProductsUnpaginated, getTop10Products } from '@/lib/api';
 import { getToken } from '@/lib/auth';
 import type { Warehouse, Product, Top10Product } from '@/types';
@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { PdfExportButton } from '@/components/exports/PdfExportButton';
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -86,10 +87,13 @@ export default function DashboardPage() {
                     <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
                     <p className="text-muted-foreground mt-1">Welcome to your warehouse management system</p>
                 </div>
-                <Button onClick={fetchDashboardData} variant="outline" size="sm" disabled={loading}>
-                    <TrendingUp className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-                </Button>
+                <div className="flex gap-2">
+                    <PdfExportButton scope="ORGANISATION" variant="outline" size="sm" label="Export PDF" />
+                    <Button onClick={fetchDashboardData} variant="outline" size="sm" disabled={loading}>
+                        <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+                    </Button>
+                </div>
             </div>
 
             {/* Error Alert */}
