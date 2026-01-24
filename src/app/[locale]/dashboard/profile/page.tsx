@@ -3,34 +3,46 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'shadcn/card';
 import { Badge } from 'shadcn/badge';
 import { Button } from 'shadcn/button';
-import { User, Building2, Shield, Calendar, Clock, CheckCircle2, XCircle, Key, LogOut } from 'lucide-react';
-import { getUserRoles, getUsername, getTokenPayload, logout } from '@/lib/auth';
+import { Skeleton } from 'shadcn/skeleton';
+import { User, Shield, CheckCircle2, XCircle, Key, LogOut } from 'lucide-react';
+import { getUsername, getTokenPayload, logout, refreshRolesCache } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
     const t = useTranslations('profile');
     const router = useRouter();
     const username = getUsername();
-    const roles = getUserRoles();
     const tokenPayload = getTokenPayload();
+    const [roles, setRoles] = useState<string[]>([]);
+    const [loadingRoles, setLoadingRoles] = useState(true);
 
-    // Mock user data - in a real app, this would come from an API
+    // Fetch roles from server on mount
+    useEffect(() => {
+        async function fetchRoles() {
+            try {
+                setLoadingRoles(true);
+                const fetchedRoles = await refreshRolesCache();
+                setRoles(fetchedRoles);
+            } catch (error) {
+                console.error('Failed to fetch roles:', error);
+                setRoles([]);
+            } finally {
+                setLoadingRoles(false);
+            }
+        }
+
+        fetchRoles();
+    }, []);
+
+    // User data from authentication token
     const user = {
-        userId: 1,
         username: username || 'Unknown',
-        email: `${username}@example.com`,
-        organisation: {
-            id: 1,
-            name: 'Sample Organisation',
-            tin: '1234567890'
-        },
         roles: roles.map((role, index) => ({
             id: index + 1,
             name: role
         })),
-        createdAt: '2024-01-15T10:30:00Z',
-        lastLogin: new Date().toISOString(),
         enabled: true,
         accountNonExpired: true,
         accountNonLocked: true,
@@ -93,83 +105,17 @@ export default function ProfilePage() {
                         </div>
                         <div>
                             <CardTitle className="text-2xl">{user.username}</CardTitle>
-                            <CardDescription>{user.email}</CardDescription>
+                            <CardDescription>{t('accountInfo.title')}</CardDescription>
                         </div>
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div className="grid gap-6 md:grid-cols-2">
-                        {/* Account Information */}
-                        <div className="space-y-4">
+                    <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                            <User className="h-4 w-4 text-muted-foreground" />
                             <div>
-                                <h3 className="text-sm font-medium text-muted-foreground mb-3">{t('accountInfo.title')}</h3>
-                                <div className="space-y-3">
-                                    <div className="flex items-center gap-3">
-                                        <User className="h-4 w-4 text-muted-foreground" />
-                                        <div>
-                                            <p className="text-sm font-medium">{t('accountInfo.userId')}</p>
-                                            <p className="text-sm text-muted-foreground">{user.userId}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                                        <div>
-                                            <p className="text-sm font-medium">{t('accountInfo.accountCreated')}</p>
-                                            <p className="text-sm text-muted-foreground">
-                                                {new Date(user.createdAt).toLocaleDateString(undefined, {
-                                                    year: 'numeric',
-                                                    month: 'long',
-                                                    day: 'numeric'
-                                                })}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <Clock className="h-4 w-4 text-muted-foreground" />
-                                        <div>
-                                            <p className="text-sm font-medium">{t('accountInfo.lastLogin')}</p>
-                                            <p className="text-sm text-muted-foreground">
-                                                {new Date(user.lastLogin).toLocaleDateString(undefined, {
-                                                    year: 'numeric',
-                                                    month: 'long',
-                                                    day: 'numeric',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
-                                                })}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Organisation */}
-                        <div className="space-y-4">
-                            <div>
-                                <h3 className="text-sm font-medium text-muted-foreground mb-3">{t('organisation.title')}</h3>
-                                <div className="space-y-3">
-                                    <div className="flex items-center gap-3">
-                                        <Building2 className="h-4 w-4 text-muted-foreground" />
-                                        <div>
-                                            <p className="text-sm font-medium">{t('organisation.name')}</p>
-                                            <p className="text-sm text-muted-foreground">{user.organisation.name}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <Building2 className="h-4 w-4 text-muted-foreground" />
-                                        <div>
-                                            <p className="text-sm font-medium">{t('organisation.id')}</p>
-                                            <p className="text-sm text-muted-foreground">{user.organisation.id}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <Building2 className="h-4 w-4 text-muted-foreground" />
-                                        <div>
-                                            <p className="text-sm font-medium">{t('organisation.tin')}</p>
-                                            <p className="text-sm text-muted-foreground">{user.organisation.tin}</p>
-                                        </div>
-                                    </div>
-                                </div>
+                                <p className="text-sm font-medium">{t('accountInfo.username')}</p>
+                                <p className="text-sm text-muted-foreground">{user.username}</p>
                             </div>
                         </div>
                     </div>
@@ -187,7 +133,12 @@ export default function ProfilePage() {
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-wrap gap-2">
-                        {user.roles.length > 0 ? (
+                        {loadingRoles ? (
+                            <>
+                                <Skeleton className="h-7 w-24" />
+                                <Skeleton className="h-7 w-20" />
+                            </>
+                        ) : user.roles.length > 0 ? (
                             user.roles.map((role) => (
                                 <Badge key={role.id} variant="default" className="text-sm px-3 py-1">
                                     {role.name}

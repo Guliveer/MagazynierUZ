@@ -428,3 +428,20 @@ export interface OrganisationWithStats extends OrganisationResponse {
   /** Number of users */
   userCount?: number;
 }
+
+// ============================================
+// User Role Response Type
+// ============================================
+
+/**
+ * Response from /api/v1/users/role endpoint
+ * Contains current user's role information from server
+ */
+export interface UserRoleResponse {
+  /** User ID */
+  userId: number;
+  /** Username */
+  username: string;
+  /** Array of role names assigned to the user */
+  roles: string[];
+}

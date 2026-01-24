@@ -5,18 +5,63 @@ import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Building2, Package, BarChart3, Shield } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
-import { logout, getUsername, getUserRoles, isAdmin } from '@/lib/auth';
+import { logout, getUsername, isAdmin, refreshRolesCache } from '@/lib/auth';
 import { Separator } from 'shadcn/separator';
 import { Badge } from 'shadcn/badge';
 import UserProfileMenu from './UserProfileMenu';
+import { useEffect, useState } from 'react';
 
 export function DashboardNav() {
     const t = useTranslations('dashboard.nav');
     const pathname = usePathname();
     const router = useRouter();
     const username = getUsername();
-    const roles = getUserRoles();
-    const userIsAdmin = isAdmin();
+    const [adminStatus, setAdminStatus] = useState(isAdmin());
+    const [roles, setRoles] = useState<string[]>([]);
+
+    // Initial role fetch and listen for role updates
+    useEffect(() => {
+    // Initial check - refresh roles from server
+        const checkAdmin = async () => {
+            console.log('DEBUG DashboardNav - Refreshing roles from server...');
+            try {
+                const fetchedRoles = await refreshRolesCache();
+                console.log('DEBUG DashboardNav - Roles fetched:', fetchedRoles);
+
+                // Update state with fetched roles
+                setRoles(fetchedRoles);
+
+                // Check admin status with the fetched roles directly
+                const adminCheck = fetchedRoles.includes('ROLE_ADMIN') || fetchedRoles.includes('SUPERADMIN') || fetchedRoles.includes('ROLE_SUPERADMIN');
+
+                console.log('DEBUG DashboardNav - Admin check result:', adminCheck);
+                setAdminStatus(adminCheck);
+            } catch (error) {
+                console.error('DEBUG DashboardNav - Error fetching roles:', error);
+            }
+        };
+
+        checkAdmin();
+
+        // Listen for role updates
+        const handleRolesUpdated = () => {
+            console.log('DEBUG DashboardNav - Roles updated event received');
+            checkAdmin(); // Re-check when roles update
+        };
+
+        window.addEventListener('rolesUpdated', handleRolesUpdated);
+
+        return () => {
+            window.removeEventListener('rolesUpdated', handleRolesUpdated);
+        };
+    }, []);
+
+    // Debug logging to see admin status
+    useEffect(() => {
+        console.log('DEBUG DashboardNav - isAdmin():', adminStatus);
+        console.log('DEBUG DashboardNav - All roles:', roles);
+        console.log('DEBUG DashboardNav - Username:', username);
+    }, [adminStatus, roles, username]);
 
     // Extract locale from pathname
     const locale = pathname?.split('/')[1] || 'en';
@@ -38,7 +83,7 @@ export function DashboardNav() {
             {/* Header with branding and user profile menu - fixed at top */}
             <div className="p-4 flex-shrink-0">
                 <h2 className="text-lg font-semibold mb-3">MagazynierUZ</h2>
-                <UserProfileMenu username={username} roles={roles} isAdmin={userIsAdmin} onLogout={handleLogout} />
+                <UserProfileMenu username={username} roles={roles} isAdmin={adminStatus} onLogout={handleLogout} />
             </div>
             <Separator />
 
@@ -58,7 +103,7 @@ export function DashboardNav() {
                     })}
 
                     {/* Admin Panel - only visible to admins */}
-                    {userIsAdmin && (
+                    {adminStatus && (
                         <>
                             <Separator className="my-2" />
                             <li>

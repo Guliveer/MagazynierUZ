@@ -1,4 +1,4 @@
-import type { LoginResponse, Warehouse, CreateWarehouseRequest, Location, CreateLocationRequest, Product, CreateProductRequest, Top10Product, PaginatedResponse, ProductWithContext, UserResponse, AdminCreateUserRequest, AdminUpdateUserRequest, OrganisationResponse, CreateOrganisationRequest, UpdateOrganisationRequest } from '@/types';
+import type { LoginResponse, Warehouse, CreateWarehouseRequest, Location, CreateLocationRequest, Product, CreateProductRequest, Top10Product, PaginatedResponse, ProductWithContext, UserResponse, AdminCreateUserRequest, AdminUpdateUserRequest, OrganisationResponse, CreateOrganisationRequest, UpdateOrganisationRequest, UserRoleResponse } from '@/types';
 import { getToken, isAuthenticated, logout } from '@/lib/auth';
 
 // Używamy lokalnego proxy API, aby obejść problem CORS
@@ -799,6 +799,19 @@ export async function assignUserToOrganisation(userId: number, organisationId: n
     return await fetchApiAuth<UserResponse>(`/api/admin/users/${userId}/organisation/${organisationId}`, {
         method: 'PUT'
     });
+}
+
+// ============================================
+// User Role API
+// ============================================
+
+/**
+ * Get current user's role information from server
+ * This provides server-side verification of user roles
+ * @returns User role information including userId, username, and roles array
+ */
+export async function getCurrentUserRole(): Promise<UserRoleResponse> {
+    return await fetchApiAuth<UserRoleResponse>('/api/v1/users/role');
 }
 
 // ============================================

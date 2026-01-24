@@ -1,7 +1,7 @@
 'use client';
 import HCaptchaWrapper, { HCaptchaRef } from '@/components/HCaptcha';
 import { ApiError, login } from '@/lib/api';
-import { setToken } from '@/lib/auth';
+import { setToken, refreshRolesCache } from '@/lib/auth';
 import { storeEncryptedCredentials } from '@/lib/crypto';
 import { AlertCircleIcon, InfoIcon, Loader2Icon } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -81,7 +81,24 @@ function LoginForm() {
 
         try {
             const response = await login(username, password);
+            console.log('DEBUG Login - Token received:', response.token);
             setToken(response.token);
+
+            // Import getTokenPayload dynamically to avoid issues
+            const { getTokenPayload } = await import('@/lib/auth');
+            const payload = getTokenPayload();
+            console.log('DEBUG Login - Token payload after setToken:', payload);
+            console.log('DEBUG Login - Roles in JWT:', payload?.roles);
+
+            // Fetch roles from server since JWT doesn't contain them
+            console.log('DEBUG Login - Token set, now fetching roles from server...');
+            try {
+                const roles = await refreshRolesCache();
+                console.log('DEBUG Login - Roles fetched from server:', roles);
+            } catch (error) {
+                console.error('DEBUG Login - Error fetching roles:', error);
+                // Continue with login even if role fetch fails
+            }
 
             // Store credentials if "Remember me" is checked
             if (rememberMe) {

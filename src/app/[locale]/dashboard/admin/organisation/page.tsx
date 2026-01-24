@@ -256,21 +256,6 @@ export default function OrganisationPage() {
                 </Card>
             </div>
 
-            {/* Members List */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Organisation Members</CardTitle>
-                    <CardDescription>Users who belong to this organisation</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="text-center py-8 text-muted-foreground">
-                        <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p className="text-sm font-medium">User management coming soon</p>
-                        <p className="text-xs mt-2">This feature requires backend API support for user listing and management</p>
-                    </div>
-                </CardContent>
-            </Card>
-
             {/* Quick Links */}
             <Card>
                 <CardHeader>

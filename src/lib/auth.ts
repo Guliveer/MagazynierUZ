@@ -138,12 +138,24 @@ export function isAuthenticated(): boolean {
 export function getTokenPayload(): JwtPayload | null {
     const token = getToken();
     if (!token) {
+        console.log('DEBUG: No token found');
         return null;
     }
 
     try {
-        return JSON.parse(atob(token.split('.')[1])) as JwtPayload;
-    } catch {
+        const parts = token.split('.');
+        if (parts.length !== 3) {
+            console.log('DEBUG: Invalid token format');
+            return null;
+        }
+
+        const payload = JSON.parse(atob(parts[1]));
+        console.log('DEBUG: JWT Payload:', payload);
+        console.log('DEBUG: Roles in payload:', payload.roles);
+        console.log('DEBUG: Full payload structure:', JSON.stringify(payload, null, 2));
+        return payload;
+    } catch (error) {
+        console.error('DEBUG: Error parsing token:', error);
         return null;
     }
 }
@@ -256,6 +268,8 @@ export function getUserRoles(): string[] {
     if (!payload || !payload.roles) {
         return [];
     }
+    // Add console log for debugging
+    console.log('User roles from JWT:', payload.roles);
     return payload.roles;
 }
 
@@ -284,7 +298,21 @@ export function hasAnyRole(roles: string[]): boolean {
  * @returns true if user has ROLE_ADMIN, false otherwise
  */
 export function isAdmin(): boolean {
-    return hasRole('ROLE_ADMIN');
+    const roles = getUserRoles();
+    console.log('DEBUG isAdmin() - All roles:', roles);
+
+    const hasRoleAdmin = roles.includes('ROLE_ADMIN');
+    const hasSuperadmin = roles.includes('SUPERADMIN');
+    const hasRoleSuperadmin = roles.includes('ROLE_SUPERADMIN');
+
+    console.log('DEBUG isAdmin() - Checks:', {
+        hasRoleAdmin,
+        hasSuperadmin,
+        hasRoleSuperadmin,
+        result: hasRoleAdmin || hasSuperadmin || hasRoleSuperadmin
+    });
+
+    return hasRoleAdmin || hasSuperadmin || hasRoleSuperadmin;
 }
 
 /**
@@ -318,4 +346,92 @@ export function getOrganisationName(): string | null {
     // JWT payload doesn't currently include organisation info
     // This would need to be added to the backend JWT token
     return null;
+}
+
+// ============================================
+// Server-Side Role Verification Functions
+// ============================================
+
+/**
+ * Get current user's roles from server
+ * This provides server-side verification of roles, which is more secure than JWT-only verification
+ * @returns Promise with user role information from server
+ * @throws ApiError if request fails
+ */
+export async function getCurrentUserRoleFromServer(): Promise<import('@/types').UserRoleResponse> {
+    // Import dynamically to avoid circular dependency
+    const { getCurrentUserRole } = await import('@/lib/api');
+    const roleResponse = await getCurrentUserRole();
+    // Add console log for debugging
+    console.log('User roles from server:', roleResponse.roles);
+    return roleResponse;
+}
+
+/**
+ * Refresh user roles by fetching from server
+ * This can be used to update roles without requiring re-login
+ * @returns Promise with updated user role information
+ * @throws ApiError if request fails
+ */
+export async function refreshUserRoles(): Promise<string[]> {
+    try {
+        const roleResponse = await getCurrentUserRoleFromServer();
+        return roleResponse.roles;
+    } catch (error) {
+        console.error('Failed to refresh user roles from server:', error);
+        // Fallback to JWT roles if server request fails
+        return getUserRoles();
+    }
+}
+
+/**
+ * Refresh roles cache by fetching from server
+ * Alias for refreshUserRoles for backward compatibility
+ * @returns Promise with array of role names
+ */
+export async function refreshRolesCache(): Promise<string[]> {
+    return await refreshUserRoles();
+}
+
+/**
+ * Verify user has a specific role by checking with server
+ * More secure than JWT-only verification as it checks current server state
+ * @param role - Role name to check (e.g., "ROLE_ADMIN")
+ * @returns Promise<boolean> - true if user has the role
+ */
+export async function hasRoleFromServer(role: string): Promise<boolean> {
+    try {
+        const roles = await refreshUserRoles();
+        // Support multiple admin role formats
+        if (role === 'ROLE_ADMIN') {
+            return roles.includes('ROLE_ADMIN') || roles.includes('SUPERADMIN') || roles.includes('ROLE_SUPERADMIN');
+        }
+        return roles.includes(role);
+    } catch (error) {
+        console.error('Failed to verify role from server:', error);
+        // Fallback to JWT verification
+        return hasRole(role);
+    }
+}
+
+/**
+ * Verify user has any of the specified roles by checking with server
+ * @param roles - Array of role names to check
+ * @returns Promise<boolean> - true if user has at least one of the roles
+ */
+export async function hasAnyRoleFromServer(roles: string[]): Promise<boolean> {
+    try {
+        const userRoles = await refreshUserRoles();
+        return roles.some((role) => {
+            // Support multiple admin role formats
+            if (role === 'ROLE_ADMIN') {
+                return userRoles.includes('ROLE_ADMIN') || userRoles.includes('SUPERADMIN') || userRoles.includes('ROLE_SUPERADMIN');
+            }
+            return userRoles.includes(role);
+        });
+    } catch (error) {
+        console.error('Failed to verify roles from server:', error);
+        // Fallback to JWT verification
+        return hasAnyRole(roles);
+    }
 }

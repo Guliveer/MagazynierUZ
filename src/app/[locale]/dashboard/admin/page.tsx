@@ -4,9 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'shadc
 import { Badge } from 'shadcn/badge';
 import { Button } from 'shadcn/button';
 import { Skeleton } from 'shadcn/skeleton';
-import { Users, Building2, Settings, FileText, Shield, Activity, Database, Package, Warehouse, TrendingUp } from 'lucide-react';
+import { Users, Building2, Shield, Activity, Package, Warehouse, TrendingUp, FileText } from 'lucide-react';
 import Link from 'next/link';
-import { getUserRoles, getUsername } from '@/lib/auth';
+import { getUsername, refreshRolesCache } from '@/lib/auth';
 import { useEffect, useState } from 'react';
 import { getSystemStatistics, getAllUsers, type SystemStatistics } from '@/lib/api';
 import { Alert, AlertDescription } from 'shadcn/alert';
@@ -18,18 +18,24 @@ export default function AdminPanelPage() {
     const params = useParams();
     const locale = params.locale as string;
     const username = getUsername();
-    const roles = getUserRoles();
+    const [roles, setRoles] = useState<string[]>([]);
     const [statistics, setStatistics] = useState<SystemStatistics | null>(null);
     const [userCount, setUserCount] = useState<number>(0);
     const [loading, setLoading] = useState(true);
+    const [loadingRoles, setLoadingRoles] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        async function fetchStatistics() {
+        async function fetchData() {
             try {
                 setLoading(true);
+                setLoadingRoles(true);
                 setError(null);
-                const [stats, users] = await Promise.all([getSystemStatistics(), getAllUsers().catch(() => [])]);
+
+                // Fetch roles and statistics in parallel
+                const [fetchedRoles, stats, users] = await Promise.all([refreshRolesCache(), getSystemStatistics(), getAllUsers().catch(() => [])]);
+
+                setRoles(fetchedRoles);
                 setStatistics(stats);
                 setUserCount(users.length);
             } catch (err) {
@@ -47,10 +53,11 @@ export default function AdminPanelPage() {
                 setUserCount(0);
             } finally {
                 setLoading(false);
+                setLoadingRoles(false);
             }
         }
 
-        fetchStatistics();
+        fetchData();
     }, [t]);
 
     const formatCurrency = (value: number) => {
@@ -83,6 +90,42 @@ export default function AdminPanelPage() {
                 </Alert>
             )}
 
+            {/* Quick Actions */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>{t('quickActions.title')}</CardTitle>
+                    <CardDescription>{t('quickActions.description')}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex flex-wrap gap-2">
+                        <Link href={`/${locale}/dashboard/profile`}>
+                            <Button variant="outline" size="sm">
+                                <Users className="h-4 w-4 mr-2" />
+                                {t('quickActions.viewProfile')}
+                            </Button>
+                        </Link>
+                        <Link href={`/${locale}/dashboard`}>
+                            <Button variant="outline" size="sm">
+                                <Activity className="h-4 w-4 mr-2" />
+                                {t('quickActions.dashboard')}
+                            </Button>
+                        </Link>
+                        <Link href={`/${locale}/dashboard/statistics`}>
+                            <Button variant="outline" size="sm">
+                                <FileText className="h-4 w-4 mr-2" />
+                                {t('quickActions.statistics')}
+                            </Button>
+                        </Link>
+                        <Link href={`/${locale}/dashboard/products`}>
+                            <Button variant="outline" size="sm">
+                                <Package className="h-4 w-4 mr-2" />
+                                {t('quickActions.products')}
+                            </Button>
+                        </Link>
+                    </div>
+                </CardContent>
+            </Card>
+
             {/* Current User Info */}
             <Card>
                 <CardHeader>
@@ -98,7 +141,9 @@ export default function AdminPanelPage() {
                         <div>
                             <p className="text-sm font-medium text-muted-foreground">{t('session.roles')}</p>
                             <div className="flex flex-wrap gap-1 mt-1">
-                                {roles.length > 0 ? (
+                                {loadingRoles ? (
+                                    <Skeleton className="h-5 w-20" />
+                                ) : roles.length > 0 ? (
                                     roles.map((role) => (
                                         <Badge key={role} variant="secondary" className="text-xs">
                                             {t(`roles.${role}` as `roles.${string}`)}
@@ -114,71 +159,6 @@ export default function AdminPanelPage() {
                     </div>
                 </CardContent>
             </Card>
-
-            {/* System Health Status */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">{t('systemHealth.systemStatus')}</CardTitle>
-                        <Activity className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        {loading ? (
-                            <Skeleton className="h-8 w-20" />
-                        ) : (
-                            <>
-                                <div className={`text-2xl font-bold ${statistics?.apiStatus === 'online' ? 'text-green-600' : 'text-red-600'}`}>{statistics?.apiStatus === 'online' ? t('systemHealth.online') : t('systemHealth.offline')}</div>
-                                <p className="text-xs text-muted-foreground">{statistics?.apiStatus === 'online' ? t('systemHealth.allSystemsOperational') : t('systemHealth.systemUnavailable')}</p>
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">{t('systemHealth.database')}</CardTitle>
-                        <Database className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        {loading ? (
-                            <Skeleton className="h-8 w-24" />
-                        ) : (
-                            <>
-                                <div className={`text-2xl font-bold ${statistics?.databaseStatus === 'connected' ? 'text-green-600' : 'text-red-600'}`}>{statistics?.databaseStatus === 'connected' ? t('systemHealth.connected') : t('systemHealth.disconnected')}</div>
-                                <p className="text-xs text-muted-foreground">{statistics?.databaseStatus === 'connected' ? t('systemHealth.databaseResponsive') : t('systemHealth.databaseUnavailable')}</p>
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">{t('systemHealth.apiStatus')}</CardTitle>
-                        <Shield className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        {loading ? (
-                            <Skeleton className="h-8 w-20" />
-                        ) : (
-                            <>
-                                <div className={`text-2xl font-bold ${statistics?.apiStatus === 'online' ? 'text-green-600' : 'text-red-600'}`}>{statistics?.apiStatus === 'online' ? t('systemHealth.active') : t('systemHealth.inactive')}</div>
-                                <p className="text-xs text-muted-foreground">{statistics?.apiStatus === 'online' ? t('systemHealth.apiEndpointsReady') : t('systemHealth.apiUnavailable')}</p>
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">{t('systemHealth.session')}</CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{t('systemHealth.active')}</div>
-                        <p className="text-xs text-muted-foreground">{t('systemHealth.authenticatedSession')}</p>
-                    </CardContent>
-                </Card>
-            </div>
 
             {/* System Statistics */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
@@ -353,75 +333,7 @@ export default function AdminPanelPage() {
                         </Link>
                     </CardContent>
                 </Card>
-
-                {/* System Settings */}
-                <Card className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                        <div className="flex items-center gap-2">
-                            <Settings className="h-5 w-5 text-primary" />
-                            <CardTitle className="text-lg">{t('features.systemSettings')}</CardTitle>
-                        </div>
-                        <CardDescription>{t('features.systemSettingsDesc')}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Button className="w-full" variant="secondary" disabled>
-                            {t('features.comingSoon')}
-                        </Button>
-                    </CardContent>
-                </Card>
-
-                {/* Audit Logs */}
-                <Card className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                        <div className="flex items-center gap-2">
-                            <FileText className="h-5 w-5 text-primary" />
-                            <CardTitle className="text-lg">{t('features.auditLogs')}</CardTitle>
-                        </div>
-                        <CardDescription>{t('features.auditLogsDesc')}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Button className="w-full" variant="secondary" disabled>
-                            {t('features.comingSoon')}
-                        </Button>
-                    </CardContent>
-                </Card>
             </div>
-
-            {/* Quick Actions */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>{t('quickActions.title')}</CardTitle>
-                    <CardDescription>{t('quickActions.description')}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                        <Link href={`/${locale}/dashboard/profile`}>
-                            <Button variant="outline" size="sm">
-                                <Users className="h-4 w-4 mr-2" />
-                                {t('quickActions.viewProfile')}
-                            </Button>
-                        </Link>
-                        <Link href={`/${locale}/dashboard`}>
-                            <Button variant="outline" size="sm">
-                                <Activity className="h-4 w-4 mr-2" />
-                                {t('quickActions.dashboard')}
-                            </Button>
-                        </Link>
-                        <Link href={`/${locale}/dashboard/statistics`}>
-                            <Button variant="outline" size="sm">
-                                <FileText className="h-4 w-4 mr-2" />
-                                {t('quickActions.statistics')}
-                            </Button>
-                        </Link>
-                        <Link href={`/${locale}/dashboard/products`}>
-                            <Button variant="outline" size="sm">
-                                <Package className="h-4 w-4 mr-2" />
-                                {t('quickActions.products')}
-                            </Button>
-                        </Link>
-                    </div>
-                </CardContent>
-            </Card>
         </div>
     );
 }

@@ -8,8 +8,8 @@ import { Button } from 'shadcn/button';
 import { Checkbox } from 'shadcn/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'shadcn/select';
 import { Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react';
-import type { UserResponse, AdminCreateUserRequest, AdminUpdateUserRequest, Warehouse } from '@/types';
-import { getWarehouses } from '@/lib/api';
+import type { UserResponse, AdminCreateUserRequest, AdminUpdateUserRequest, OrganisationResponse } from '@/types';
+import { getAllOrganisations } from '@/lib/api';
 
 interface UserFormProps {
   user?: UserResponse | null;
@@ -24,28 +24,28 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
     const [showPassword, setShowPassword] = useState(false);
     const [selectedRoles, setSelectedRoles] = useState<string[]>(user?.roles || ['ROLE_USER']);
     const [organisationId, setOrganisationId] = useState<string>(user?.organisationId?.toString() || '');
-    const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
-    const [loadingWarehouses, setLoadingWarehouses] = useState(false);
+    const [organisations, setOrganisations] = useState<OrganisationResponse[]>([]);
+    const [loadingOrganisations, setLoadingOrganisations] = useState(false);
 
     const [errors, setErrors] = useState<{
     username?: string;
     password?: string;
   }>({});
 
-    // Load warehouses for organisation selection
+    // Load organisations for organisation selection
     useEffect(() => {
-        const loadWarehouses = async () => {
-            setLoadingWarehouses(true);
+        const loadOrganisations = async () => {
+            setLoadingOrganisations(true);
             try {
-                const data = await getWarehouses();
-                setWarehouses(data);
+                const data = await getAllOrganisations();
+                setOrganisations(data);
             } catch (error) {
-                console.error('Failed to load warehouses:', error);
+                console.error('Failed to load organisations:', error);
             } finally {
-                setLoadingWarehouses(false);
+                setLoadingOrganisations(false);
             }
         };
-        loadWarehouses();
+        loadOrganisations();
     }, []);
 
     const validateUsername = (value: string): string | undefined => {
@@ -255,20 +255,20 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
             {/* Organisation */}
             <div className="space-y-2">
                 <Label htmlFor="organisation">Organisation (Optional)</Label>
-                <Select value={organisationId} onValueChange={setOrganisationId} disabled={isLoading || loadingWarehouses}>
+                <Select value={organisationId} onValueChange={setOrganisationId} disabled={isLoading || loadingOrganisations}>
                     <SelectTrigger id="organisation">
                         <SelectValue placeholder="Select organisation (optional)" />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="">No Organisation</SelectItem>
-                        {warehouses.map((warehouse) => (
-                            <SelectItem key={warehouse.id} value={warehouse.id.toString()}>
-                                {warehouse.name} ({warehouse.code})
+                        {organisations.map((organisation) => (
+                            <SelectItem key={organisation.id} value={organisation.id.toString()}>
+                                {organisation.name} (TIN: {organisation.tin})
                             </SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
-                <p className="text-xs text-muted-foreground">Assign user to a specific organisation/warehouse</p>
+                <p className="text-xs text-muted-foreground">Assign user to a specific organisation</p>
             </div>
 
             {/* Submit Button */}

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { isAuthenticated, isAdmin } from '@/lib/auth';
+import { isAuthenticated, refreshRolesCache } from '@/lib/auth';
 import { Alert, AlertDescription, AlertTitle } from 'shadcn/alert';
 import { Button } from 'shadcn/button';
 import { ShieldAlert, ArrowLeft } from 'lucide-react';
@@ -15,29 +15,40 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const params = useParams();
     const locale = params.locale as string;
 
-    // Compute authorization state during render instead of in effect
-    const [isAuthorized, setIsAuthorized] = useState<boolean | null>(() => {
-        if (typeof window === 'undefined') {
-            return null;
-        }
-        if (!isAuthenticated()) {
-            return null;
-        }
-        return isAdmin();
-    });
+    const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
     useEffect(() => {
-    // Check authentication and admin role
-        if (!isAuthenticated()) {
-            router.push(`/${locale}/login?redirect=/${locale}/dashboard/admin`);
-            return;
-        }
+        const checkAdminAccess = async () => {
+            console.log('DEBUG AdminLayout - Checking admin access...');
 
-        // Use a microtask to avoid synchronous setState in effect
-        Promise.resolve().then(() => {
-            const authorized = isAdmin();
-            setIsAuthorized(authorized);
-        });
+            // Check authentication first
+            if (!isAuthenticated()) {
+                console.log('DEBUG AdminLayout - Not authenticated, redirecting to login...');
+                router.push(`/${locale}/login?redirect=/${locale}/dashboard/admin`);
+                return;
+            }
+
+            try {
+                // Fetch roles from API
+                const fetchedRoles = await refreshRolesCache();
+                console.log('DEBUG AdminLayout - Roles fetched:', fetchedRoles);
+
+                // Check if user has admin access
+                const hasAdminAccess = fetchedRoles.includes('ROLE_ADMIN') || fetchedRoles.includes('SUPERADMIN') || fetchedRoles.includes('ROLE_SUPERADMIN');
+
+                console.log('DEBUG AdminLayout - Has admin access:', hasAdminAccess);
+                setIsAuthorized(hasAdminAccess);
+
+                if (!hasAdminAccess) {
+                    console.log('DEBUG AdminLayout - Access denied');
+                }
+            } catch (error) {
+                console.error('DEBUG AdminLayout - Error checking access:', error);
+                setIsAuthorized(false);
+            }
+        };
+
+        checkAdminAccess();
     }, [router, locale]);
 
     // Loading state
