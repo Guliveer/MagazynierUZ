@@ -10,6 +10,8 @@ import { Spinner } from 'shadcn/spinner';
 import { cn } from '@/lib/utils';
 import { useTokenRefresh } from '@/hooks/useTokenRefresh';
 import { TokenExpirationModal } from '@/components/auth/TokenExpirationModal';
+import { BreadcrumbProvider } from '@/contexts/BreadcrumbContext';
+import { Breadcrumbs } from '@/components/dashboard/Breadcrumbs';
 
 const mobileNavItems = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -78,7 +80,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
 
                 {/* Main content - with left margin to account for fixed sidebar */}
-                <main className="flex-1 p-6 pb-20 md:pb-6 md:ml-64 overflow-auto">{children}</main>
+                <main className="flex-1 p-6 pb-20 md:pb-6 md:ml-64 overflow-auto">
+                    <BreadcrumbProvider>
+                        <Breadcrumbs />
+                        {children}
+                    </BreadcrumbProvider>
+                </main>
             </div>
         </>
     );

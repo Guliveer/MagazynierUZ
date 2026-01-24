@@ -7,7 +7,7 @@ import { usePathname, useRouter } from '@/i18n/routing';
 import { Button } from 'shadcn/button';
 import { Badge } from 'shadcn/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from 'shadcn/dropdown-menu';
-import { User, ChevronDown, Sun, Moon, Monitor, UserCircle, Shield, LogOut, RefreshCw } from 'lucide-react';
+import { User, ChevronDown, Sun, Moon, Monitor, UserCircle, LogOut, RefreshCw } from 'lucide-react';
 import { getCurrentUserRole } from '@/lib/api';
 
 interface UserProfileMenuProps {
@@ -28,7 +28,7 @@ const locales = [
     { code: 'pl', name: 'Polski', flag: '🇵🇱' }
 ] as const;
 
-export default function UserProfileMenu({ username, roles, isAdmin, onLogout }: UserProfileMenuProps) {
+export default function UserProfileMenu({ username, roles, onLogout }: UserProfileMenuProps) {
     const { theme, setTheme } = useTheme();
     const locale = useLocale();
     const router = useRouter();
@@ -39,19 +39,16 @@ export default function UserProfileMenu({ username, roles, isAdmin, onLogout }: 
     // Server-side role fetching state
     const [serverRoles, setServerRoles] = useState<string[]>(roles);
     const [loadingRoles, setLoadingRoles] = useState(false);
-    const [roleError, setRoleError] = useState<string | null>(null);
 
     // Fetch roles from server on mount and periodically
     useEffect(() => {
         const fetchRoles = async () => {
             setLoadingRoles(true);
-            setRoleError(null);
             try {
                 const roleResponse = await getCurrentUserRole();
                 setServerRoles(roleResponse.roles);
             } catch (error) {
                 console.error('Failed to fetch roles from server:', error);
-                setRoleError('Failed to fetch roles');
                 // Fallback to prop-based roles
                 setServerRoles(roles);
             } finally {

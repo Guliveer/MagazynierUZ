@@ -1,4 +1,5 @@
 'use client';
+'use no memo';
 
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -10,7 +11,8 @@ import { Input } from 'shadcn/input';
 import { Textarea } from 'shadcn/textarea';
 import { Button } from 'shadcn/button';
 import { Spinner } from 'shadcn/spinner';
-import type { Product } from '@/types';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'shadcn/select';
+import type { Product, Warehouse, Location } from '@/types';
 
 // Base schema for type inference
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -18,7 +20,9 @@ const baseProductFormSchema = z.object({
     name: z.string().min(2),
     description: z.string().optional(),
     price: z.number().positive(),
-    quantity: z.number().int().min(0)
+    quantity: z.number().int().min(0),
+    warehouseId: z.number().nullable(),
+    locationId: z.number().nullable()
 });
 
 export type ProductFormData = z.infer<typeof baseProductFormSchema>;
@@ -28,9 +32,16 @@ interface ProductFormProps {
   onSubmit: (data: ProductFormData) => Promise<void>;
   onCancel: () => void;
   isLoading?: boolean;
+  warehouses?: Warehouse[];
+  locations?: Location[];
+  selectedWarehouseId?: number | null;
+  selectedLocationId?: number | null;
+  onWarehouseChange?: (warehouseId: number | null) => void;
+  isLoadingLocations?: boolean;
+  isEditing?: boolean;
 }
 
-export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: ProductFormProps) {
+export function ProductForm({ product, onSubmit, onCancel, isLoading = false, warehouses = [], locations = [], selectedWarehouseId, selectedLocationId, onWarehouseChange, isLoadingLocations = false, isEditing = false }: ProductFormProps) {
     const t = useTranslations('products.form');
 
     // Validation schema with translated messages
@@ -41,7 +52,15 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: 
         quantity: z
             .number({ message: t('validation.quantityRequired') })
             .int(t('validation.quantityInteger'))
-            .min(0, t('validation.quantityNonNegative'))
+            .min(0, t('validation.quantityNonNegative')),
+        warehouseId: z
+            .number({ message: t('validation.warehouseRequired') })
+            .nullable()
+            .refine((val) => isEditing || val !== null, { message: t('validation.warehouseRequired') }),
+        locationId: z
+            .number({ message: t('validation.locationRequired') })
+            .nullable()
+            .refine((val) => isEditing || val !== null, { message: t('validation.locationRequired') })
     });
 
     const form = useForm<ProductFormData>({
@@ -50,7 +69,9 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: 
             name: product?.name ?? '',
             description: product?.description ?? '',
             price: product?.price ?? 0,
-            quantity: product?.quantity ?? 0
+            quantity: product?.quantity ?? 0,
+            warehouseId: selectedWarehouseId ?? product?.warehouseId ?? null,
+            locationId: selectedLocationId ?? product?.locationId ?? null
         }
     });
 
@@ -60,9 +81,24 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: 
             name: product?.name ?? '',
             description: product?.description ?? '',
             price: product?.price ?? 0,
-            quantity: product?.quantity ?? 0
+            quantity: product?.quantity ?? 0,
+            warehouseId: selectedWarehouseId ?? product?.warehouseId ?? null,
+            locationId: selectedLocationId ?? product?.locationId ?? null
         });
-    }, [product, form]);
+    }, [product, form, selectedWarehouseId, selectedLocationId]);
+
+    // Update form values when selectedWarehouseId or selectedLocationId changes externally
+    useEffect(() => {
+        if (selectedWarehouseId !== undefined) {
+            form.setValue('warehouseId', selectedWarehouseId);
+        }
+    }, [selectedWarehouseId, form]);
+
+    useEffect(() => {
+        if (selectedLocationId !== undefined) {
+            form.setValue('locationId', selectedLocationId);
+        }
+    }, [selectedLocationId, form]);
 
     const handleSubmit = form.handleSubmit(async (data) => {
         try {
@@ -72,9 +108,82 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: 
         }
     });
 
+    const handleWarehouseChange = (value: string) => {
+        const warehouseId = value ? parseInt(value, 10) : null;
+        form.setValue('warehouseId', warehouseId);
+        form.setValue('locationId', null); // Reset location when warehouse changes
+        if (onWarehouseChange) {
+            onWarehouseChange(warehouseId);
+        }
+    };
+
+    const handleLocationChange = (value: string) => {
+        const locationId = value ? parseInt(value, 10) : null;
+        form.setValue('locationId', locationId);
+    };
+
+    // eslint-disable-next-line react-hooks/incompatible-library
+    const currentWarehouseId = form.watch('warehouseId');
+    const isLocationDisabled = !currentWarehouseId || isLoadingLocations;
+
     return (
         <Form {...form}>
             <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Warehouse and Location Selection - only show when not editing */}
+                {!isEditing && (
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <FormField
+                            control={form.control}
+                            name="warehouseId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{t('fields.warehouse')} *</FormLabel>
+                                    <Select value={field.value?.toString() ?? ''} onValueChange={handleWarehouseChange} disabled={isLoading}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder={t('fields.warehousePlaceholder')} />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {warehouses.map((warehouse) => (
+                                                <SelectItem key={warehouse.id} value={warehouse.id.toString()}>
+                                                    {warehouse.name} ({warehouse.code})
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="locationId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{t('fields.location')} *</FormLabel>
+                                    <Select value={field.value?.toString() ?? ''} onValueChange={handleLocationChange} disabled={isLocationDisabled || isLoading}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder={isLoadingLocations ? '...' : !currentWarehouseId ? t('fields.selectWarehouseFirst') : t('fields.locationPlaceholder')} />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {locations.map((location) => (
+                                                <SelectItem key={location.id} value={location.id.toString()}>
+                                                    {location.locationCode} - {location.zoneName}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                )}
+
                 <FormField
                     control={form.control}
                     name="name"

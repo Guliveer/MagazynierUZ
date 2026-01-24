@@ -62,7 +62,7 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick, locale 
         'hsl(240, 100%, 50%)', // Blue
         'hsl(280, 65%, 47%)', // Purple
         'hsl(328, 85%, 70%)', // Magenta
-        'hsl(0, 0%, 100%)' // White
+        'hsl(0, 0%, 50%)' // White
     ];
 
     const handleBarClick = (data: { product?: Top10Product }) => {

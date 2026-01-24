@@ -6,26 +6,40 @@ import { ProductForm, type ProductFormData } from './ProductForm';
 import { ProductLocationBadge } from './ProductLocationBadge';
 import { Alert, AlertDescription } from 'shadcn/alert';
 import { Info } from 'lucide-react';
-import type { Product, CreateProductRequest, ProductWithContext } from '@/types';
+import type { Product, CreateProductRequest, ProductWithContext, Warehouse, Location } from '@/types';
 
 interface ProductDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   product?: Product | null;
-  onSubmit: (data: CreateProductRequest) => Promise<void>;
+  onSubmit: (data: CreateProductRequest, warehouseId: number, locationId: number) => Promise<void>;
   isLoading?: boolean;
   warehouseName?: string;
   warehouseCode?: string;
   locationCode?: string;
   zoneName?: string;
+  warehouses?: Warehouse[];
+  locations?: Location[];
+  selectedWarehouseId?: number | null;
+  selectedLocationId?: number | null;
+  onWarehouseChange?: (warehouseId: number | null) => void;
+  isLoadingLocations?: boolean;
 }
 
-export function ProductDialog({ open, onOpenChange, product, onSubmit, isLoading = false, warehouseName, warehouseCode, locationCode, zoneName }: ProductDialogProps) {
+export function ProductDialog({ open, onOpenChange, product, onSubmit, isLoading = false, warehouseName, warehouseCode, locationCode, zoneName, warehouses = [], locations = [], selectedWarehouseId, selectedLocationId, onWarehouseChange, isLoadingLocations = false }: ProductDialogProps) {
     const t = useTranslations('products.form');
     const isEditing = !!product;
     const productWithContext = product as ProductWithContext | undefined;
 
     const handleSubmit = async (data: ProductFormData) => {
+    // Get warehouse and location IDs from form data or product context
+        const warehouseId = isEditing ? productWithContext?.warehouseId || product?.warehouseId || product?.warehouse?.id : data.warehouseId;
+        const locationId = isEditing ? productWithContext?.locationId || product?.locationId || product?.location?.id : data.locationId;
+
+        if (!warehouseId || !locationId) {
+            throw new Error('Warehouse and location are required');
+        }
+
         const request: CreateProductRequest = {
             name: data.name,
             description: data.description ?? '',
@@ -34,7 +48,7 @@ export function ProductDialog({ open, onOpenChange, product, onSubmit, isLoading
         };
 
         try {
-            await onSubmit(request);
+            await onSubmit(request, warehouseId, locationId);
         } catch (error) {
             throw error;
         }
@@ -58,18 +72,18 @@ export function ProductDialog({ open, onOpenChange, product, onSubmit, isLoading
                     <DialogDescription>{isEditing ? t('description.edit') : t('description.add')}</DialogDescription>
                 </DialogHeader>
 
-                {/* Show current location information */}
-                {(displayWarehouseName || displayLocationCode) && (
+                {/* Show current location information when editing */}
+                {isEditing && (displayWarehouseName || displayLocationCode) && (
                     <Alert>
                         <Info className="h-4 w-4" />
                         <AlertDescription className="flex items-center gap-2">
-                            <span className="text-sm">{isEditing ? t('currentLocation') : t('addingTo')}</span>
+                            <span className="text-sm">{t('currentLocation')}</span>
                             <ProductLocationBadge warehouseName={displayWarehouseName} warehouseCode={displayWarehouseCode} locationCode={displayLocationCode} zoneName={displayZoneName} locationType={productWithContext?.locationType} compact />
                         </AlertDescription>
                     </Alert>
                 )}
 
-                <ProductForm product={product} onSubmit={handleSubmit} onCancel={handleCancel} isLoading={isLoading} />
+                <ProductForm product={product} onSubmit={handleSubmit} onCancel={handleCancel} isLoading={isLoading} warehouses={warehouses} locations={locations} selectedWarehouseId={isEditing ? productWithContext?.warehouseId || product?.warehouseId : selectedWarehouseId} selectedLocationId={isEditing ? productWithContext?.locationId || product?.locationId : selectedLocationId} onWarehouseChange={onWarehouseChange} isLoadingLocations={isLoadingLocations} isEditing={isEditing} />
             </DialogContent>
         </Dialog>
     );

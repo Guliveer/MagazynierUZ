@@ -12,9 +12,9 @@ import { Badge } from 'shadcn/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'shadcn/card';
 import { Separator } from 'shadcn/separator';
 import { toast } from 'sonner';
-import Link from 'next/link';
 import { PdfExportButton } from '@/components/exports/PdfExportButton';
 import { useTranslations } from 'next-intl';
+import { useSetBreadcrumbLabel } from '@/contexts/BreadcrumbContext';
 
 interface WarehouseDetailPageProps {
   params: Promise<{
@@ -31,6 +31,9 @@ export default function WarehouseDetailPage({ params }: WarehouseDetailPageProps
     const [warehouse, setWarehouse] = useState<Warehouse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    // Set dynamic breadcrumb label with warehouse name
+    useSetBreadcrumbLabel(warehouse?.name ?? null);
 
     useEffect(() => {
         const fetchWarehouse = async () => {
@@ -96,19 +99,12 @@ export default function WarehouseDetailPage({ params }: WarehouseDetailPageProps
 
     return (
         <div className="container mx-auto py-6 space-y-6">
-            {/* Header with breadcrumb */}
+            {/* Header */}
             <div className="flex items-center gap-4">
                 <Button variant="ghost" size="icon" onClick={() => router.push('/dashboard/warehouses')} title="Back to warehouses">
                     <ArrowLeft className="h-4 w-4" />
                 </Button>
                 <div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                        <Link href="/dashboard/warehouses" className="hover:text-foreground">
-              Warehouses
-                        </Link>
-                        <span>/</span>
-                        <span className="text-foreground">{warehouse.name}</span>
-                    </div>
                     <h1 className="text-3xl font-bold tracking-tight">{warehouse.name}</h1>
                 </div>
             </div>

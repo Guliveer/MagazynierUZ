@@ -1,4 +1,16 @@
 {
+  "breadcrumbs": {
+    "dashboard": "Panel",
+    "warehouses": "Magazyny",
+    "warehouseDetail": "Szczegóły magazynu",
+    "products": "Produkty",
+    "statistics": "Statystyki",
+    "profile": "Profil",
+    "admin": "Panel Administratora",
+    "users": "Zarządzanie użytkownikami",
+    "organisations": "Organizacje",
+    "myOrganisation": "Moja organizacja"
+  },
   "theme": {
     "light": "Jasny",
     "dark": "Ciemny",
@@ -232,7 +244,12 @@
         "price": "Cena (PLN)",
         "pricePlaceholder": "np. 4999.99",
         "quantity": "Ilość",
-        "quantityPlaceholder": "np. 10"
+        "quantityPlaceholder": "np. 10",
+        "warehouse": "Magazyn",
+        "warehousePlaceholder": "Wybierz magazyn",
+        "location": "Lokalizacja",
+        "locationPlaceholder": "Wybierz lokalizację",
+        "selectWarehouseFirst": "Najpierw wybierz magazyn"
       },
       "validation": {
         "nameMin": "Nazwa musi mieć co najmniej 2 znaki",
@@ -240,7 +257,9 @@
         "pricePositive": "Cena musi być większa niż 0",
         "quantityRequired": "Ilość jest wymagana i musi być liczbą",
         "quantityInteger": "Ilość musi być liczbą całkowitą",
-        "quantityNonNegative": "Ilość nie może być ujemna"
+        "quantityNonNegative": "Ilość nie może być ujemna",
+        "warehouseRequired": "Magazyn jest wymagany",
+        "locationRequired": "Lokalizacja jest wymagana"
       },
       "buttons": {
         "cancel": "Anuluj",
@@ -651,12 +670,6 @@
       "myOrganisation": "Moja organizacja",
       "myOrganisationDesc": "Zobacz szczegóły swojej organizacji",
       "viewDetails": "Zobacz szczegóły",
-      "warehouses": "Magazyny",
-      "warehousesDesc": "Przeglądaj i zarządzaj wszystkimi magazynami",
-      "viewWarehouses": "Zobacz magazyny",
-      "inventory": "Inwentarz",
-      "inventoryDesc": "Przeglądaj inwentarz we wszystkich lokalizacjach",
-      "viewInventory": "Zobacz inwentarz",
       "userManagement": "Zarządzanie użytkownikami",
       "userManagementDesc": "Zarządzaj użytkownikami, rolami i uprawnieniami",
       "manageUsers": "Zarządzaj użytkownikami",
@@ -665,14 +678,6 @@
       "comingSoon": "Wkrótce",
       "auditLogs": "Dzienniki audytu",
       "auditLogsDesc": "Przeglądaj aktywność systemu i ścieżki audytu (Wkrótce)"
-    },
-    "quickActions": {
-      "title": "Szybkie akcje",
-      "description": "Typowe zadania administracyjne",
-      "viewProfile": "Zobacz profil",
-      "dashboard": "Panel",
-      "statistics": "Statystyki",
-      "products": "Produkty"
     },
     "layout": {
       "verifyingAccess": "Weryfikacja dostępu...",
@@ -883,14 +888,7 @@
       "quickLinksDescription": "Przejdź do powiązanych sekcji",
       "viewWarehouses": "Zobacz magazyny",
       "viewProducts": "Zobacz produkty",
-      "viewStatistics": "Zobacz statystyki",
-      "backToAdminPanel": "Powrót do panelu administratora",
-      "organisationActions": "Akcje organizacji",
-      "organisationActionsDescription": "Działania administracyjne dla tej organizacji",
-      "editDetails": "Edytuj szczegóły",
-      "manageMembers": "Zarządzaj członkami",
-      "sendNotification": "Wyślij powiadomienie",
-      "featuresNote": "Uwaga: Te funkcje wymagają wsparcia API backendu do zarządzania organizacją i są obecnie niedostępne."
+      "viewStatistics": "Zobacz statystyki"
     },
     "roles": {
       "ROLE_USER": "Użytkownik",

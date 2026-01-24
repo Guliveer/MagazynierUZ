@@ -6,7 +6,7 @@ import { Button } from 'shadcn/button';
 import { Separator } from 'shadcn/separator';
 import { Skeleton } from 'shadcn/skeleton';
 import { Alert, AlertDescription } from 'shadcn/alert';
-import { Building2, Users, Package, Warehouse, ArrowLeft, Edit, Mail, Phone, MapPin, Calendar, Hash, TrendingUp } from 'lucide-react';
+import { Building2, Users, Package, Warehouse, Edit, Mail, Phone, MapPin, Calendar, Hash, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { getUsername, getOrganisationId, getOrganisationName } from '@/lib/auth';
 import { useEffect, useState } from 'react';
@@ -55,16 +55,9 @@ export default function OrganisationPage() {
         <div className="space-y-6">
             {/* Header */}
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <Link href="/dashboard/admin">
-                        <Button variant="ghost" size="icon">
-                            <ArrowLeft className="h-4 w-4" />
-                        </Button>
-                    </Link>
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Organisation Management</h1>
-                        <p className="text-muted-foreground mt-2">View and manage organisation details</p>
-                    </div>
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">Organisation Management</h1>
+                    <p className="text-muted-foreground mt-2">View and manage organisation details</p>
                 </div>
                 <Button disabled>
                     <Edit className="h-4 w-4 mr-2" />
@@ -282,38 +275,7 @@ export default function OrganisationPage() {
                 View Statistics
                             </Button>
                         </Link>
-                        <Link href="/dashboard/admin">
-                            <Button variant="outline" size="sm">
-                                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Admin Panel
-                            </Button>
-                        </Link>
                     </div>
-                </CardContent>
-            </Card>
-
-            {/* Actions */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Organisation Actions</CardTitle>
-                    <CardDescription>Administrative actions for this organisation</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                        <Button variant="outline" disabled>
-                            <Edit className="h-4 w-4 mr-2" />
-              Edit Details
-                        </Button>
-                        <Button variant="outline" disabled>
-                            <Users className="h-4 w-4 mr-2" />
-              Manage Members
-                        </Button>
-                        <Button variant="outline" disabled>
-                            <Mail className="h-4 w-4 mr-2" />
-              Send Notification
-                        </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-4">Note: These features require backend API support for organisation management and are currently unavailable.</p>
                 </CardContent>
             </Card>
         </div>

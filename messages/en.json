@@ -1,4 +1,16 @@
 {
+  "breadcrumbs": {
+    "dashboard": "Dashboard",
+    "warehouses": "Warehouses",
+    "warehouseDetail": "Warehouse Details",
+    "products": "Products",
+    "statistics": "Statistics",
+    "profile": "Profile",
+    "admin": "Admin Panel",
+    "users": "User Management",
+    "organisations": "Organisations",
+    "myOrganisation": "My Organisation"
+  },
   "theme": {
     "light": "Light",
     "dark": "Dark",
@@ -232,7 +244,12 @@
         "price": "Price (PLN)",
         "pricePlaceholder": "e.g. 4999.99",
         "quantity": "Quantity",
-        "quantityPlaceholder": "e.g. 10"
+        "quantityPlaceholder": "e.g. 10",
+        "warehouse": "Warehouse",
+        "warehousePlaceholder": "Select warehouse",
+        "location": "Location",
+        "locationPlaceholder": "Select location",
+        "selectWarehouseFirst": "Select warehouse first"
       },
       "validation": {
         "nameMin": "Name must be at least 2 characters",
@@ -240,7 +257,9 @@
         "pricePositive": "Price must be greater than 0",
         "quantityRequired": "Quantity is required and must be a number",
         "quantityInteger": "Quantity must be an integer",
-        "quantityNonNegative": "Quantity cannot be negative"
+        "quantityNonNegative": "Quantity cannot be negative",
+        "warehouseRequired": "Warehouse is required",
+        "locationRequired": "Location is required"
       },
       "buttons": {
         "cancel": "Cancel",
@@ -651,12 +670,6 @@
       "myOrganisation": "My Organisation",
       "myOrganisationDesc": "View your organisation details",
       "viewDetails": "View Details",
-      "warehouses": "Warehouses",
-      "warehousesDesc": "View and manage all warehouses",
-      "viewWarehouses": "View Warehouses",
-      "inventory": "Inventory",
-      "inventoryDesc": "View inventory across all locations",
-      "viewInventory": "View Inventory",
       "userManagement": "User Management",
       "userManagementDesc": "Manage users, roles, and permissions",
       "manageUsers": "Manage Users",
@@ -665,14 +678,6 @@
       "comingSoon": "Coming Soon",
       "auditLogs": "Audit Logs",
       "auditLogsDesc": "View system activity and audit trails (Coming Soon)"
-    },
-    "quickActions": {
-      "title": "Quick Actions",
-      "description": "Common administrative tasks",
-      "viewProfile": "View Profile",
-      "dashboard": "Dashboard",
-      "statistics": "Statistics",
-      "products": "Products"
     },
     "layout": {
       "verifyingAccess": "Verifying access...",
@@ -883,14 +888,7 @@
       "quickLinksDescription": "Navigate to related sections",
       "viewWarehouses": "View Warehouses",
       "viewProducts": "View Products",
-      "viewStatistics": "View Statistics",
-      "backToAdminPanel": "Back to Admin Panel",
-      "organisationActions": "Organisation Actions",
-      "organisationActionsDescription": "Administrative actions for this organisation",
-      "editDetails": "Edit Details",
-      "manageMembers": "Manage Members",
-      "sendNotification": "Send Notification",
-      "featuresNote": "Note: These features require backend API support for organisation management and are currently unavailable."
+      "viewStatistics": "View Statistics"
     },
     "roles": {
       "ROLE_USER": "User",

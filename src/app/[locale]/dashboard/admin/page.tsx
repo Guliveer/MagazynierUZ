@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'shadc
 import { Badge } from 'shadcn/badge';
 import { Button } from 'shadcn/button';
 import { Skeleton } from 'shadcn/skeleton';
-import { Users, Building2, Shield, Activity, Package, Warehouse, TrendingUp, FileText } from 'lucide-react';
+import { Users, Building2, Shield, Package, Warehouse, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { getUsername, refreshRolesCache } from '@/lib/auth';
 import { useEffect, useState } from 'react';
@@ -89,42 +89,6 @@ export default function AdminPanelPage() {
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             )}
-
-            {/* Quick Actions */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>{t('quickActions.title')}</CardTitle>
-                    <CardDescription>{t('quickActions.description')}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                        <Link href={`/${locale}/dashboard/profile`}>
-                            <Button variant="outline" size="sm">
-                                <Users className="h-4 w-4 mr-2" />
-                                {t('quickActions.viewProfile')}
-                            </Button>
-                        </Link>
-                        <Link href={`/${locale}/dashboard`}>
-                            <Button variant="outline" size="sm">
-                                <Activity className="h-4 w-4 mr-2" />
-                                {t('quickActions.dashboard')}
-                            </Button>
-                        </Link>
-                        <Link href={`/${locale}/dashboard/statistics`}>
-                            <Button variant="outline" size="sm">
-                                <FileText className="h-4 w-4 mr-2" />
-                                {t('quickActions.statistics')}
-                            </Button>
-                        </Link>
-                        <Link href={`/${locale}/dashboard/products`}>
-                            <Button variant="outline" size="sm">
-                                <Package className="h-4 w-4 mr-2" />
-                                {t('quickActions.products')}
-                            </Button>
-                        </Link>
-                    </div>
-                </CardContent>
-            </Card>
 
             {/* Current User Info */}
             <Card>
@@ -279,41 +243,7 @@ export default function AdminPanelPage() {
                     </CardHeader>
                     <CardContent>
                         <Link href={`/${locale}/dashboard/admin/organisation`}>
-                            <Button className="w-full" variant="outline">
-                                {t('features.viewDetails')}
-                            </Button>
-                        </Link>
-                    </CardContent>
-                </Card>
-
-                {/* Warehouse Overview */}
-                <Card className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                        <div className="flex items-center gap-2">
-                            <Warehouse className="h-5 w-5 text-primary" />
-                            <CardTitle className="text-lg">{t('features.warehouses')}</CardTitle>
-                        </div>
-                        <CardDescription>{t('features.warehousesDesc')}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Link href={`/${locale}/dashboard/warehouses`}>
-                            <Button className="w-full">{t('features.viewWarehouses')}</Button>
-                        </Link>
-                    </CardContent>
-                </Card>
-
-                {/* Inventory Summary */}
-                <Card className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                        <div className="flex items-center gap-2">
-                            <Package className="h-5 w-5 text-primary" />
-                            <CardTitle className="text-lg">{t('features.inventory')}</CardTitle>
-                        </div>
-                        <CardDescription>{t('features.inventoryDesc')}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Link href={`/${locale}/dashboard/products`}>
-                            <Button className="w-full">{t('features.viewInventory')}</Button>
+                            <Button className="w-full">{t('features.viewDetails')}</Button>
                         </Link>
                     </CardContent>
                 </Card>

@@ -12,7 +12,7 @@ import { ProductFilters, type ProductFilterValues } from '@/components/products/
 import { ProductSearchResults, type SortField, type SortDirection, type ViewMode } from '@/components/products/ProductSearchResults';
 import { ProductDialog } from '@/components/products/ProductDialog';
 import { DeleteProductDialog } from '@/components/products/DeleteProductDialog';
-import { searchProducts, createProduct, updateProduct, deleteProduct, ApiError, getWarehouse, getLocation } from '@/lib/api';
+import { searchProducts, createProduct, updateProduct, deleteProduct, ApiError, getWarehouse, getLocation, getWarehouses, getLocations } from '@/lib/api';
 import type { Product, ProductWithContext, CreateProductRequest, PaginatedResponse, Warehouse, Location } from '@/types';
 import { useDebounce } from '@/hooks/useDebounce';
 
@@ -58,8 +58,50 @@ export default function ProductsPage() {
     const [isSaving, setIsSaving] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
+    // Warehouse and location data for the dialog
+    const [dialogWarehouses, setDialogWarehouses] = useState<Warehouse[]>([]);
+    const [dialogLocations, setDialogLocations] = useState<Location[]>([]);
+    const [dialogSelectedWarehouseId, setDialogSelectedWarehouseId] = useState<number | null>(null);
+    const [dialogSelectedLocationId, setDialogSelectedLocationId] = useState<number | null>(null);
+    const [isLoadingDialogLocations, setIsLoadingDialogLocations] = useState(false);
+
     // Debounce search query
     const debouncedSearchQuery = useDebounce(filters.searchQuery, 300);
+
+    // Fetch warehouses for dialog when it opens
+    useEffect(() => {
+        if (isDialogOpen && dialogWarehouses.length === 0) {
+            getWarehouses()
+                .then(setDialogWarehouses)
+                .catch((err) => {
+                    console.error('Failed to fetch warehouses:', err);
+                    toast.error(t('messages.warehousesError'));
+                });
+        }
+    }, [isDialogOpen, dialogWarehouses.length, t]);
+
+    // Fetch locations when warehouse changes in dialog
+    const handleDialogWarehouseChange = useCallback(
+        async (warehouseId: number | null) => {
+            setDialogSelectedWarehouseId(warehouseId);
+            setDialogSelectedLocationId(null);
+            setDialogLocations([]);
+
+            if (warehouseId) {
+                setIsLoadingDialogLocations(true);
+                try {
+                    const locations = await getLocations(warehouseId);
+                    setDialogLocations(locations);
+                } catch (err) {
+                    console.error('Failed to fetch locations:', err);
+                    toast.error(t('messages.locationsError'));
+                } finally {
+                    setIsLoadingDialogLocations(false);
+                }
+            }
+        },
+        [t]
+    );
 
     // Update URL when filters change
     const updateURL = useCallback(
@@ -309,6 +351,21 @@ export default function ProductsPage() {
     // Handle add product
     const handleAddClick = () => {
         setSelectedProduct(null);
+        // Pre-select warehouse and location from current filters if available
+        setDialogSelectedWarehouseId(filters.warehouseId);
+        setDialogSelectedLocationId(filters.locationId);
+
+        // If we have a warehouse filter, fetch its locations
+        if (filters.warehouseId) {
+            setIsLoadingDialogLocations(true);
+            getLocations(filters.warehouseId)
+                .then(setDialogLocations)
+                .catch((err) => {
+                    console.error('Failed to fetch locations:', err);
+                })
+                .finally(() => setIsLoadingDialogLocations(false));
+        }
+
         setIsDialogOpen(true);
     };
 
@@ -353,18 +410,8 @@ export default function ProductsPage() {
     };
 
     // Handle product submission
-    const handleSubmit = async (data: CreateProductRequest) => {
+    const handleSubmit = async (data: CreateProductRequest, warehouseId: number, locationId: number) => {
         const isEditing = !!selectedProduct;
-
-        // Get warehouse and location IDs from the product (if editing) or filters (if creating)
-        const warehouseId = isEditing && selectedProduct?.warehouseId ? selectedProduct.warehouseId : filters.warehouseId;
-        const locationId = isEditing && selectedProduct?.locationId ? selectedProduct.locationId : filters.locationId;
-
-        // Validate that we have the required IDs
-        if (!warehouseId || !locationId) {
-            toast.error(t('messages.selectWarehouseLocation'));
-            return;
-        }
 
         try {
             setIsSaving(true);
@@ -376,6 +423,10 @@ export default function ProductsPage() {
                 toast.success(t('messages.created'));
             }
             setIsDialogOpen(false);
+            // Reset dialog state
+            setDialogSelectedWarehouseId(null);
+            setDialogSelectedLocationId(null);
+            setDialogLocations([]);
             await performSearch(); // Refresh results
         } catch (err) {
             const message = err instanceof ApiError ? err.message : t('messages.createError');
@@ -414,6 +465,17 @@ export default function ProductsPage() {
         }
     };
 
+    // Handle dialog close - reset state
+    const handleDialogOpenChange = (open: boolean) => {
+        setIsDialogOpen(open);
+        if (!open) {
+            // Reset dialog state when closing
+            setDialogSelectedWarehouseId(null);
+            setDialogSelectedLocationId(null);
+            setDialogLocations([]);
+        }
+    };
+
     return (
         <div className="container mx-auto py-6 space-y-6">
             {/* Page header */}
@@ -422,7 +484,7 @@ export default function ProductsPage() {
                     <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
                     <p className="text-muted-foreground mt-1">{t('subtitle')}</p>
                 </div>
-                <Button onClick={handleAddClick} disabled={!filters.warehouseId || !filters.locationId} title={!filters.warehouseId || !filters.locationId ? t('addProductTooltip') : t('addProduct')}>
+                <Button onClick={handleAddClick}>
                     <Plus className="mr-2 h-4 w-4" />
                     {t('addProduct')}
                 </Button>
@@ -442,7 +504,7 @@ export default function ProductsPage() {
             )}
 
             {/* Dialogs */}
-            <ProductDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} product={selectedProduct} onSubmit={handleSubmit} isLoading={isSaving} />
+            <ProductDialog open={isDialogOpen} onOpenChange={handleDialogOpenChange} product={selectedProduct} onSubmit={handleSubmit} isLoading={isSaving} warehouses={dialogWarehouses} locations={dialogLocations} selectedWarehouseId={dialogSelectedWarehouseId} selectedLocationId={dialogSelectedLocationId} onWarehouseChange={handleDialogWarehouseChange} isLoadingLocations={isLoadingDialogLocations} />
 
             <DeleteProductDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} product={selectedProduct} onConfirm={handleDeleteConfirm} isLoading={isDeleting} />
         </div>

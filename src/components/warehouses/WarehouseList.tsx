@@ -217,14 +217,16 @@ export function WarehouseList() {
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold tracking-tight">Warehouses</h2>
-                <Button variant="outline" onClick={() => setIsMapOpen(true)}>
-                    <MapPin className="mr-2 h-4 w-4" />
-          View map
-                </Button>
-                <Button onClick={handleAddClick}>
-                    <Plus className="mr-2 h-4 w-4" />
-          Add Warehouse
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" onClick={() => setIsMapOpen(true)}>
+                        <MapPin className="mr-2 h-4 w-4" />
+            View map
+                    </Button>
+                    <Button onClick={handleAddClick}>
+                        <Plus className="mr-2 h-4 w-4" />
+            Add Warehouse
+                    </Button>
+                </div>
             </div>
 
             <div className="rounded-md border">
