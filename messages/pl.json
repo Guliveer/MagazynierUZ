@@ -912,6 +912,7 @@
     "logout": "Wyloguj się",
     "accountInfo": {
       "title": "Informacje o koncie",
+      "username": "Nazwa użytkownika",
       "userId": "ID użytkownika",
       "accountCreated": "Konto utworzone",
       "lastLogin": "Ostatnie logowanie"

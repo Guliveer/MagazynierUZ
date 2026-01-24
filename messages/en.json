@@ -912,6 +912,7 @@
     "logout": "Logout",
     "accountInfo": {
       "title": "Account Information",
+      "username": "Username",
       "userId": "User ID",
       "accountCreated": "Account Created",
       "lastLogin": "Last Login"
