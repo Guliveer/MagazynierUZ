@@ -10,8 +10,13 @@ import { getUserRoles, getUsername } from '@/lib/auth';
 import { useEffect, useState } from 'react';
 import { getSystemStatistics, getAllUsers, type SystemStatistics } from '@/lib/api';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 
 export default function AdminPanelPage() {
+    const t = useTranslations('admin');
+    const params = useParams();
+    const locale = params.locale as string;
     const username = getUsername();
     const roles = getUserRoles();
     const [statistics, setStatistics] = useState<SystemStatistics | null>(null);
@@ -28,7 +33,7 @@ export default function AdminPanelPage() {
                 setStatistics(stats);
                 setUserCount(users.length);
             } catch (err) {
-                setError(err instanceof Error ? err.message : 'Failed to load statistics');
+                setError(err instanceof Error ? err.message : t('messages.loadStatisticsFailed'));
                 // Set offline statistics on error
                 setStatistics({
                     totalWarehouses: 0,
@@ -46,7 +51,7 @@ export default function AdminPanelPage() {
         }
 
         fetchStatistics();
-    }, []);
+    }, [t]);
 
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('pl-PL', {
@@ -60,13 +65,13 @@ export default function AdminPanelPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Admin Panel</h1>
-                    <p className="text-muted-foreground mt-2">System administration and management</p>
+                    <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
+                    <p className="text-muted-foreground mt-2">{t('subtitle')}</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <Badge variant="default" className="gap-1">
                         <Shield className="h-3 w-3" />
-            Administrator
+                        {t('badge')}
                     </Badge>
                 </div>
             </div>
@@ -81,27 +86,27 @@ export default function AdminPanelPage() {
             {/* Current User Info */}
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-lg">Current Session</CardTitle>
-                    <CardDescription>Your administrator session information</CardDescription>
+                    <CardTitle className="text-lg">{t('session.title')}</CardTitle>
+                    <CardDescription>{t('session.description')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="grid gap-4 md:grid-cols-2">
                         <div>
-                            <p className="text-sm font-medium text-muted-foreground">Username</p>
+                            <p className="text-sm font-medium text-muted-foreground">{t('session.username')}</p>
                             <p className="text-lg font-semibold">{username || 'Unknown'}</p>
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-muted-foreground">Roles</p>
+                            <p className="text-sm font-medium text-muted-foreground">{t('session.roles')}</p>
                             <div className="flex flex-wrap gap-1 mt-1">
                                 {roles.length > 0 ? (
                                     roles.map((role) => (
                                         <Badge key={role} variant="secondary" className="text-xs">
-                                            {role}
+                                            {t(`roles.${role}` as `roles.${string}`)}
                                         </Badge>
                                     ))
                                 ) : (
                                     <Badge variant="outline" className="text-xs">
-                    No roles
+                                        {t('session.noRoles')}
                                     </Badge>
                                 )}
                             </div>
@@ -114,7 +119,7 @@ export default function AdminPanelPage() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">System Status</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('systemHealth.systemStatus')}</CardTitle>
                         <Activity className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -122,8 +127,8 @@ export default function AdminPanelPage() {
                             <Skeleton className="h-8 w-20" />
                         ) : (
                             <>
-                                <div className={`text-2xl font-bold ${statistics?.apiStatus === 'online' ? 'text-green-600' : 'text-red-600'}`}>{statistics?.apiStatus === 'online' ? 'Online' : 'Offline'}</div>
-                                <p className="text-xs text-muted-foreground">{statistics?.apiStatus === 'online' ? 'All systems operational' : 'System unavailable'}</p>
+                                <div className={`text-2xl font-bold ${statistics?.apiStatus === 'online' ? 'text-green-600' : 'text-red-600'}`}>{statistics?.apiStatus === 'online' ? t('systemHealth.online') : t('systemHealth.offline')}</div>
+                                <p className="text-xs text-muted-foreground">{statistics?.apiStatus === 'online' ? t('systemHealth.allSystemsOperational') : t('systemHealth.systemUnavailable')}</p>
                             </>
                         )}
                     </CardContent>
@@ -131,7 +136,7 @@ export default function AdminPanelPage() {
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Database</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('systemHealth.database')}</CardTitle>
                         <Database className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -139,8 +144,8 @@ export default function AdminPanelPage() {
                             <Skeleton className="h-8 w-24" />
                         ) : (
                             <>
-                                <div className={`text-2xl font-bold ${statistics?.databaseStatus === 'connected' ? 'text-green-600' : 'text-red-600'}`}>{statistics?.databaseStatus === 'connected' ? 'Connected' : 'Disconnected'}</div>
-                                <p className="text-xs text-muted-foreground">{statistics?.databaseStatus === 'connected' ? 'Database responsive' : 'Database unavailable'}</p>
+                                <div className={`text-2xl font-bold ${statistics?.databaseStatus === 'connected' ? 'text-green-600' : 'text-red-600'}`}>{statistics?.databaseStatus === 'connected' ? t('systemHealth.connected') : t('systemHealth.disconnected')}</div>
+                                <p className="text-xs text-muted-foreground">{statistics?.databaseStatus === 'connected' ? t('systemHealth.databaseResponsive') : t('systemHealth.databaseUnavailable')}</p>
                             </>
                         )}
                     </CardContent>
@@ -148,7 +153,7 @@ export default function AdminPanelPage() {
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">API Status</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('systemHealth.apiStatus')}</CardTitle>
                         <Shield className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -156,8 +161,8 @@ export default function AdminPanelPage() {
                             <Skeleton className="h-8 w-20" />
                         ) : (
                             <>
-                                <div className={`text-2xl font-bold ${statistics?.apiStatus === 'online' ? 'text-green-600' : 'text-red-600'}`}>{statistics?.apiStatus === 'online' ? 'Active' : 'Inactive'}</div>
-                                <p className="text-xs text-muted-foreground">{statistics?.apiStatus === 'online' ? 'API endpoints ready' : 'API unavailable'}</p>
+                                <div className={`text-2xl font-bold ${statistics?.apiStatus === 'online' ? 'text-green-600' : 'text-red-600'}`}>{statistics?.apiStatus === 'online' ? t('systemHealth.active') : t('systemHealth.inactive')}</div>
+                                <p className="text-xs text-muted-foreground">{statistics?.apiStatus === 'online' ? t('systemHealth.apiEndpointsReady') : t('systemHealth.apiUnavailable')}</p>
                             </>
                         )}
                     </CardContent>
@@ -165,12 +170,12 @@ export default function AdminPanelPage() {
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Session</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('systemHealth.session')}</CardTitle>
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">Active</div>
-                        <p className="text-xs text-muted-foreground">Authenticated session</p>
+                        <div className="text-2xl font-bold">{t('systemHealth.active')}</div>
+                        <p className="text-xs text-muted-foreground">{t('systemHealth.authenticatedSession')}</p>
                     </CardContent>
                 </Card>
             </div>
@@ -179,7 +184,7 @@ export default function AdminPanelPage() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('statistics.totalUsers')}</CardTitle>
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -188,7 +193,7 @@ export default function AdminPanelPage() {
                         ) : (
                             <>
                                 <div className="text-2xl font-bold">{userCount}</div>
-                                <p className="text-xs text-muted-foreground">Registered users</p>
+                                <p className="text-xs text-muted-foreground">{t('statistics.registeredUsers')}</p>
                             </>
                         )}
                     </CardContent>
@@ -196,7 +201,7 @@ export default function AdminPanelPage() {
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Warehouses</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('statistics.totalWarehouses')}</CardTitle>
                         <Warehouse className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -205,7 +210,9 @@ export default function AdminPanelPage() {
                         ) : (
                             <>
                                 <div className="text-2xl font-bold">{statistics?.totalWarehouses || 0}</div>
-                                <p className="text-xs text-muted-foreground">{statistics?.activeWarehouses || 0} active</p>
+                                <p className="text-xs text-muted-foreground">
+                                    {statistics?.activeWarehouses || 0} {t('statistics.active')}
+                                </p>
                             </>
                         )}
                     </CardContent>
@@ -213,7 +220,7 @@ export default function AdminPanelPage() {
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Locations</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('statistics.totalLocations')}</CardTitle>
                         <Building2 className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -222,7 +229,7 @@ export default function AdminPanelPage() {
                         ) : (
                             <>
                                 <div className="text-2xl font-bold">{statistics?.totalLocations || 0}</div>
-                                <p className="text-xs text-muted-foreground">Across all warehouses</p>
+                                <p className="text-xs text-muted-foreground">{t('statistics.acrossAllWarehouses')}</p>
                             </>
                         )}
                     </CardContent>
@@ -230,7 +237,7 @@ export default function AdminPanelPage() {
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('statistics.totalProducts')}</CardTitle>
                         <Package className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -239,7 +246,7 @@ export default function AdminPanelPage() {
                         ) : (
                             <>
                                 <div className="text-2xl font-bold">{statistics?.totalProducts || 0}</div>
-                                <p className="text-xs text-muted-foreground">In inventory</p>
+                                <p className="text-xs text-muted-foreground">{t('statistics.inInventory')}</p>
                             </>
                         )}
                     </CardContent>
@@ -247,7 +254,7 @@ export default function AdminPanelPage() {
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Inventory Value</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('statistics.inventoryValue')}</CardTitle>
                         <TrendingUp className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -256,7 +263,7 @@ export default function AdminPanelPage() {
                         ) : (
                             <>
                                 <div className="text-2xl font-bold">{formatCurrency(statistics?.totalInventoryValue || 0)}</div>
-                                <p className="text-xs text-muted-foreground">Total value</p>
+                                <p className="text-xs text-muted-foreground">{t('statistics.totalValue')}</p>
                             </>
                         )}
                     </CardContent>
@@ -270,13 +277,13 @@ export default function AdminPanelPage() {
                     <CardHeader>
                         <div className="flex items-center gap-2">
                             <Building2 className="h-5 w-5 text-primary" />
-                            <CardTitle className="text-lg">Organisations</CardTitle>
+                            <CardTitle className="text-lg">{t('features.organisations')}</CardTitle>
                         </div>
-                        <CardDescription>Manage all organisations in the system</CardDescription>
+                        <CardDescription>{t('features.organisationsDesc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Link href="/dashboard/admin/organisations">
-                            <Button className="w-full">Manage Organisations</Button>
+                        <Link href={`/${locale}/dashboard/admin/organisations`}>
+                            <Button className="w-full">{t('features.manageOrganisations')}</Button>
                         </Link>
                     </CardContent>
                 </Card>
@@ -286,14 +293,14 @@ export default function AdminPanelPage() {
                     <CardHeader>
                         <div className="flex items-center gap-2">
                             <Building2 className="h-5 w-5 text-primary" />
-                            <CardTitle className="text-lg">My Organisation</CardTitle>
+                            <CardTitle className="text-lg">{t('features.myOrganisation')}</CardTitle>
                         </div>
-                        <CardDescription>View your organisation details</CardDescription>
+                        <CardDescription>{t('features.myOrganisationDesc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Link href="/dashboard/admin/organisation">
+                        <Link href={`/${locale}/dashboard/admin/organisation`}>
                             <Button className="w-full" variant="outline">
-                View Details
+                                {t('features.viewDetails')}
                             </Button>
                         </Link>
                     </CardContent>
@@ -304,13 +311,13 @@ export default function AdminPanelPage() {
                     <CardHeader>
                         <div className="flex items-center gap-2">
                             <Warehouse className="h-5 w-5 text-primary" />
-                            <CardTitle className="text-lg">Warehouses</CardTitle>
+                            <CardTitle className="text-lg">{t('features.warehouses')}</CardTitle>
                         </div>
-                        <CardDescription>View and manage all warehouses</CardDescription>
+                        <CardDescription>{t('features.warehousesDesc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Link href="/dashboard/warehouses">
-                            <Button className="w-full">View Warehouses</Button>
+                        <Link href={`/${locale}/dashboard/warehouses`}>
+                            <Button className="w-full">{t('features.viewWarehouses')}</Button>
                         </Link>
                     </CardContent>
                 </Card>
@@ -320,13 +327,13 @@ export default function AdminPanelPage() {
                     <CardHeader>
                         <div className="flex items-center gap-2">
                             <Package className="h-5 w-5 text-primary" />
-                            <CardTitle className="text-lg">Inventory</CardTitle>
+                            <CardTitle className="text-lg">{t('features.inventory')}</CardTitle>
                         </div>
-                        <CardDescription>View inventory across all locations</CardDescription>
+                        <CardDescription>{t('features.inventoryDesc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Link href="/dashboard/products">
-                            <Button className="w-full">View Inventory</Button>
+                        <Link href={`/${locale}/dashboard/products`}>
+                            <Button className="w-full">{t('features.viewInventory')}</Button>
                         </Link>
                     </CardContent>
                 </Card>
@@ -336,13 +343,13 @@ export default function AdminPanelPage() {
                     <CardHeader>
                         <div className="flex items-center gap-2">
                             <Users className="h-5 w-5 text-primary" />
-                            <CardTitle className="text-lg">User Management</CardTitle>
+                            <CardTitle className="text-lg">{t('features.userManagement')}</CardTitle>
                         </div>
-                        <CardDescription>Manage users, roles, and permissions</CardDescription>
+                        <CardDescription>{t('features.userManagementDesc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Link href="/dashboard/admin/users">
-                            <Button className="w-full">Manage Users</Button>
+                        <Link href={`/${locale}/dashboard/admin/users`}>
+                            <Button className="w-full">{t('features.manageUsers')}</Button>
                         </Link>
                     </CardContent>
                 </Card>
@@ -352,13 +359,13 @@ export default function AdminPanelPage() {
                     <CardHeader>
                         <div className="flex items-center gap-2">
                             <Settings className="h-5 w-5 text-primary" />
-                            <CardTitle className="text-lg">System Settings</CardTitle>
+                            <CardTitle className="text-lg">{t('features.systemSettings')}</CardTitle>
                         </div>
-                        <CardDescription>Configure system-wide settings (Coming Soon)</CardDescription>
+                        <CardDescription>{t('features.systemSettingsDesc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Button className="w-full" variant="secondary" disabled>
-              Coming Soon
+                            {t('features.comingSoon')}
                         </Button>
                     </CardContent>
                 </Card>
@@ -368,13 +375,13 @@ export default function AdminPanelPage() {
                     <CardHeader>
                         <div className="flex items-center gap-2">
                             <FileText className="h-5 w-5 text-primary" />
-                            <CardTitle className="text-lg">Audit Logs</CardTitle>
+                            <CardTitle className="text-lg">{t('features.auditLogs')}</CardTitle>
                         </div>
-                        <CardDescription>View system activity and audit trails (Coming Soon)</CardDescription>
+                        <CardDescription>{t('features.auditLogsDesc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Button className="w-full" variant="secondary" disabled>
-              Coming Soon
+                            {t('features.comingSoon')}
                         </Button>
                     </CardContent>
                 </Card>
@@ -383,33 +390,33 @@ export default function AdminPanelPage() {
             {/* Quick Actions */}
             <Card>
                 <CardHeader>
-                    <CardTitle>Quick Actions</CardTitle>
-                    <CardDescription>Common administrative tasks</CardDescription>
+                    <CardTitle>{t('quickActions.title')}</CardTitle>
+                    <CardDescription>{t('quickActions.description')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-wrap gap-2">
-                        <Link href="/dashboard/profile">
+                        <Link href={`/${locale}/dashboard/profile`}>
                             <Button variant="outline" size="sm">
                                 <Users className="h-4 w-4 mr-2" />
-                View Profile
+                                {t('quickActions.viewProfile')}
                             </Button>
                         </Link>
-                        <Link href="/dashboard">
+                        <Link href={`/${locale}/dashboard`}>
                             <Button variant="outline" size="sm">
                                 <Activity className="h-4 w-4 mr-2" />
-                Dashboard
+                                {t('quickActions.dashboard')}
                             </Button>
                         </Link>
-                        <Link href="/dashboard/statistics">
+                        <Link href={`/${locale}/dashboard/statistics`}>
                             <Button variant="outline" size="sm">
                                 <FileText className="h-4 w-4 mr-2" />
-                Statistics
+                                {t('quickActions.statistics')}
                             </Button>
                         </Link>
-                        <Link href="/dashboard/products">
+                        <Link href={`/${locale}/dashboard/products`}>
                             <Button variant="outline" size="sm">
                                 <Package className="h-4 w-4 mr-2" />
-                Products
+                                {t('quickActions.products')}
                             </Button>
                         </Link>
                     </div>

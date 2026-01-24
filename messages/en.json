@@ -1,0 +1,1057 @@
+{
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "common": {
+    "actions": {
+      "login": "Login",
+      "register": "Register",
+      "goHome": "Go Home",
+      "submit": "Submit",
+      "cancel": "Cancel"
+    },
+    "labels": {
+      "username": "Username",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "rememberMe": "Remember me for automatic session extension"
+    },
+    "status": {
+      "loading": "Loading...",
+      "error": "Error",
+      "success": "Success"
+    }
+  },
+  "landing": {
+    "title": "Welcome to MagazynierUZ",
+    "subtitle": "Smart storage starts with MagazynierUZ.",
+    "actions": {
+      "login": "Login",
+      "register": "Registration"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "loggingIn": "Logging in...",
+      "noAccount": "Don't have an account?",
+      "registerNow": "Register now",
+      "sessionExpired": {
+        "title": "Session Expired",
+        "message": "Your session has expired. Please log in again."
+      },
+      "extendSession": {
+        "title": "Extend Session",
+        "message": "Please log in again to extend your session and continue where you left off."
+      },
+      "errors": {
+        "captchaRequired": "Please complete the captcha verification",
+        "captchaError": "Captcha error: {error}",
+        "invalidCredentials": "Invalid username or password",
+        "loginFailed": "Login failed. Please try again.",
+        "unexpectedError": "An unexpected error occurred. Please try again."
+      }
+    },
+    "register": {
+      "title": "Registration",
+      "subtitle": "Create your account",
+      "registering": "Registering...",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Log in",
+      "success": {
+        "registered": "Registration was successful! Logging you in...",
+        "registeredLogin": "Registration was successful! Please log in."
+      },
+      "errors": {
+        "passwordMismatch": "Passwords need to match!",
+        "passwordRequirements": "Password does not meet requirements",
+        "captchaRequired": "Please complete the captcha verification",
+        "captchaError": "Captcha error: {error}",
+        "userExists": "An account with this username already exists",
+        "registrationFailed": "Registration failed. Please try again.",
+        "unexpectedError": "An unexpected error occurred. Please try again."
+      },
+      "validation": {
+        "passwordMinLength": "Password must be at least 6 characters long",
+        "passwordMaxLength": "Password must be at most 500 characters long"
+      }
+    }
+  },
+  "dashboard": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "warehouses": "Warehouses",
+      "products": "Products",
+      "statistics": "Statistics",
+      "adminPanel": "Admin Panel",
+      "profile": "Profile",
+      "logout": "Log out",
+      "adminBadge": "ADMIN"
+    },
+    "home": {
+      "title": "Dashboard",
+      "subtitle": "Welcome to your warehouse management system",
+      "refresh": "Refresh",
+      "exportPdf": "Export PDF",
+      "stats": {
+        "totalWarehouses": "Total Warehouses",
+        "totalProducts": "Total Products",
+        "inventoryValue": "Inventory Value",
+        "lowStockAlerts": "Low Stock Alerts",
+        "activeLocations": "Active locations",
+        "inInventory": "In inventory",
+        "totalValue": "Total value",
+        "belowUnits": "Below 10 units"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "description": "Common tasks and shortcuts",
+        "searchProducts": "Search Products",
+        "searchProductsDesc": "Find and manage products",
+        "addWarehouse": "Add Warehouse",
+        "addWarehouseDesc": "Create new warehouse",
+        "viewStatistics": "View Statistics",
+        "viewStatisticsDesc": "Analytics and insights",
+        "addProduct": "Add Product",
+        "addProductDesc": "Create new product"
+      },
+      "topProducts": {
+        "title": "Top 3 Products",
+        "description": "Products with highest quantities",
+        "viewAll": "View All",
+        "noProducts": "No products found",
+        "units": "units"
+      },
+      "warehouses": {
+        "title": "Warehouses",
+        "description": "Your warehouse locations",
+        "viewAll": "View All",
+        "noWarehouses": "No warehouses found",
+        "addWarehouse": "Add Warehouse",
+        "viewMore": "View {count} more",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "stockLevel": {
+        "title": "Stock Level Overview",
+        "description": "Distribution of products by stock level",
+        "highStock": "High Stock",
+        "mediumStock": "Medium Stock",
+        "lowStock": "Low Stock",
+        "highStockDesc": "≥ 50 units",
+        "mediumStockDesc": "10-49 units",
+        "lowStockDesc": "< 10 units"
+      },
+      "errors": {
+        "loadFailed": "Failed to load dashboard data. Please try again."
+      }
+    },
+    "tokenExpiration": {
+      "title": "Session Expiring Soon",
+      "description": "Your session is about to expire. You'll be logged out automatically when the timer reaches zero.",
+      "remaining": "remaining",
+      "whatHappens": "What happens next?",
+      "steps": {
+        "stayLoggedIn": "Click \"Stay Logged In\" to extend your session",
+        "redirect": "You'll be redirected to login and returned to this page",
+        "dismiss": "Or dismiss this warning and continue working",
+        "saveWork": "Save your work to avoid losing any changes"
+      },
+      "actions": {
+        "dismiss": "Dismiss",
+        "stayLoggedIn": "Stay Logged In"
+      }
+    },
+    "underConstruction": {
+      "title": "Under Construction",
+      "description": "This page is currently being built. Please check back later!",
+      "message": "We're working hard to bring you something amazing!"
+    }
+  },
+  "notFound": {
+    "title": "404",
+    "subtitle": "Page Not Found",
+    "message": "Sorry, the page you're looking for doesn't exist or has been moved.",
+    "goHome": "Go Home"
+  },
+  "products": {
+    "title": "Product Search",
+    "subtitle": "Search and filter products across all warehouses and locations",
+    "addProduct": "Add Product",
+    "addProductTooltip": "Select warehouse and location to add products",
+    "search": {
+      "label": "Search Products",
+      "placeholder": "Search by product name or description...",
+      "button": "Search",
+      "searching": "Searching...",
+      "noResults": "No products found matching your search criteria",
+      "noResultsDescription": "No products match your search criteria. Try adjusting your filters."
+    },
+    "filters": {
+      "warehouse": "Warehouse",
+      "location": "Location",
+      "allWarehouses": "All warehouses",
+      "allLocations": "All locations",
+      "selectWarehouseFirst": "Select warehouse first",
+      "advancedFilters": "Advanced Filters",
+      "active": "Active",
+      "priceRange": "Price Range (PLN)",
+      "minPrice": "Min price",
+      "maxPrice": "Max price",
+      "priceRangeError": "Min price must be less than or equal to max price",
+      "quantityRange": "Quantity Range",
+      "minQuantity": "Min quantity",
+      "maxQuantity": "Max quantity",
+      "quantityRangeError": "Min quantity must be less than or equal to max quantity",
+      "availableOnly": "Show only available products (quantity > 0)",
+      "activeFilters": "Active filters:",
+      "search": "Search",
+      "price": "Price",
+      "quantity": "Quantity",
+      "availableOnlyBadge": "Available only",
+      "clearAll": "Clear all"
+    },
+    "form": {
+      "title": {
+        "add": "Add New Product",
+        "edit": "Edit Product"
+      },
+      "description": {
+        "add": "Fill in the form to add a new product to this location.",
+        "edit": "Update the product details and save changes."
+      },
+      "currentLocation": "Current location:",
+      "addingTo": "Adding to:",
+      "fields": {
+        "name": "Product Name",
+        "namePlaceholder": "e.g. Dell XPS 15 Laptop",
+        "description": "Description",
+        "descriptionPlaceholder": "Optional product description...",
+        "price": "Price (PLN)",
+        "pricePlaceholder": "e.g. 4999.99",
+        "quantity": "Quantity",
+        "quantityPlaceholder": "e.g. 10"
+      },
+      "validation": {
+        "nameMin": "Name must be at least 2 characters",
+        "priceRequired": "Price is required and must be a number",
+        "pricePositive": "Price must be greater than 0",
+        "quantityRequired": "Quantity is required and must be a number",
+        "quantityInteger": "Quantity must be an integer",
+        "quantityNonNegative": "Quantity cannot be negative"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "save": "Save Changes",
+        "add": "Add Product"
+      }
+    },
+    "list": {
+      "title": "Products",
+      "searchPlaceholder": "Search products...",
+      "addProduct": "Add Product",
+      "table": {
+        "id": "ID",
+        "name": "Name",
+        "description": "Description",
+        "price": "Price",
+        "quantity": "Quantity",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "empty": {
+        "title": "No products",
+        "description": "There are no products in this location yet. Add your first product to start managing inventory.",
+        "addFirst": "Add First Product"
+      },
+      "error": {
+        "tryAgain": "Try Again"
+      }
+    },
+    "results": {
+      "showing": "Showing",
+      "of": "of",
+      "results": "results",
+      "perPage": {
+        "10": "10 per page",
+        "25": "25 per page",
+        "50": "50 per page",
+        "100": "100 per page"
+      },
+      "viewMode": {
+        "table": "Table view",
+        "grid": "Grid view"
+      },
+      "sort": {
+        "id": "ID",
+        "name": "Name",
+        "price": "Price",
+        "quantity": "Quantity"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "noDescription": "No description",
+      "missingContext": "Missing warehouse/location info",
+      "editUnavailable": "Edit unavailable",
+      "deleteUnavailable": "Delete unavailable"
+    },
+    "location": {
+      "unknown": "Unknown Location",
+      "types": {
+        "PICKING": "Picking",
+        "BULK": "Bulk Storage",
+        "RECEIVING": "Receiving",
+        "SHIPPING": "Shipping",
+        "RETURNS": "Returns"
+      },
+      "tooltip": {
+        "code": "Code",
+        "zone": "Zone",
+        "type": "Type",
+        "clickWarehouse": "Click to filter by warehouse",
+        "clickLocation": "Click to filter by location"
+      }
+    },
+    "history": {
+      "title": "Recent Searches",
+      "clearAll": "Clear All",
+      "loadSearch": "Load this search",
+      "removeFromHistory": "Remove from history",
+      "timeAgo": {
+        "justNow": "Just now",
+        "minutesAgo": "{minutes}m ago",
+        "hoursAgo": "{hours}h ago",
+        "daysAgo": "{days}d ago"
+      },
+      "filters": {
+        "warehouse": "W#",
+        "location": "L#",
+        "qty": "Qty",
+        "available": "Available"
+      }
+    },
+    "export": {
+      "button": "Export",
+      "exporting": "Exporting...",
+      "noProducts": "No products to export",
+      "tooltip": "Export {count}",
+      "success": "Successfully exported {count} to CSV",
+      "error": "Failed to export products"
+    },
+    "delete": {
+      "title": "Are you sure you want to delete this product?",
+      "description": "You are about to delete {name}. This action cannot be undone and will permanently remove the product from this location.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    },
+    "messages": {
+      "selectWarehouseLocation": "Please select a warehouse and location first",
+      "missingContext": "Cannot edit product: missing warehouse/location information",
+      "missingContextDelete": "Cannot delete product: missing warehouse/location information",
+      "created": "Product has been added",
+      "updated": "Product has been updated",
+      "deleted": "Product has been deleted",
+      "createError": "An error occurred while saving the product",
+      "updateError": "An error occurred while saving the product",
+      "deleteError": "An error occurred while deleting the product",
+      "fetchError": "An error occurred while fetching products",
+      "searchError": "An error occurred while searching products",
+      "warehousesError": "An error occurred while fetching warehouses",
+      "locationsError": "An error occurred while fetching locations"
+    }
+  },
+  "warehouses": {
+    "title": "Warehouses",
+    "subtitle": "Manage your warehouse locations and addresses",
+    "addWarehouse": "Add Warehouse",
+    "viewMap": "View map",
+    "list": {
+      "title": "Warehouses",
+      "table": {
+        "id": "ID",
+        "name": "Name",
+        "code": "Code",
+        "status": "Status",
+        "city": "City",
+        "actions": "Actions"
+      },
+      "actions": {
+        "view": "View Details",
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "empty": {
+        "title": "No warehouses",
+        "description": "You don't have any warehouses yet. Add your first warehouse to start managing locations and products.",
+        "addFirst": "Add First Warehouse"
+      },
+      "error": {
+        "tryAgain": "Try Again"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      }
+    },
+    "form": {
+      "title": {
+        "add": "Add New Warehouse",
+        "edit": "Edit Warehouse"
+      },
+      "description": {
+        "add": "Fill in the form to add a new warehouse to the system.",
+        "edit": "Update the warehouse details and save changes."
+      },
+      "fields": {
+        "name": "Warehouse Name",
+        "namePlaceholder": "e.g. Main Warehouse",
+        "code": "Warehouse Code",
+        "codePlaceholder": "e.g. WH01",
+        "description": "Description",
+        "descriptionPlaceholder": "Optional warehouse description...",
+        "street": "Street",
+        "streetPlaceholder": "e.g. Warehouse Street",
+        "houseNumber": "House No.",
+        "houseNumberPlaceholder": "e.g. 15",
+        "apartmentNumber": "Apt. No.",
+        "apartmentNumberPlaceholder": "e.g. 2A",
+        "city": "City",
+        "cityPlaceholder": "e.g. Warsaw",
+        "postcode": "Postcode",
+        "postcodePlaceholder": "e.g. 00-001",
+        "coordinates": "Coordinates (latitude, longitude)",
+        "coordinatesPlaceholder": "e.g. 52.2297, 21.0122"
+      },
+      "validation": {
+        "nameMin": "Name must be at least 2 characters",
+        "codeMin": "Code must be at least 2 characters",
+        "codeMax": "Code can be at most 10 characters",
+        "streetRequired": "Street is required",
+        "houseNumberRequired": "House number is required",
+        "cityRequired": "City is required",
+        "postcodeRequired": "Postcode is required"
+      },
+      "sections": {
+        "address": "Address"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "save": "Save Changes",
+        "add": "Add Warehouse"
+      }
+    },
+    "dialog": {
+      "title": {
+        "add": "Add New Warehouse",
+        "edit": "Edit Warehouse"
+      },
+      "description": {
+        "add": "Fill in the form to add a new warehouse to the system.",
+        "edit": "Update the warehouse details and save changes."
+      }
+    },
+    "delete": {
+      "title": "Are you sure you want to delete this warehouse?",
+      "description": "You are about to delete {name}. This action cannot be undone and will remove all associated data.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    },
+    "map": {
+      "title": "Warehouse map",
+      "noWarehouses": "No warehouses with valid coordinates to display"
+    },
+    "detail": {
+      "title": "Warehouse Details",
+      "backToWarehouses": "Back to warehouses",
+      "breadcrumb": "Warehouses",
+      "information": {
+        "title": "Warehouse Information",
+        "description": "Details and status of this warehouse"
+      },
+      "fields": {
+        "code": "Warehouse Code",
+        "id": "Warehouse ID",
+        "address": "Address",
+        "apartment": "Apt."
+      },
+      "exportPdf": "Export PDF",
+      "notFound": "Warehouse not found",
+      "invalidId": "Invalid warehouse ID"
+    },
+    "messages": {
+      "created": "Warehouse has been added",
+      "updated": "Warehouse has been updated",
+      "deleted": "Warehouse has been deleted",
+      "createError": "An error occurred while saving the warehouse",
+      "updateError": "An error occurred while saving the warehouse",
+      "deleteError": "An error occurred while deleting the warehouse",
+      "fetchError": "An error occurred while fetching warehouses",
+      "fetchDetailError": "An error occurred while fetching warehouse details"
+    }
+  },
+  "statistics": {
+    "title": "Product Statistics",
+    "subtitle": "Comprehensive analytics and insights",
+    "lastUpdated": "Updated: {time}",
+    "summary": {
+      "totalProducts": "Total Products",
+      "totalProductsDesc": "Across all locations",
+      "totalValue": "Total Value",
+      "totalValueDesc": "Inventory value",
+      "averagePrice": "Average Price",
+      "averagePriceDesc": "Per product",
+      "warehouses": "Warehouses",
+      "warehousesDesc": "Active locations",
+      "lowStock": "Low Stock",
+      "lowStockDesc": "Below 10 units"
+    },
+    "filters": {
+      "title": "Filters & Settings",
+      "description": "Customize the statistics view",
+      "autoRefresh": "Auto-refresh",
+      "quickFilters": "Quick Filters",
+      "highValue": "High Value",
+      "lowStock": "Low Stock",
+      "mostPopular": "Most Popular",
+      "sortBy": "Sort By",
+      "sortDirection": "Sort Direction",
+      "warehouse": "Warehouse",
+      "location": "Location",
+      "showAvailableOnly": "Show Available Only",
+      "yes": "Yes",
+      "no": "No",
+      "sortOptions": {
+        "quantity": "Quantity",
+        "price": "Price",
+        "name": "Name"
+      },
+      "sortDirectionOptions": {
+        "desc": "Descending",
+        "asc": "Ascending"
+      },
+      "allWarehouses": "All Warehouses",
+      "allLocations": "All Locations"
+    },
+    "charts": {
+      "tabs": {
+        "byQuantity": "By Quantity",
+        "byPrice": "By Price",
+        "totalValue": "Total Value",
+        "distribution": "Distribution"
+      },
+      "titles": {
+        "byQuantity": "Top 10 Products by Quantity",
+        "byPrice": "Top 10 Products by Price",
+        "totalValue": "Top 10 Products by Total Value",
+        "distribution": "Warehouse Distribution"
+      },
+      "descriptions": {
+        "byQuantity": "Products with the highest quantities in stock",
+        "byPrice": "Most expensive products in inventory",
+        "totalValue": "Products with highest total inventory value (quantity × price)",
+        "distribution": "Distribution of product value across warehouses"
+      },
+      "labels": {
+        "quantity": "Quantity",
+        "price": "Price (PLN)",
+        "value": "Value",
+        "totalValue": "Total Value"
+      },
+      "tooltip": {
+        "quantity": "Quantity:",
+        "price": "Price:",
+        "totalValue": "Total Value:"
+      }
+    },
+    "table": {
+      "title": "Product Details",
+      "description": "Detailed information about the top 10 products",
+      "headers": {
+        "rank": "Rank",
+        "name": "Name",
+        "description": "Description",
+        "quantity": "Quantity",
+        "price": "Price",
+        "totalValue": "Total Value",
+        "status": "Status"
+      }
+    },
+    "status": {
+      "lowStock": "Low Stock",
+      "medium": "Medium",
+      "inStock": "In Stock"
+    },
+    "actions": {
+      "refresh": "Refresh",
+      "exportCsv": "Export CSV"
+    },
+    "messages": {
+      "loading": "Loading statistics...",
+      "error": "Failed to load statistics. Please try again.",
+      "noProducts": "No products found",
+      "noProductsDescription": "Try adjusting your filters",
+      "noData": "No data available"
+    }
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "subtitle": "System administration and management",
+    "badge": "Administrator",
+    "session": {
+      "title": "Current Session",
+      "description": "Your administrator session information",
+      "username": "Username",
+      "roles": "Roles",
+      "noRoles": "No roles",
+      "active": "Active",
+      "authenticated": "Authenticated session"
+    },
+    "systemHealth": {
+      "systemStatus": "System Status",
+      "database": "Database",
+      "apiStatus": "API Status",
+      "session": "Session",
+      "online": "Online",
+      "offline": "Offline",
+      "connected": "Connected",
+      "disconnected": "Disconnected",
+      "active": "Active",
+      "inactive": "Inactive",
+      "allSystemsOperational": "All systems operational",
+      "systemUnavailable": "System unavailable",
+      "databaseResponsive": "Database responsive",
+      "databaseUnavailable": "Database unavailable",
+      "apiEndpointsReady": "API endpoints ready",
+      "apiUnavailable": "API unavailable",
+      "authenticatedSession": "Authenticated session"
+    },
+    "statistics": {
+      "totalUsers": "Total Users",
+      "registeredUsers": "Registered users",
+      "totalWarehouses": "Total Warehouses",
+      "active": "active",
+      "totalLocations": "Total Locations",
+      "acrossAllWarehouses": "Across all warehouses",
+      "totalProducts": "Total Products",
+      "inInventory": "In inventory",
+      "inventoryValue": "Inventory Value",
+      "totalValue": "Total value"
+    },
+    "features": {
+      "organisations": "Organisations",
+      "organisationsDesc": "Manage all organisations in the system",
+      "manageOrganisations": "Manage Organisations",
+      "myOrganisation": "My Organisation",
+      "myOrganisationDesc": "View your organisation details",
+      "viewDetails": "View Details",
+      "warehouses": "Warehouses",
+      "warehousesDesc": "View and manage all warehouses",
+      "viewWarehouses": "View Warehouses",
+      "inventory": "Inventory",
+      "inventoryDesc": "View inventory across all locations",
+      "viewInventory": "View Inventory",
+      "userManagement": "User Management",
+      "userManagementDesc": "Manage users, roles, and permissions",
+      "manageUsers": "Manage Users",
+      "systemSettings": "System Settings",
+      "systemSettingsDesc": "Configure system-wide settings (Coming Soon)",
+      "comingSoon": "Coming Soon",
+      "auditLogs": "Audit Logs",
+      "auditLogsDesc": "View system activity and audit trails (Coming Soon)"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "description": "Common administrative tasks",
+      "viewProfile": "View Profile",
+      "dashboard": "Dashboard",
+      "statistics": "Statistics",
+      "products": "Products"
+    },
+    "layout": {
+      "verifyingAccess": "Verifying access...",
+      "accessDenied": "Access Denied",
+      "accessDeniedMessage": "You do not have permission to access the admin panel. This area is restricted to administrators only.",
+      "backToDashboard": "Back to Dashboard",
+      "viewProfile": "View Profile"
+    },
+    "users": {
+      "title": "User Management",
+      "subtitle": "Manage system users, roles, and organisation assignments",
+      "totalUsers": "Total Users",
+      "registeredInSystem": "Registered in the system",
+      "administrators": "Administrators",
+      "withAdminPrivileges": "With admin privileges",
+      "assignedUsers": "Assigned Users",
+      "withOrganisationAssignment": "With organisation assignment",
+      "allUsers": "All Users",
+      "allUsersDesc": "View and manage all users in the system",
+      "searchByUsername": "Search by username...",
+      "filterByRole": "Filter by role",
+      "filterByOrg": "Filter by org",
+      "allRoles": "All Roles",
+      "allOrganisations": "All Organisations",
+      "noOrganisation": "No Organisation",
+      "createUser": "Create User",
+      "showing": "Showing",
+      "of": "of",
+      "usersCount": "users",
+      "noUsersFound": "No users found",
+      "adjustFilters": "Try adjusting your search or filters",
+      "getStarted": "Get started by creating your first user",
+      "username": "Username",
+      "roles": "Roles",
+      "organisation": "Organisation",
+      "actions": "Actions",
+      "you": "You",
+      "noOrganisationItalic": "No organisation"
+    },
+    "userForm": {
+      "username": "Username",
+      "usernameRequired": "Username is required",
+      "usernameMinLength": "Username must be at least 3 characters",
+      "usernameMaxLength": "Username must not exceed 50 characters",
+      "usernamePlaceholder": "Enter username (3-50 characters)",
+      "password": "Password",
+      "passwordRequired": "Password is required",
+      "passwordMinLength": "Password must be at least 4 characters",
+      "passwordPlaceholderNew": "Enter new password (optional)",
+      "passwordPlaceholderCreate": "Enter password (min 4 characters)",
+      "leaveBlankToKeep": "(leave blank to keep current)",
+      "passwordStrength": {
+        "weak": "Weak",
+        "medium": "Medium",
+        "strong": "Strong"
+      },
+      "roles": "Roles",
+      "rolesRequired": "At least one role must be selected",
+      "roleUser": "User",
+      "roleUserDesc": "Standard user access",
+      "roleAdmin": "Admin",
+      "roleAdminDesc": "Full system access",
+      "roleManager": "Manager",
+      "roleManagerDesc": "Warehouse management",
+      "organisation": "Organisation (Optional)",
+      "organisationPlaceholder": "Select organisation (optional)",
+      "noOrganisation": "No Organisation",
+      "organisationHelp": "Assign user to a specific organisation/warehouse",
+      "updating": "Updating...",
+      "creating": "Creating...",
+      "updateUser": "Update User",
+      "createUser": "Create User"
+    },
+    "userDialog": {
+      "editTitle": "Edit User",
+      "createTitle": "Create New User",
+      "editDescription": "Update user information, roles, and organisation assignment.",
+      "createDescription": "Create a new user account with roles and organisation assignment.",
+      "userUpdated": "User \"{username}\" has been updated",
+      "userCreated": "User \"{username}\" has been created",
+      "updateFailed": "Failed to update user: {error}",
+      "createFailed": "Failed to create user: {error}"
+    },
+    "deleteUser": {
+      "title": "Delete User",
+      "cannotDeleteSelf": "You cannot delete your own account.",
+      "confirmMessage": "Are you sure you want to delete user",
+      "warningMessage": "This action cannot be undone. All data associated with this user will be permanently removed from the system.",
+      "cancel": "Cancel",
+      "deleting": "Deleting...",
+      "deleteUser": "Delete User",
+      "cannotDeleteOwnAccount": "Cannot delete your own account",
+      "userDeleted": "User \"{username}\" has been deleted",
+      "deleteFailed": "Failed to delete user. Please try again."
+    },
+    "organisations": {
+      "title": "Organisation Management",
+      "subtitle": "Manage organisations, view their warehouses and users, and maintain organisation data.",
+      "totalOrganisations": "Total Organisations",
+      "activeInSystem": "Active organisations in system",
+      "totalWarehouses": "Total Warehouses",
+      "acrossAllOrganisations": "Across all organisations",
+      "totalUsers": "Total Users",
+      "assignedToOrganisations": "Assigned to organisations",
+      "organisationsTitle": "Organisations",
+      "organisationsDesc": "View and manage all organisations in the system. Create, edit, or delete organisations as needed.",
+      "searchByNameOrTin": "Search by name or TIN...",
+      "createOrganisation": "Create Organisation",
+      "showing": "Showing",
+      "of": "of",
+      "organisationsCount": "organisations",
+      "noOrganisationsFound": "No organisations found",
+      "adjustSearch": "Try adjusting your search query",
+      "getStarted": "Get started by creating your first organisation",
+      "name": "Name",
+      "tin": "TIN",
+      "warehouses": "Warehouses",
+      "users": "Users",
+      "actions": "Actions"
+    },
+    "organisationForm": {
+      "name": "Organisation Name",
+      "nameRequired": "Organisation name is required",
+      "nameMaxLength": "Organisation name must not exceed 20 characters",
+      "nameMinLength": "Organisation name must be at least 1 character",
+      "namePlaceholder": "Enter organisation name (max 20 characters)",
+      "characters": "characters",
+      "tin": "TIN (Tax Identification Number)",
+      "tinRequired": "TIN is required",
+      "tinMaxLength": "TIN must not exceed 20 characters",
+      "tinMinLength": "TIN must be at least 1 character",
+      "tinInvalidFormat": "TIN can only contain letters, numbers, and hyphens",
+      "tinPlaceholder": "Enter TIN (e.g., 123-456-789)",
+      "tinHelp": "Tax Identification Number must be unique across all organisations",
+      "updating": "Updating...",
+      "creating": "Creating...",
+      "updateOrganisation": "Update Organisation",
+      "createOrganisation": "Create Organisation"
+    },
+    "organisationDialog": {
+      "editTitle": "Edit Organisation",
+      "createTitle": "Create New Organisation",
+      "editDescription": "Update organisation information. Name and TIN must be unique.",
+      "createDescription": "Create a new organisation with a unique name and TIN.",
+      "organisationUpdated": "Organisation \"{name}\" has been updated",
+      "organisationCreated": "Organisation \"{name}\" has been created",
+      "updateFailedDuplicate": "Failed to update: Organisation name or TIN already exists",
+      "createFailedDuplicate": "Failed to create: Organisation name or TIN already exists",
+      "updateFailed": "Failed to update organisation: {error}",
+      "createFailed": "Failed to create organisation: {error}"
+    },
+    "deleteOrganisation": {
+      "title": "Delete Organisation",
+      "checkingDependencies": "Checking dependencies...",
+      "cannotDelete": "This organisation cannot be deleted because it has:",
+      "warehouse": "warehouse",
+      "warehouses": "warehouses",
+      "user": "user",
+      "users": "users",
+      "removeWarehousesAndUsers": "Please remove all warehouses and reassign all users before deleting this organisation.",
+      "confirmMessage": "Are you sure you want to delete organisation",
+      "tin": "TIN",
+      "warningMessage": "This action cannot be undone. All data associated with this organisation will be permanently removed from the system.",
+      "cancel": "Cancel",
+      "deleting": "Deleting...",
+      "deleteOrganisation": "Delete Organisation",
+      "cannotDeleteWithDependencies": "Cannot delete organisation with existing warehouses or users",
+      "organisationDeleted": "Organisation \"{name}\" has been deleted",
+      "deleteFailedDependencies": "Cannot delete: Organisation has associated warehouses or users",
+      "deleteFailed": "Failed to delete organisation: {error}"
+    },
+    "organisation": {
+      "title": "Organisation Management",
+      "subtitle": "View and manage organisation details",
+      "editOrganisation": "Edit Organisation",
+      "organisationOverview": "Organisation",
+      "organisationId": "Organisation ID",
+      "organisationInfo": "Organisation information from JWT token",
+      "active": "Active",
+      "organisationInformation": "Organisation Information",
+      "organisation": "Organisation",
+      "dataSource": "Data Source",
+      "statisticsFromApi": "Statistics from API endpoints",
+      "contactInformation": "Contact Information",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "notAvailableViaApi": "Not available via API",
+      "administratorDetails": "Administrator Details",
+      "currentAdministrator": "Current Administrator",
+      "session": "Session",
+      "activeAndAuthenticated": "Active and authenticated",
+      "additionalInformation": "Additional Information",
+      "jwtNote": "Organisation details are extracted from your JWT authentication token. Additional organisation management features require backend API support.",
+      "warehouses": "Warehouses",
+      "managedWarehouses": "Managed warehouses",
+      "locations": "Locations",
+      "totalLocations": "Total locations",
+      "products": "Products",
+      "totalProductsInInventory": "Total products in inventory",
+      "totalValue": "Total Value",
+      "inventoryValue": "Inventory value",
+      "organisationMembers": "Organisation Members",
+      "membersDescription": "Users who belong to this organisation",
+      "userManagementComingSoon": "User management coming soon",
+      "userManagementNote": "This feature requires backend API support for user listing and management",
+      "quickLinks": "Quick Links",
+      "quickLinksDescription": "Navigate to related sections",
+      "viewWarehouses": "View Warehouses",
+      "viewProducts": "View Products",
+      "viewStatistics": "View Statistics",
+      "backToAdminPanel": "Back to Admin Panel",
+      "organisationActions": "Organisation Actions",
+      "organisationActionsDescription": "Administrative actions for this organisation",
+      "editDetails": "Edit Details",
+      "manageMembers": "Manage Members",
+      "sendNotification": "Send Notification",
+      "featuresNote": "Note: These features require backend API support for organisation management and are currently unavailable."
+    },
+    "roles": {
+      "ROLE_USER": "User",
+      "ROLE_ADMIN": "Admin",
+      "ROLE_MANAGER": "Manager",
+      "USER": "User",
+      "ADMIN": "Admin",
+      "MANAGER": "Manager"
+    },
+    "messages": {
+      "loadUsersFailed": "Failed to load users",
+      "loadOrganisationsFailed": "Failed to load organisations. Please try again.",
+      "loadStatisticsFailed": "Failed to load statistics"
+    }
+  },
+  "profile": {
+    "title": "User Profile",
+    "subtitle": "Your account information and settings",
+    "logout": "Logout",
+    "accountInfo": {
+      "title": "Account Information",
+      "userId": "User ID",
+      "accountCreated": "Account Created",
+      "lastLogin": "Last Login"
+    },
+    "organisation": {
+      "title": "Organisation",
+      "name": "Organisation Name",
+      "id": "Organisation ID",
+      "tin": "Tax ID (TIN)"
+    },
+    "roles": {
+      "title": "Roles & Permissions",
+      "description": "Your assigned roles in the system",
+      "noRoles": "No roles assigned"
+    },
+    "accountStatus": {
+      "title": "Account Status",
+      "description": "Current status of your account",
+      "enabled": "Account Enabled",
+      "active": "Active",
+      "disabled": "Disabled",
+      "notExpired": "Account Not Expired",
+      "valid": "Valid",
+      "expired": "Expired",
+      "notLocked": "Account Not Locked",
+      "unlocked": "Unlocked",
+      "locked": "Locked",
+      "credentialsNotExpired": "Credentials Not Expired"
+    },
+    "session": {
+      "title": "Session Information",
+      "description": "Current authentication session details",
+      "tokenIssuedAt": "Token Issued At",
+      "tokenExpiresAt": "Token Expires At",
+      "unknown": "Unknown"
+    }
+  },
+  "locations": {
+    "title": "Locations in {warehouseName}",
+    "addLocation": "Add Location",
+    "addFirstLocation": "Add First Location",
+    "exportWarehousePdf": "Export Warehouse PDF",
+    "showing": "{filtered} of {total} locations",
+    "search": {
+      "placeholder": "Search by code..."
+    },
+    "filters": {
+      "type": "Type",
+      "allTypes": "All Types",
+      "zone": "Zone",
+      "allZones": "All Zones",
+      "status": "Status",
+      "allStatus": "All Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "locked": "Locked",
+      "sortBy": "Sort by",
+      "sortByCode": "Sort by Code",
+      "sortByType": "Sort by Type",
+      "sortByZone": "Sort by Zone"
+    },
+    "table": {
+      "locationCode": "Location Code",
+      "type": "Type",
+      "zone": "Zone",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "types": {
+      "PICKING": "Picking",
+      "BULK": "Bulk Storage",
+      "RECEIVING": "Receiving",
+      "SHIPPING": "Shipping",
+      "RETURNS": "Returns",
+      "descriptions": {
+        "PICKING": "Area for order picking operations",
+        "BULK": "High-capacity storage area",
+        "RECEIVING": "Incoming goods processing",
+        "SHIPPING": "Outgoing goods staging",
+        "RETURNS": "Returned items processing"
+      }
+    },
+    "form": {
+      "title": {
+        "add": "Add New Location",
+        "edit": "Edit Location"
+      },
+      "description": {
+        "add": "Fill in the form to add a new location to this warehouse.",
+        "edit": "Update the location details and save changes."
+      },
+      "fields": {
+        "locationCode": "Location Code",
+        "locationCodePlaceholder": "e.g. A-01-01",
+        "locationCodeDescription": "Unique identifier for this location",
+        "locationCodeCannotChange": "Location code cannot be changed",
+        "locationType": "Location Type",
+        "locationTypePlaceholder": "Select location type",
+        "zoneName": "Zone Name",
+        "zoneNamePlaceholder": "e.g. Zone A",
+        "zoneNameDescription": "Logical grouping for organizing locations"
+      },
+      "status": {
+        "title": "Location Status",
+        "active": "Active",
+        "activeDescription": "Location is available for use",
+        "locked": "Locked",
+        "lockedDescription": "Prevent modifications to this location"
+      },
+      "validation": {
+        "locationCodeRequired": "Location code is required",
+        "locationCodeMax": "Location code can be at most 20 characters",
+        "zoneNameRequired": "Zone name is required",
+        "zoneNameMax": "Zone name can be at most 50 characters"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "save": "Save Changes",
+        "add": "Add Location"
+      }
+    },
+    "delete": {
+      "title": "Are you sure you want to delete this location?",
+      "description": "You are about to delete location {code} in zone {zone}. This action cannot be undone and will remove all associated data.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    },
+    "empty": {
+      "title": "No locations",
+      "description": "This warehouse doesn't have any locations yet. Add your first location to start organizing products."
+    },
+    "messages": {
+      "created": "Location has been added",
+      "updated": "Location has been updated",
+      "deleted": "Location has been deleted",
+      "createError": "An error occurred while saving the location",
+      "updateError": "An error occurred while saving the location",
+      "deleteError": "An error occurred while deleting the location",
+      "fetchError": "An error occurred while fetching locations",
+      "tryAgain": "Try Again"
+    }
+  }
+}

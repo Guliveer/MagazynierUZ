@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { createUser, updateUser } from '@/lib/api';
@@ -15,6 +16,7 @@ interface UserDialogProps {
 }
 
 export function UserDialog({ user, open, onOpenChange, onSuccess }: UserDialogProps) {
+    const t = useTranslations('admin.userDialog');
     const [isLoading, setIsLoading] = useState(false);
 
     const isEdit = !!user;
@@ -24,17 +26,17 @@ export function UserDialog({ user, open, onOpenChange, onSuccess }: UserDialogPr
         try {
             if (isEdit && user) {
                 await updateUser(user.id, data as AdminUpdateUserRequest);
-                toast.success(`User "${user.username}" has been updated`);
+                toast.success(t('userUpdated', { username: user.username }));
             } else {
                 const newUser = await createUser(data as AdminCreateUserRequest);
-                toast.success(`User "${newUser.username}" has been created`);
+                toast.success(t('userCreated', { username: newUser.username }));
             }
             onOpenChange(false);
             onSuccess();
         } catch (error) {
             console.error('Failed to save user:', error);
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            toast.error(isEdit ? `Failed to update user: ${errorMessage}` : `Failed to create user: ${errorMessage}`);
+            toast.error(isEdit ? t('updateFailed', { error: errorMessage }) : t('createFailed', { error: errorMessage }));
         } finally {
             setIsLoading(false);
         }

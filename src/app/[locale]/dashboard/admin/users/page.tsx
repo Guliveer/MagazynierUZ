@@ -11,8 +11,10 @@ import { UserDialog } from '@/components/admin/UserDialog';
 import { DeleteUserDialog } from '@/components/admin/DeleteUserDialog';
 import { Users, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useTranslations } from 'next-intl';
 
 export default function UsersPage() {
+    const t = useTranslations('admin.users');
     const [users, setUsers] = useState<UserResponse[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -41,8 +43,8 @@ export default function UsersPage() {
             setUsers(data);
         } catch (err) {
             console.error('Failed to load users:', err);
-            setError('Failed to load users. Please try again.');
-            toast.error('Failed to load users');
+            setError(t('../../admin.messages.loadUsersFailed'));
+            toast.error(t('../../admin.messages.loadUsersFailed'));
         } finally {
             setIsLoading(false);
         }
@@ -50,6 +52,7 @@ export default function UsersPage() {
 
     useEffect(() => {
         loadUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleCreate = () => {
@@ -79,15 +82,15 @@ export default function UsersPage() {
         <div className="space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
-                <p className="text-muted-foreground mt-2">Manage system users, roles, and organisation assignments</p>
+                <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
+                <p className="text-muted-foreground mt-2">{t('subtitle')}</p>
             </div>
 
             {/* Error Alert */}
             {error && (
                 <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
+                    <AlertTitle>{t('../../common.status.error')}</AlertTitle>
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             )}
@@ -96,34 +99,34 @@ export default function UsersPage() {
             <div className="grid gap-4 md:grid-cols-3">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('totalUsers')}</CardTitle>
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{users.length}</div>
-                        <p className="text-xs text-muted-foreground">Registered in the system</p>
+                        <p className="text-xs text-muted-foreground">{t('registeredInSystem')}</p>
                     </CardContent>
                 </Card>
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Administrators</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('administrators')}</CardTitle>
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{users.filter((u) => u.roles.includes('ROLE_ADMIN')).length}</div>
-                        <p className="text-xs text-muted-foreground">With admin privileges</p>
+                        <p className="text-xs text-muted-foreground">{t('withAdminPrivileges')}</p>
                     </CardContent>
                 </Card>
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Assigned Users</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('assignedUsers')}</CardTitle>
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{users.filter((u) => u.organisationId).length}</div>
-                        <p className="text-xs text-muted-foreground">With organisation assignment</p>
+                        <p className="text-xs text-muted-foreground">{t('withOrganisationAssignment')}</p>
                     </CardContent>
                 </Card>
             </div>
@@ -131,8 +134,8 @@ export default function UsersPage() {
             {/* User List */}
             <Card>
                 <CardHeader>
-                    <CardTitle>All Users</CardTitle>
-                    <CardDescription>View and manage all users in the system</CardDescription>
+                    <CardTitle>{t('allUsers')}</CardTitle>
+                    <CardDescription>{t('allUsersDesc')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <UserList users={users} isLoading={isLoading} onEdit={handleEdit} onDelete={handleDelete} onCreate={handleCreate} currentUserId={currentUserId} />

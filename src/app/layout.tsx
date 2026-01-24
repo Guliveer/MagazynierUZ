@@ -1,31 +1,7 @@
-import { Analytics } from '@vercel/analytics/next';
-import type { Metadata, Viewport } from 'next';
-import './css/globals.css';
-import React from 'react';
-import ThemeProviderWrapper from './themeProvider';
-import { Toaster } from '@/components/ui/sonner';
+import type { ReactNode } from 'react';
 
-export const metadata: Metadata = {
-    title: 'MagazynierUZ',
-    description: 'App for warehouse management'
-};
-
-export const viewport: Viewport = {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1
-};
-
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-    return (
-        <html lang="en" suppressHydrationWarning>
-            <body className={'antialiased'}>
-                <Analytics />
-                <ThemeProviderWrapper>
-                    {children}
-                    <Toaster />
-                </ThemeProviderWrapper>
-            </body>
-        </html>
-    );
+// This is a minimal root layout required by Next.js
+// The actual layout with providers is in [locale]/layout.tsx
+export default function RootLayout({ children }: { children: ReactNode }) {
+    return children;
 }

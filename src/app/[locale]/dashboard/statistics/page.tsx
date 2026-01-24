@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
 import { getTop10Products, getWarehouses, getLocations, searchProductsUnpaginated } from '@/lib/api';
 import { getToken } from '@/lib/auth';
 import type { Top10Product, Warehouse, Location, Product, ChartViewType } from '@/types';
@@ -20,6 +21,8 @@ import { AlertCircle, BarChart3, TrendingUp, Package, DollarSign, Warehouse as W
 
 export default function StatisticsPage() {
     const router = useRouter();
+    const t = useTranslations('statistics');
+    const locale = useLocale();
     const [products, setProducts] = useState<Top10Product[]>([]);
     const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
     const [locations, setLocations] = useState<Location[]>([]);
@@ -45,6 +48,27 @@ export default function StatisticsPage() {
         warehousesCount: 0,
         lowStockCount: 0
     });
+
+    // Format currency based on locale
+    const formatCurrency = useCallback(
+        (value: number) => {
+            return new Intl.NumberFormat(locale, {
+                style: 'currency',
+                currency: 'PLN',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(value);
+        },
+        [locale]
+    );
+
+    // Format number based on locale
+    const formatNumber = useCallback(
+        (value: number) => {
+            return new Intl.NumberFormat(locale).format(value);
+        },
+        [locale]
+    );
 
     // Check authentication
     useEffect(() => {
@@ -97,11 +121,11 @@ export default function StatisticsPage() {
             setLastUpdated(new Date());
         } catch (err) {
             console.error('Failed to fetch data:', err);
-            setError('Failed to load statistics. Please try again.');
+            setError(t('messages.error'));
         } finally {
             setLoading(false);
         }
-    }, [sortBy, sortDirection, selectedWarehouse, selectedLocation, showAvailableOnly]);
+    }, [sortBy, sortDirection, selectedWarehouse, selectedLocation, showAvailableOnly, t]);
 
     // Initial data fetch
     useEffect(() => {
@@ -141,7 +165,7 @@ export default function StatisticsPage() {
 
     // Export to CSV
     const exportToCSV = () => {
-        const headers = ['Rank', 'Name', 'Description', 'Quantity', 'Price (PLN)', 'Total Value (PLN)'];
+        const headers = [t('table.headers.rank'), t('table.headers.name'), t('table.headers.description'), t('table.headers.quantity'), t('table.headers.price'), t('table.headers.totalValue')];
         const rows = products.map((product, index) => [index + 1, product.name, product.description, product.quantity, product.price.toFixed(2), (product.quantity * product.price).toFixed(2)]);
 
         const csvContent = [headers.join(','), ...rows.map((row) => row.map((cell) => `"${cell}"`).join(','))].join('\n');
@@ -175,36 +199,6 @@ export default function StatisticsPage() {
         }
     };
 
-    // Unused functions kept for future use
-    // const getChartData = () => {
-    //     switch (chartView) {
-    //         case 'quantity':
-    //             return { data: products, sortBy: 'quantity' as const };
-    //         case 'price':
-    //             return { data: products, sortBy: 'price' as const };
-    //         case 'totalValue':
-    //             return {
-    //                 data: products.map((p) => ({ ...p, price: p.quantity * p.price })),
-    //                 sortBy: 'price' as const
-    //             };
-    //         default:
-    //             return { data: products, sortBy };
-    //     }
-    // };
-
-    // const warehouseDistribution = warehouses.map((warehouse) => {
-    //     const warehouseProducts = allProducts.filter(() => {
-    //         // This is a simplified calculation - in real scenario, products would have warehouse info
-    //         return true; // Include all for now
-    //     });
-    //     const totalValue = warehouseProducts.reduce((sum, p) => sum + p.price * p.quantity, 0);
-    //     return {
-    //         name: warehouse.name,
-    //         value: totalValue,
-    //         productCount: warehouseProducts.length
-    //     };
-    // });
-
     return (
         <div className="container mx-auto p-6 space-y-6">
             {/* Header */}
@@ -212,22 +206,22 @@ export default function StatisticsPage() {
                 <div className="flex items-center gap-3">
                     <BarChart3 className="h-8 w-8 text-primary" />
                     <div>
-                        <h1 className="text-3xl font-bold">Product Statistics</h1>
-                        <p className="text-muted-foreground">Comprehensive analytics and insights</p>
+                        <h1 className="text-3xl font-bold">{t('title')}</h1>
+                        <p className="text-muted-foreground">{t('subtitle')}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Clock className="h-4 w-4" />
-                        <span>Updated: {lastUpdated.toLocaleTimeString()}</span>
+                        <span>{t('lastUpdated', { time: lastUpdated.toLocaleTimeString(locale) })}</span>
                     </div>
                     <Button onClick={fetchAllData} variant="outline" size="sm" disabled={loading}>
                         <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
+                        {t('actions.refresh')}
                     </Button>
                     <Button onClick={exportToCSV} variant="outline" size="sm" disabled={products.length === 0}>
                         <Download className="h-4 w-4 mr-2" />
-            Export CSV
+                        {t('actions.exportCsv')}
                     </Button>
                 </div>
             </div>
@@ -236,7 +230,7 @@ export default function StatisticsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('summary.totalProducts')}</CardTitle>
                         <Package className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -244,8 +238,8 @@ export default function StatisticsPage() {
                             <Skeleton className="h-8 w-20" />
                         ) : (
                             <>
-                                <div className="text-2xl font-bold">{summaryStats.totalProducts}</div>
-                                <p className="text-xs text-muted-foreground">Across all locations</p>
+                                <div className="text-2xl font-bold">{formatNumber(summaryStats.totalProducts)}</div>
+                                <p className="text-xs text-muted-foreground">{t('summary.totalProductsDesc')}</p>
                             </>
                         )}
                     </CardContent>
@@ -253,7 +247,7 @@ export default function StatisticsPage() {
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Value</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('summary.totalValue')}</CardTitle>
                         <DollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -261,8 +255,8 @@ export default function StatisticsPage() {
                             <Skeleton className="h-8 w-24" />
                         ) : (
                             <>
-                                <div className="text-2xl font-bold">{summaryStats.totalInventoryValue.toFixed(2)} PLN</div>
-                                <p className="text-xs text-muted-foreground">Inventory value</p>
+                                <div className="text-2xl font-bold">{formatCurrency(summaryStats.totalInventoryValue)}</div>
+                                <p className="text-xs text-muted-foreground">{t('summary.totalValueDesc')}</p>
                             </>
                         )}
                     </CardContent>
@@ -270,7 +264,7 @@ export default function StatisticsPage() {
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Average Price</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('summary.averagePrice')}</CardTitle>
                         <TrendingUp className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -278,8 +272,8 @@ export default function StatisticsPage() {
                             <Skeleton className="h-8 w-20" />
                         ) : (
                             <>
-                                <div className="text-2xl font-bold">{summaryStats.averagePrice.toFixed(2)} PLN</div>
-                                <p className="text-xs text-muted-foreground">Per product</p>
+                                <div className="text-2xl font-bold">{formatCurrency(summaryStats.averagePrice)}</div>
+                                <p className="text-xs text-muted-foreground">{t('summary.averagePriceDesc')}</p>
                             </>
                         )}
                     </CardContent>
@@ -287,7 +281,7 @@ export default function StatisticsPage() {
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Warehouses</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('summary.warehouses')}</CardTitle>
                         <WarehouseIcon className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -295,8 +289,8 @@ export default function StatisticsPage() {
                             <Skeleton className="h-8 w-12" />
                         ) : (
                             <>
-                                <div className="text-2xl font-bold">{summaryStats.warehousesCount}</div>
-                                <p className="text-xs text-muted-foreground">Active locations</p>
+                                <div className="text-2xl font-bold">{formatNumber(summaryStats.warehousesCount)}</div>
+                                <p className="text-xs text-muted-foreground">{t('summary.warehousesDesc')}</p>
                             </>
                         )}
                     </CardContent>
@@ -304,7 +298,7 @@ export default function StatisticsPage() {
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Low Stock</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('summary.lowStock')}</CardTitle>
                         <AlertTriangle className="h-4 w-4 text-destructive" />
                     </CardHeader>
                     <CardContent>
@@ -312,8 +306,8 @@ export default function StatisticsPage() {
                             <Skeleton className="h-8 w-12" />
                         ) : (
                             <>
-                                <div className="text-2xl font-bold text-destructive">{summaryStats.lowStockCount}</div>
-                                <p className="text-xs text-muted-foreground">Below 10 units</p>
+                                <div className="text-2xl font-bold text-destructive">{formatNumber(summaryStats.lowStockCount)}</div>
+                                <p className="text-xs text-muted-foreground">{t('summary.lowStockDesc')}</p>
                             </>
                         )}
                     </CardContent>
@@ -327,13 +321,13 @@ export default function StatisticsPage() {
                         <div>
                             <CardTitle className="flex items-center gap-2">
                                 <Filter className="h-5 w-5" />
-                Filters & Settings
+                                {t('filters.title')}
                             </CardTitle>
-                            <CardDescription>Customize the statistics view</CardDescription>
+                            <CardDescription>{t('filters.description')}</CardDescription>
                         </div>
                         <div className="flex items-center gap-2">
                             <Label htmlFor="auto-refresh" className="text-sm">
-                Auto-refresh
+                                {t('filters.autoRefresh')}
                             </Label>
                             <Switch id="auto-refresh" checked={autoRefresh} onCheckedChange={setAutoRefresh} />
                         </div>
@@ -342,19 +336,19 @@ export default function StatisticsPage() {
                 <CardContent className="space-y-4">
                     {/* Quick Filters */}
                     <div className="space-y-2">
-                        <Label>Quick Filters</Label>
+                        <Label>{t('filters.quickFilters')}</Label>
                         <div className="flex flex-wrap gap-2">
                             <Button variant="outline" size="sm" onClick={() => applyQuickFilter('highValue')}>
                                 <TrendingUp className="h-4 w-4 mr-2" />
-                High Value
+                                {t('filters.highValue')}
                             </Button>
                             <Button variant="outline" size="sm" onClick={() => applyQuickFilter('lowStock')}>
                                 <AlertTriangle className="h-4 w-4 mr-2" />
-                Low Stock
+                                {t('filters.lowStock')}
                             </Button>
                             <Button variant="outline" size="sm" onClick={() => applyQuickFilter('mostPopular')}>
                                 <Package className="h-4 w-4 mr-2" />
-                Most Popular
+                                {t('filters.mostPopular')}
                             </Button>
                         </div>
                     </div>
@@ -363,42 +357,42 @@ export default function StatisticsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                         {/* Sort By */}
                         <div className="space-y-2">
-                            <Label htmlFor="sortBy">Sort By</Label>
+                            <Label htmlFor="sortBy">{t('filters.sortBy')}</Label>
                             <Select value={sortBy} onValueChange={(value) => setSortBy(value as 'quantity' | 'price' | 'name')}>
                                 <SelectTrigger id="sortBy">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="quantity">Quantity</SelectItem>
-                                    <SelectItem value="price">Price</SelectItem>
-                                    <SelectItem value="name">Name</SelectItem>
+                                    <SelectItem value="quantity">{t('filters.sortOptions.quantity')}</SelectItem>
+                                    <SelectItem value="price">{t('filters.sortOptions.price')}</SelectItem>
+                                    <SelectItem value="name">{t('filters.sortOptions.name')}</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
 
                         {/* Sort Direction */}
                         <div className="space-y-2">
-                            <Label htmlFor="sortDirection">Sort Direction</Label>
+                            <Label htmlFor="sortDirection">{t('filters.sortDirection')}</Label>
                             <Select value={sortDirection} onValueChange={(value) => setSortDirection(value as 'asc' | 'desc')}>
                                 <SelectTrigger id="sortDirection">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="desc">Descending</SelectItem>
-                                    <SelectItem value="asc">Ascending</SelectItem>
+                                    <SelectItem value="desc">{t('filters.sortDirectionOptions.desc')}</SelectItem>
+                                    <SelectItem value="asc">{t('filters.sortDirectionOptions.asc')}</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
 
                         {/* Warehouse Filter */}
                         <div className="space-y-2">
-                            <Label htmlFor="warehouse">Warehouse</Label>
+                            <Label htmlFor="warehouse">{t('filters.warehouse')}</Label>
                             <Select value={selectedWarehouse} onValueChange={setSelectedWarehouse}>
                                 <SelectTrigger id="warehouse">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Warehouses</SelectItem>
+                                    <SelectItem value="all">{t('filters.allWarehouses')}</SelectItem>
                                     {warehouses.map((warehouse) => (
                                         <SelectItem key={warehouse.id} value={warehouse.id.toString()}>
                                             {warehouse.name}
@@ -410,13 +404,13 @@ export default function StatisticsPage() {
 
                         {/* Location Filter */}
                         <div className="space-y-2">
-                            <Label htmlFor="location">Location</Label>
+                            <Label htmlFor="location">{t('filters.location')}</Label>
                             <Select value={selectedLocation} onValueChange={setSelectedLocation} disabled={selectedWarehouse === 'all' || locations.length === 0}>
                                 <SelectTrigger id="location">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Locations</SelectItem>
+                                    <SelectItem value="all">{t('filters.allLocations')}</SelectItem>
                                     {locations.map((location) => (
                                         <SelectItem key={location.id} value={location.id.toString()}>
                                             {location.locationCode} - {location.zoneName}
@@ -428,10 +422,10 @@ export default function StatisticsPage() {
 
                         {/* Availability Toggle */}
                         <div className="space-y-2">
-                            <Label htmlFor="available">Show Available Only</Label>
+                            <Label htmlFor="available">{t('filters.showAvailableOnly')}</Label>
                             <div className="flex items-center h-10 px-3 border rounded-md">
                                 <Switch id="available" checked={showAvailableOnly} onCheckedChange={setShowAvailableOnly} />
-                                <span className="ml-2 text-sm">{showAvailableOnly ? 'Yes' : 'No'}</span>
+                                <span className="ml-2 text-sm">{showAvailableOnly ? t('filters.yes') : t('filters.no')}</span>
                             </div>
                         </div>
                     </div>
@@ -443,27 +437,27 @@ export default function StatisticsPage() {
                 <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="quantity">
                         <BarChart3 className="h-4 w-4 mr-2" />
-            By Quantity
+                        {t('charts.tabs.byQuantity')}
                     </TabsTrigger>
                     <TabsTrigger value="price">
                         <DollarSign className="h-4 w-4 mr-2" />
-            By Price
+                        {t('charts.tabs.byPrice')}
                     </TabsTrigger>
                     <TabsTrigger value="totalValue">
                         <TrendingUp className="h-4 w-4 mr-2" />
-            Total Value
+                        {t('charts.tabs.totalValue')}
                     </TabsTrigger>
                     <TabsTrigger value="comparison">
                         <PieChartIcon className="h-4 w-4 mr-2" />
-            Distribution
+                        {t('charts.tabs.distribution')}
                     </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="quantity" className="space-y-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Top 10 Products by Quantity</CardTitle>
-                            <CardDescription>Products with the highest quantities in stock</CardDescription>
+                            <CardTitle>{t('charts.titles.byQuantity')}</CardTitle>
+                            <CardDescription>{t('charts.descriptions.byQuantity')}</CardDescription>
                         </CardHeader>
                         <CardContent>
                             {loading ? (
@@ -478,11 +472,11 @@ export default function StatisticsPage() {
                             ) : products.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center h-[400px] text-muted-foreground">
                                     <BarChart3 className="h-16 w-16 mb-4 opacity-50" />
-                                    <p className="text-lg font-medium">No products found</p>
-                                    <p className="text-sm">Try adjusting your filters</p>
+                                    <p className="text-lg font-medium">{t('messages.noProducts')}</p>
+                                    <p className="text-sm">{t('messages.noProductsDescription')}</p>
                                 </div>
                             ) : (
-                                <Top10Chart data={products} sortBy="quantity" viewType="bar" />
+                                <Top10Chart data={products} sortBy="quantity" viewType="bar" locale={locale} />
                             )}
                         </CardContent>
                     </Card>
@@ -491,8 +485,8 @@ export default function StatisticsPage() {
                 <TabsContent value="price" className="space-y-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Top 10 Products by Price</CardTitle>
-                            <CardDescription>Most expensive products in inventory</CardDescription>
+                            <CardTitle>{t('charts.titles.byPrice')}</CardTitle>
+                            <CardDescription>{t('charts.descriptions.byPrice')}</CardDescription>
                         </CardHeader>
                         <CardContent>
                             {loading ? (
@@ -507,11 +501,11 @@ export default function StatisticsPage() {
                             ) : products.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center h-[400px] text-muted-foreground">
                                     <BarChart3 className="h-16 w-16 mb-4 opacity-50" />
-                                    <p className="text-lg font-medium">No products found</p>
-                                    <p className="text-sm">Try adjusting your filters</p>
+                                    <p className="text-lg font-medium">{t('messages.noProducts')}</p>
+                                    <p className="text-sm">{t('messages.noProductsDescription')}</p>
                                 </div>
                             ) : (
-                                <Top10Chart data={products} sortBy="price" viewType="bar" />
+                                <Top10Chart data={products} sortBy="price" viewType="bar" locale={locale} />
                             )}
                         </CardContent>
                     </Card>
@@ -520,8 +514,8 @@ export default function StatisticsPage() {
                 <TabsContent value="totalValue" className="space-y-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Top 10 Products by Total Value</CardTitle>
-                            <CardDescription>Products with highest total inventory value (quantity × price)</CardDescription>
+                            <CardTitle>{t('charts.titles.totalValue')}</CardTitle>
+                            <CardDescription>{t('charts.descriptions.totalValue')}</CardDescription>
                         </CardHeader>
                         <CardContent>
                             {loading ? (
@@ -536,11 +530,11 @@ export default function StatisticsPage() {
                             ) : products.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center h-[400px] text-muted-foreground">
                                     <BarChart3 className="h-16 w-16 mb-4 opacity-50" />
-                                    <p className="text-lg font-medium">No products found</p>
-                                    <p className="text-sm">Try adjusting your filters</p>
+                                    <p className="text-lg font-medium">{t('messages.noProducts')}</p>
+                                    <p className="text-sm">{t('messages.noProductsDescription')}</p>
                                 </div>
                             ) : (
-                                <Top10Chart data={products.map((p) => ({ ...p, price: p.quantity * p.price }))} sortBy="price" viewType="bar" />
+                                <Top10Chart data={products.map((p) => ({ ...p, price: p.quantity * p.price }))} sortBy="price" viewType="bar" locale={locale} />
                             )}
                         </CardContent>
                     </Card>
@@ -549,8 +543,8 @@ export default function StatisticsPage() {
                 <TabsContent value="comparison" className="space-y-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Warehouse Distribution</CardTitle>
-                            <CardDescription>Distribution of product value across warehouses</CardDescription>
+                            <CardTitle>{t('charts.titles.distribution')}</CardTitle>
+                            <CardDescription>{t('charts.descriptions.distribution')}</CardDescription>
                         </CardHeader>
                         <CardContent>
                             {loading ? (
@@ -565,11 +559,11 @@ export default function StatisticsPage() {
                             ) : products.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center h-[400px] text-muted-foreground">
                                     <PieChartIcon className="h-16 w-16 mb-4 opacity-50" />
-                                    <p className="text-lg font-medium">No data available</p>
-                                    <p className="text-sm">Try adjusting your filters</p>
+                                    <p className="text-lg font-medium">{t('messages.noData')}</p>
+                                    <p className="text-sm">{t('messages.noProductsDescription')}</p>
                                 </div>
                             ) : (
-                                <Top10Chart data={products} sortBy="quantity" viewType="pie" />
+                                <Top10Chart data={products} sortBy="quantity" viewType="pie" locale={locale} />
                             )}
                         </CardContent>
                     </Card>
@@ -580,21 +574,21 @@ export default function StatisticsPage() {
             {!loading && !error && products.length > 0 && (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Product Details</CardTitle>
-                        <CardDescription>Detailed information about the top 10 products</CardDescription>
+                        <CardTitle>{t('table.title')}</CardTitle>
+                        <CardDescription>{t('table.description')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="overflow-x-auto">
                             <table className="w-full">
                                 <thead>
                                     <tr className="border-b">
-                                        <th className="text-left p-2 font-medium">Rank</th>
-                                        <th className="text-left p-2 font-medium">Name</th>
-                                        <th className="text-left p-2 font-medium">Description</th>
-                                        <th className="text-right p-2 font-medium">Quantity</th>
-                                        <th className="text-right p-2 font-medium">Price</th>
-                                        <th className="text-right p-2 font-medium">Total Value</th>
-                                        <th className="text-center p-2 font-medium">Status</th>
+                                        <th className="text-left p-2 font-medium">{t('table.headers.rank')}</th>
+                                        <th className="text-left p-2 font-medium">{t('table.headers.name')}</th>
+                                        <th className="text-left p-2 font-medium">{t('table.headers.description')}</th>
+                                        <th className="text-right p-2 font-medium">{t('table.headers.quantity')}</th>
+                                        <th className="text-right p-2 font-medium">{t('table.headers.price')}</th>
+                                        <th className="text-right p-2 font-medium">{t('table.headers.totalValue')}</th>
+                                        <th className="text-center p-2 font-medium">{t('table.headers.status')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -603,10 +597,10 @@ export default function StatisticsPage() {
                                             <td className="p-2 font-mono text-muted-foreground">{index + 1}</td>
                                             <td className="p-2 font-medium">{product.name}</td>
                                             <td className="p-2 text-muted-foreground">{product.description}</td>
-                                            <td className="p-2 text-right font-mono">{product.quantity}</td>
-                                            <td className="p-2 text-right font-mono">{product.price.toFixed(2)} PLN</td>
-                                            <td className="p-2 text-right font-mono font-semibold">{(product.quantity * product.price).toFixed(2)} PLN</td>
-                                            <td className="p-2 text-center">{product.quantity < 10 ? <Badge variant="destructive">Low Stock</Badge> : product.quantity < 50 ? <Badge variant="secondary">Medium</Badge> : <Badge variant="default">In Stock</Badge>}</td>
+                                            <td className="p-2 text-right font-mono">{formatNumber(product.quantity)}</td>
+                                            <td className="p-2 text-right font-mono">{formatCurrency(product.price)}</td>
+                                            <td className="p-2 text-right font-mono font-semibold">{formatCurrency(product.quantity * product.price)}</td>
+                                            <td className="p-2 text-center">{product.quantity < 10 ? <Badge variant="destructive">{t('status.lowStock')}</Badge> : product.quantity < 50 ? <Badge variant="secondary">{t('status.medium')}</Badge> : <Badge variant="default">{t('status.inStock')}</Badge>}</td>
                                         </tr>
                                     ))}
                                 </tbody>

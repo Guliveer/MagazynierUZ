@@ -17,8 +17,10 @@ import { DeleteWarehouseDialog } from './DeleteWarehouseDialog';
 import { WarehouseMapDialog } from './WarehouseMapDialog';
 
 import { WarehouseDialog } from './WarehouseDialog';
+import { useTranslations } from 'next-intl';
 
 export function WarehouseList() {
+    const t = useTranslations('warehouses');
     const router = useRouter();
     const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -40,13 +42,13 @@ export function WarehouseList() {
             // Protection against null/undefined - always set an array
             setWarehouses(Array.isArray(data) ? data : []);
         } catch (err) {
-            const message = err instanceof ApiError ? err.message : 'An error occurred while fetching warehouses';
+            const message = err instanceof ApiError ? err.message : t('messages.fetchError');
             setError(message);
             toast.error(message);
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [t]);
 
     useEffect(() => {
         fetchWarehouses();

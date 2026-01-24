@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import { deleteUser } from '@/lib/api';
@@ -16,32 +17,37 @@ interface DeleteUserDialogProps {
 }
 
 export function DeleteUserDialog({ user, open, onOpenChange, onSuccess, currentUserId }: DeleteUserDialogProps) {
+    const t = useTranslations('admin.deleteUser');
     const [isDeleting, setIsDeleting] = useState(false);
 
     const handleDelete = async () => {
-        if (!user) { return; }
+        if (!user) {
+            return;
+        }
 
         // Prevent deletion of current user
         if (currentUserId && user.id === currentUserId) {
-            toast.error('Cannot delete your own account');
+            toast.error(t('cannotDeleteOwnAccount'));
             return;
         }
 
         setIsDeleting(true);
         try {
             await deleteUser(user.id);
-            toast.success(`User "${user.username}" has been deleted`);
+            toast.success(t('userDeleted', { username: user.username }));
             onOpenChange(false);
             onSuccess();
         } catch (error) {
             console.error('Failed to delete user:', error);
-            toast.error('Failed to delete user. Please try again.');
+            toast.error(t('deleteFailed'));
         } finally {
             setIsDeleting(false);
         }
     };
 
-    if (!user) { return null; }
+    if (!user) {
+        return null;
+    }
 
     const isSelf = currentUserId && user.id === currentUserId;
 

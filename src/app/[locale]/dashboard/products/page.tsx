@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter, useParams } from 'next/navigation';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 
@@ -17,7 +18,10 @@ import { useDebounce } from '@/hooks/useDebounce';
 
 export default function ProductsPage() {
     const router = useRouter();
+    const params = useParams();
+    const locale = params.locale as string;
     const searchParams = useSearchParams();
+    const t = useTranslations('products');
 
     // Initialize filters from URL params
     const getInitialFilters = (): ProductFilterValues => ({
@@ -103,9 +107,9 @@ export default function ProductsPage() {
             }
 
             const queryString = params.toString();
-            router.push(`/dashboard/products${queryString ? `?${queryString}` : ''}`, { scroll: false });
+            router.push(`/${locale}/dashboard/products${queryString ? `?${queryString}` : ''}`, { scroll: false });
         },
-        [router]
+        [router, locale]
     );
 
     // Enrich products with warehouse and location context
@@ -230,13 +234,13 @@ export default function ProductsPage() {
             // Update URL with current filters
             updateURL(filters, page, pageSize, sortBy, sortDirection, viewMode);
         } catch (err) {
-            const message = err instanceof ApiError ? err.message : 'An error occurred while searching products';
+            const message = err instanceof ApiError ? err.message : t('messages.searchError');
             toast.error(message);
             setPaginatedData(null);
         } finally {
             setIsSearching(false);
         }
-    }, [filters, page, pageSize, sortBy, sortDirection, viewMode, updateURL, enrichProductsWithContext]);
+    }, [filters, page, pageSize, sortBy, sortDirection, viewMode, updateURL, enrichProductsWithContext, t]);
 
     // Auto-search when debounced query changes
     useEffect(() => {
@@ -324,7 +328,7 @@ export default function ProductsPage() {
             setIsDialogOpen(true);
         } else {
             // Product missing context - try to fetch it
-            toast.error('Cannot edit product: missing warehouse/location information');
+            toast.error(t('messages.missingContext'));
             console.error('Product missing context:', product);
         }
     };
@@ -343,7 +347,7 @@ export default function ProductsPage() {
             });
             setIsDeleteDialogOpen(true);
         } else {
-            toast.error('Cannot delete product: missing warehouse/location information');
+            toast.error(t('messages.missingContextDelete'));
             console.error('Product missing context:', product);
         }
     };
@@ -358,7 +362,7 @@ export default function ProductsPage() {
 
         // Validate that we have the required IDs
         if (!warehouseId || !locationId) {
-            toast.error('Please select a warehouse and location first');
+            toast.error(t('messages.selectWarehouseLocation'));
             return;
         }
 
@@ -366,15 +370,15 @@ export default function ProductsPage() {
             setIsSaving(true);
             if (isEditing) {
                 await updateProduct(warehouseId, locationId, selectedProduct.id, data);
-                toast.success('Product has been updated');
+                toast.success(t('messages.updated'));
             } else {
                 await createProduct(warehouseId, locationId, data);
-                toast.success('Product has been added');
+                toast.success(t('messages.created'));
             }
             setIsDialogOpen(false);
             await performSearch(); // Refresh results
         } catch (err) {
-            const message = err instanceof ApiError ? err.message : 'An error occurred while saving the product';
+            const message = err instanceof ApiError ? err.message : t('messages.createError');
             toast.error(message);
         } finally {
             setIsSaving(false);
@@ -392,18 +396,18 @@ export default function ProductsPage() {
         const locationId = selectedProduct.locationId || selectedProduct.location?.id;
 
         if (!warehouseId || !locationId) {
-            toast.error('Cannot delete product: missing warehouse/location information');
+            toast.error(t('messages.missingContextDelete'));
             return;
         }
 
         try {
             setIsDeleting(true);
             await deleteProduct(warehouseId, locationId, selectedProduct.id);
-            toast.success('Product has been deleted');
+            toast.success(t('messages.deleted'));
             setIsDeleteDialogOpen(false);
             await performSearch(); // Refresh results
         } catch (err) {
-            const message = err instanceof ApiError ? err.message : 'An error occurred while deleting the product';
+            const message = err instanceof ApiError ? err.message : t('messages.deleteError');
             toast.error(message);
         } finally {
             setIsDeleting(false);
@@ -415,12 +419,12 @@ export default function ProductsPage() {
             {/* Page header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Product Search</h1>
-                    <p className="text-muted-foreground mt-1">Search and filter products across all warehouses and locations</p>
+                    <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
+                    <p className="text-muted-foreground mt-1">{t('subtitle')}</p>
                 </div>
-                <Button onClick={handleAddClick} disabled={!filters.warehouseId || !filters.locationId} title={!filters.warehouseId || !filters.locationId ? 'Select warehouse and location to add products' : 'Add product'}>
+                <Button onClick={handleAddClick} disabled={!filters.warehouseId || !filters.locationId} title={!filters.warehouseId || !filters.locationId ? t('addProductTooltip') : t('addProduct')}>
                     <Plus className="mr-2 h-4 w-4" />
-          Add Product
+                    {t('addProduct')}
                 </Button>
             </div>
 
@@ -433,7 +437,7 @@ export default function ProductsPage() {
             {/* No results state */}
             {hasSearched && paginatedData && paginatedData.content.length === 0 && (
                 <div className="text-center py-12 border rounded-lg bg-muted/50">
-                    <p className="text-muted-foreground">No products found matching your search criteria</p>
+                    <p className="text-muted-foreground">{t('search.noResults')}</p>
                 </div>
             )}
 

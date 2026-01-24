@@ -14,6 +14,7 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { PdfExportButton } from '@/components/exports/PdfExportButton';
+import { useTranslations } from 'next-intl';
 
 interface WarehouseDetailPageProps {
   params: Promise<{
@@ -22,6 +23,8 @@ interface WarehouseDetailPageProps {
 }
 
 export default function WarehouseDetailPage({ params }: WarehouseDetailPageProps) {
+    const t = useTranslations('warehouses.detail');
+    const tMessages = useTranslations('warehouses.messages');
     const router = useRouter();
     const { id } = use(params);
     const warehouseId = parseInt(id);
@@ -32,7 +35,7 @@ export default function WarehouseDetailPage({ params }: WarehouseDetailPageProps
     useEffect(() => {
         const fetchWarehouse = async () => {
             if (isNaN(warehouseId)) {
-                setError('Invalid warehouse ID');
+                setError(t('invalidId'));
                 setIsLoading(false);
                 return;
             }
@@ -43,7 +46,7 @@ export default function WarehouseDetailPage({ params }: WarehouseDetailPageProps
                 const data = await getWarehouse(warehouseId);
                 setWarehouse(data);
             } catch (err) {
-                const message = err instanceof ApiError ? err.message : 'An error occurred while fetching warehouse details';
+                const message = err instanceof ApiError ? err.message : tMessages('fetchDetailError');
                 setError(message);
                 toast.error(message);
             } finally {
@@ -52,7 +55,7 @@ export default function WarehouseDetailPage({ params }: WarehouseDetailPageProps
         };
 
         fetchWarehouse();
-    }, [warehouseId]);
+    }, [warehouseId, t, tMessages]);
 
     // Loading state
     if (isLoading) {

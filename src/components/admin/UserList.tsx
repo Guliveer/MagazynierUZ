@@ -106,8 +106,12 @@ export function UserList({ users, isLoading, onEdit, onDelete, onCreate, current
     };
 
     const getRoleBadgeVariant = (role: string) => {
-        if (role === 'ROLE_ADMIN') { return 'destructive'; }
-        if (role === 'ROLE_MANAGER') { return 'default'; }
+        if (role === 'ROLE_ADMIN') {
+            return 'destructive';
+        }
+        if (role === 'ROLE_MANAGER') {
+            return 'default';
+        }
         return 'secondary';
     };
 

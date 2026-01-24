@@ -3,11 +3,9 @@
 import dynamic from 'next/dynamic';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import type { Warehouse } from '@/types';
+import { useTranslations } from 'next-intl';
 
-const WarehouseMap = dynamic(
-    () => import('./WarehouseMap'),
-    { ssr: false }
-);
+const WarehouseMap = dynamic(() => import('./WarehouseMap'), { ssr: false });
 
 type Props = {
   open: boolean;
@@ -16,11 +14,13 @@ type Props = {
 };
 
 export function WarehouseMapDialog({ open, onOpenChange, warehouses }: Props) {
+    const t = useTranslations('warehouses.map');
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-4xl">
                 <DialogHeader>
-                    <DialogTitle>Warehouse map</DialogTitle>
+                    <DialogTitle>{t('title')}</DialogTitle>
                 </DialogHeader>
 
                 <WarehouseMap warehouses={warehouses} />

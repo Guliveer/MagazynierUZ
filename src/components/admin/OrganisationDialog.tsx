@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { createOrganisation, updateOrganisation } from '@/lib/api';
@@ -15,6 +16,7 @@ interface OrganisationDialogProps {
 }
 
 export function OrganisationDialog({ organisation, open, onOpenChange, onSuccess }: OrganisationDialogProps) {
+    const t = useTranslations('admin.organisationDialog');
     const [isLoading, setIsLoading] = useState(false);
 
     const isEdit = !!organisation;
@@ -24,10 +26,10 @@ export function OrganisationDialog({ organisation, open, onOpenChange, onSuccess
         try {
             if (isEdit && organisation) {
                 await updateOrganisation(organisation.id, data as UpdateOrganisationRequest);
-                toast.success(`Organisation "${organisation.name}" has been updated`);
+                toast.success(t('organisationUpdated', { name: organisation.name }));
             } else {
                 const newOrg = await createOrganisation(data as CreateOrganisationRequest);
-                toast.success(`Organisation "${newOrg.name}" has been created`);
+                toast.success(t('organisationCreated', { name: newOrg.name }));
             }
             onOpenChange(false);
             onSuccess();
@@ -37,9 +39,9 @@ export function OrganisationDialog({ organisation, open, onOpenChange, onSuccess
 
             // Check for common errors
             if (errorMessage.includes('already exists') || errorMessage.includes('duplicate')) {
-                toast.error(isEdit ? 'Failed to update: Organisation name or TIN already exists' : 'Failed to create: Organisation name or TIN already exists');
+                toast.error(isEdit ? t('updateFailedDuplicate') : t('createFailedDuplicate'));
             } else {
-                toast.error(isEdit ? `Failed to update organisation: ${errorMessage}` : `Failed to create organisation: ${errorMessage}`);
+                toast.error(isEdit ? t('updateFailed', { error: errorMessage }) : t('createFailed', { error: errorMessage }));
             }
         } finally {
             setIsLoading(false);

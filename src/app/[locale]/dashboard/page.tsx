@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Package, Warehouse as WarehouseIcon, TrendingUp, AlertTriangle, Plus, Search, BarChart3, ArrowRight, RefreshCw } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { getWarehouses, searchProductsUnpaginated, getTop10Products } from '@/lib/api';
 import { getToken } from '@/lib/auth';
 import type { Warehouse, Product, Top10Product } from '@/types';
@@ -15,7 +16,10 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { PdfExportButton } from '@/components/exports/PdfExportButton';
 
 export default function DashboardPage() {
+    const t = useTranslations('dashboard.home');
     const router = useRouter();
+    const pathname = usePathname();
+    const locale = pathname?.split('/')[1] || 'en';
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -36,11 +40,12 @@ export default function DashboardPage() {
     useEffect(() => {
         const token = getToken();
         if (!token) {
-            router.push('/login');
+            router.push(`/${locale}/login`);
             return;
         }
         fetchDashboardData();
-    }, [router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [router, locale]);
 
     const fetchDashboardData = async () => {
         setLoading(true);
@@ -66,7 +71,7 @@ export default function DashboardPage() {
             });
         } catch (err) {
             console.error('Failed to fetch dashboard data:', err);
-            setError('Failed to load dashboard data. Please try again.');
+            setError(t('errors.loadFailed'));
         } finally {
             setLoading(false);
         }
@@ -84,14 +89,14 @@ export default function DashboardPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-                    <p className="text-muted-foreground mt-1">Welcome to your warehouse management system</p>
+                    <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
+                    <p className="text-muted-foreground mt-1">{t('subtitle')}</p>
                 </div>
                 <div className="flex gap-2">
-                    <PdfExportButton scope="ORGANISATION" variant="outline" size="sm" label="Export PDF" />
+                    <PdfExportButton scope="ORGANISATION" variant="outline" size="sm" label={t('exportPdf')} />
                     <Button onClick={fetchDashboardData} variant="outline" size="sm" disabled={loading}>
                         <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
+                        {t('refresh')}
                     </Button>
                 </div>
             </div>
@@ -109,7 +114,7 @@ export default function DashboardPage() {
                 {/* Total Warehouses */}
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Warehouses</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('stats.totalWarehouses')}</CardTitle>
                         <WarehouseIcon className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -118,7 +123,7 @@ export default function DashboardPage() {
                         ) : (
                             <>
                                 <div className="text-2xl font-bold">{stats.totalWarehouses}</div>
-                                <p className="text-xs text-muted-foreground mt-1">Active locations</p>
+                                <p className="text-xs text-muted-foreground mt-1">{t('stats.activeLocations')}</p>
                             </>
                         )}
                     </CardContent>
@@ -127,7 +132,7 @@ export default function DashboardPage() {
                 {/* Total Products */}
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('stats.totalProducts')}</CardTitle>
                         <Package className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -136,7 +141,7 @@ export default function DashboardPage() {
                         ) : (
                             <>
                                 <div className="text-2xl font-bold">{stats.totalProducts}</div>
-                                <p className="text-xs text-muted-foreground mt-1">In inventory</p>
+                                <p className="text-xs text-muted-foreground mt-1">{t('stats.inInventory')}</p>
                             </>
                         )}
                     </CardContent>
@@ -145,7 +150,7 @@ export default function DashboardPage() {
                 {/* Total Inventory Value */}
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Inventory Value</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('stats.inventoryValue')}</CardTitle>
                         <TrendingUp className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -154,7 +159,7 @@ export default function DashboardPage() {
                         ) : (
                             <>
                                 <div className="text-2xl font-bold">{formatPrice(stats.totalInventoryValue)}</div>
-                                <p className="text-xs text-muted-foreground mt-1">Total value</p>
+                                <p className="text-xs text-muted-foreground mt-1">{t('stats.totalValue')}</p>
                             </>
                         )}
                     </CardContent>
@@ -163,7 +168,7 @@ export default function DashboardPage() {
                 {/* Low Stock Alerts */}
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Low Stock Alerts</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('stats.lowStockAlerts')}</CardTitle>
                         <AlertTriangle className="h-4 w-4 text-destructive" />
                     </CardHeader>
                     <CardContent>
@@ -172,7 +177,7 @@ export default function DashboardPage() {
                         ) : (
                             <>
                                 <div className="text-2xl font-bold text-destructive">{stats.lowStockCount}</div>
-                                <p className="text-xs text-muted-foreground mt-1">Below 10 units</p>
+                                <p className="text-xs text-muted-foreground mt-1">{t('stats.belowUnits')}</p>
                             </>
                         )}
                     </CardContent>
@@ -182,40 +187,40 @@ export default function DashboardPage() {
             {/* Quick Actions */}
             <Card>
                 <CardHeader>
-                    <CardTitle>Quick Actions</CardTitle>
-                    <CardDescription>Common tasks and shortcuts</CardDescription>
+                    <CardTitle>{t('quickActions.title')}</CardTitle>
+                    <CardDescription>{t('quickActions.description')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <Link href="/dashboard/products">
+                        <Link href={`/${locale}/dashboard/products`}>
                             <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2">
                                 <Search className="h-6 w-6" />
-                                <span className="font-medium">Search Products</span>
-                                <span className="text-xs text-muted-foreground">Find and manage products</span>
+                                <span className="font-medium">{t('quickActions.searchProducts')}</span>
+                                <span className="text-xs text-muted-foreground">{t('quickActions.searchProductsDesc')}</span>
                             </Button>
                         </Link>
 
-                        <Link href="/dashboard/warehouses">
+                        <Link href={`/${locale}/dashboard/warehouses`}>
                             <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2">
                                 <Plus className="h-6 w-6" />
-                                <span className="font-medium">Add Warehouse</span>
-                                <span className="text-xs text-muted-foreground">Create new warehouse</span>
+                                <span className="font-medium">{t('quickActions.addWarehouse')}</span>
+                                <span className="text-xs text-muted-foreground">{t('quickActions.addWarehouseDesc')}</span>
                             </Button>
                         </Link>
 
-                        <Link href="/dashboard/statistics">
+                        <Link href={`/${locale}/dashboard/statistics`}>
                             <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2">
                                 <BarChart3 className="h-6 w-6" />
-                                <span className="font-medium">View Statistics</span>
-                                <span className="text-xs text-muted-foreground">Analytics and insights</span>
+                                <span className="font-medium">{t('quickActions.viewStatistics')}</span>
+                                <span className="text-xs text-muted-foreground">{t('quickActions.viewStatisticsDesc')}</span>
                             </Button>
                         </Link>
 
-                        <Link href="/dashboard/products">
+                        <Link href={`/${locale}/dashboard/products`}>
                             <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2">
                                 <Package className="h-6 w-6" />
-                                <span className="font-medium">Add Product</span>
-                                <span className="text-xs text-muted-foreground">Create new product</span>
+                                <span className="font-medium">{t('quickActions.addProduct')}</span>
+                                <span className="text-xs text-muted-foreground">{t('quickActions.addProductDesc')}</span>
                             </Button>
                         </Link>
                     </div>
@@ -228,12 +233,12 @@ export default function DashboardPage() {
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <div>
-                                <CardTitle>Top 3 Products</CardTitle>
-                                <CardDescription>Products with highest quantities</CardDescription>
+                                <CardTitle>{t('topProducts.title')}</CardTitle>
+                                <CardDescription>{t('topProducts.description')}</CardDescription>
                             </div>
-                            <Link href="/dashboard/statistics">
+                            <Link href={`/${locale}/dashboard/statistics`}>
                                 <Button variant="ghost" size="sm">
-                  View All
+                                    {t('topProducts.viewAll')}
                                     <ArrowRight className="h-4 w-4 ml-2" />
                                 </Button>
                             </Link>
@@ -255,7 +260,7 @@ export default function DashboardPage() {
                         ) : topProducts.length === 0 ? (
                             <div className="text-center py-8 text-muted-foreground">
                                 <Package className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                                <p>No products found</p>
+                                <p>{t('topProducts.noProducts')}</p>
                             </div>
                         ) : (
                             <div className="space-y-3">
@@ -268,7 +273,9 @@ export default function DashboardPage() {
                                                 <p className="text-sm text-muted-foreground truncate">{product.description}</p>
                                             </div>
                                         </div>
-                                        <Badge variant={product.quantity > 50 ? 'default' : product.quantity > 10 ? 'secondary' : 'destructive'}>{product.quantity} units</Badge>
+                                        <Badge variant={product.quantity > 50 ? 'default' : product.quantity > 10 ? 'secondary' : 'destructive'}>
+                                            {product.quantity} {t('topProducts.units')}
+                                        </Badge>
                                     </div>
                                 ))}
                             </div>
@@ -281,12 +288,12 @@ export default function DashboardPage() {
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <div>
-                                <CardTitle>Warehouses</CardTitle>
-                                <CardDescription>Your warehouse locations</CardDescription>
+                                <CardTitle>{t('warehouses.title')}</CardTitle>
+                                <CardDescription>{t('warehouses.description')}</CardDescription>
                             </div>
-                            <Link href="/dashboard/warehouses">
+                            <Link href={`/${locale}/dashboard/warehouses`}>
                                 <Button variant="ghost" size="sm">
-                  View All
+                                    {t('warehouses.viewAll')}
                                     <ArrowRight className="h-4 w-4 ml-2" />
                                 </Button>
                             </Link>
@@ -308,11 +315,11 @@ export default function DashboardPage() {
                         ) : warehouses.length === 0 ? (
                             <div className="text-center py-8 text-muted-foreground">
                                 <WarehouseIcon className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                                <p className="mb-4">No warehouses found</p>
-                                <Link href="/dashboard/warehouses">
+                                <p className="mb-4">{t('warehouses.noWarehouses')}</p>
+                                <Link href={`/${locale}/dashboard/warehouses`}>
                                     <Button size="sm">
                                         <Plus className="h-4 w-4 mr-2" />
-                    Add Warehouse
+                                        {t('warehouses.addWarehouse')}
                                     </Button>
                                 </Link>
                             </div>
@@ -329,14 +336,14 @@ export default function DashboardPage() {
                                                 </p>
                                             </div>
                                         </div>
-                                        <Badge variant={warehouse.isActive ? 'default' : 'secondary'}>{warehouse.isActive ? 'Active' : 'Inactive'}</Badge>
+                                        <Badge variant={warehouse.isActive ? 'default' : 'secondary'}>{warehouse.isActive ? t('warehouses.active') : t('warehouses.inactive')}</Badge>
                                     </div>
                                 ))}
                                 {warehouses.length > 3 && (
                                     <div className="text-center pt-2">
-                                        <Link href="/dashboard/warehouses">
+                                        <Link href={`/${locale}/dashboard/warehouses`}>
                                             <Button variant="link" size="sm">
-                        View {warehouses.length - 3} more
+                                                {t('warehouses.viewMore', { count: warehouses.length - 3 })}
                                             </Button>
                                         </Link>
                                     </div>
@@ -351,34 +358,34 @@ export default function DashboardPage() {
             {!loading && products.length > 0 && (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Stock Level Overview</CardTitle>
-                        <CardDescription>Distribution of products by stock level</CardDescription>
+                        <CardTitle>{t('stockLevel.title')}</CardTitle>
+                        <CardDescription>{t('stockLevel.description')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="flex items-center justify-between p-4 border rounded-lg bg-green-50 dark:bg-green-950/20">
                                 <div>
-                                    <p className="text-sm font-medium text-muted-foreground">High Stock</p>
+                                    <p className="text-sm font-medium text-muted-foreground">{t('stockLevel.highStock')}</p>
                                     <p className="text-2xl font-bold text-green-600 dark:text-green-400">{products.filter((p: Product) => p.quantity >= 50).length}</p>
-                                    <p className="text-xs text-muted-foreground">≥ 50 units</p>
+                                    <p className="text-xs text-muted-foreground">{t('stockLevel.highStockDesc')}</p>
                                 </div>
                                 <Package className="h-8 w-8 text-green-600 dark:text-green-400" />
                             </div>
 
                             <div className="flex items-center justify-between p-4 border rounded-lg bg-yellow-50 dark:bg-yellow-950/20">
                                 <div>
-                                    <p className="text-sm font-medium text-muted-foreground">Medium Stock</p>
+                                    <p className="text-sm font-medium text-muted-foreground">{t('stockLevel.mediumStock')}</p>
                                     <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{products.filter((p: Product) => p.quantity >= 10 && p.quantity < 50).length}</p>
-                                    <p className="text-xs text-muted-foreground">10-49 units</p>
+                                    <p className="text-xs text-muted-foreground">{t('stockLevel.mediumStockDesc')}</p>
                                 </div>
                                 <Package className="h-8 w-8 text-yellow-600 dark:text-yellow-400" />
                             </div>
 
                             <div className="flex items-center justify-between p-4 border rounded-lg bg-red-50 dark:bg-red-950/20">
                                 <div>
-                                    <p className="text-sm font-medium text-muted-foreground">Low Stock</p>
+                                    <p className="text-sm font-medium text-muted-foreground">{t('stockLevel.lowStock')}</p>
                                     <p className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.lowStockCount}</p>
-                                    <p className="text-xs text-muted-foreground">&lt; 10 units</p>
+                                    <p className="text-xs text-muted-foreground">{t('stockLevel.lowStockDesc')}</p>
                                 </div>
                                 <AlertTriangle className="h-8 w-8 text-red-600 dark:text-red-400" />
                             </div>

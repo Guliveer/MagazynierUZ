@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { DeleteLocationDialog } from './DeleteLocationDialog';
 import { LocationDialog } from './LocationDialog';
 import { PdfExportButton } from '@/components/exports/PdfExportButton';
+import { useTranslations } from 'next-intl';
 
 interface LocationListProps {
   warehouseId: number;
@@ -30,15 +31,8 @@ const LOCATION_TYPE_COLORS: Record<LocationType, string> = {
     RETURNS: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20'
 };
 
-const LOCATION_TYPE_LABELS: Record<LocationType, string> = {
-    PICKING: 'Picking',
-    BULK: 'Bulk Storage',
-    RECEIVING: 'Receiving',
-    SHIPPING: 'Shipping',
-    RETURNS: 'Returns'
-};
-
 export function LocationList({ warehouseId, warehouseName }: LocationListProps) {
+    const t = useTranslations('locations');
     const [locations, setLocations] = useState<Location[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -64,13 +58,13 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
             const data = await getLocations(warehouseId);
             setLocations(Array.isArray(data) ? data : []);
         } catch (err) {
-            const message = err instanceof ApiError ? err.message : 'An error occurred while fetching locations';
+            const message = err instanceof ApiError ? err.message : t('messages.fetchError');
             setError(message);
             toast.error(message);
         } finally {
             setIsLoading(false);
         }
-    }, [warehouseId]);
+    }, [warehouseId, t]);
 
     useEffect(() => {
         fetchLocations();
@@ -151,15 +145,15 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
             setIsSaving(true);
             if (selectedLocation) {
                 await updateLocation(warehouseId, selectedLocation.id, data);
-                toast.success('Location has been updated');
+                toast.success(t('messages.updated'));
             } else {
                 await createLocation(warehouseId, data);
-                toast.success('Location has been added');
+                toast.success(t('messages.created'));
             }
             setIsDialogOpen(false);
             await fetchLocations();
         } catch (err) {
-            const message = err instanceof ApiError ? err.message : 'An error occurred while saving the location';
+            const message = err instanceof ApiError ? err.message : t('messages.createError');
             toast.error(message);
         } finally {
             setIsSaving(false);
@@ -174,11 +168,11 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
         try {
             setIsDeleting(true);
             await deleteLocation(warehouseId, selectedLocation.id);
-            toast.success('Location has been deleted');
+            toast.success(t('messages.deleted'));
             setIsDeleteDialogOpen(false);
             await fetchLocations();
         } catch (err) {
-            const message = err instanceof ApiError ? err.message : 'An error occurred while deleting the location';
+            const message = err instanceof ApiError ? err.message : t('messages.deleteError');
             toast.error(message);
         } finally {
             setIsDeleting(false);
@@ -202,11 +196,11 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Code</TableHead>
-                                <TableHead>Type</TableHead>
-                                <TableHead>Zone</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                                <TableHead>{t('table.locationCode')}</TableHead>
+                                <TableHead>{t('table.type')}</TableHead>
+                                <TableHead>{t('table.zone')}</TableHead>
+                                <TableHead>{t('table.status')}</TableHead>
+                                <TableHead className="text-right">{t('table.actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -244,16 +238,16 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
         return (
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold tracking-tight">Locations in {warehouseName}</h2>
+                    <h2 className="text-2xl font-bold tracking-tight">{t('title', { warehouseName })}</h2>
                     <Button onClick={handleAddClick}>
                         <Plus className="mr-2 h-4 w-4" />
-            Add Location
+                        {t('addLocation')}
                     </Button>
                 </div>
                 <div className="rounded-md border border-destructive/50 bg-destructive/10 p-6 text-center">
                     <p className="text-destructive">{error}</p>
                     <Button variant="outline" className="mt-4" onClick={fetchLocations}>
-            Try Again
+                        {t('messages.tryAgain')}
                     </Button>
                 </div>
             </div>
@@ -265,10 +259,10 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
         return (
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold tracking-tight">Locations in {warehouseName}</h2>
+                    <h2 className="text-2xl font-bold tracking-tight">{t('title', { warehouseName })}</h2>
                     <Button onClick={handleAddClick}>
                         <Plus className="mr-2 h-4 w-4" />
-            Add Location
+                        {t('addLocation')}
                     </Button>
                 </div>
                 <Empty className="border rounded-lg py-12">
@@ -276,12 +270,12 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
                         <EmptyMedia variant="icon">
                             <MapPin />
                         </EmptyMedia>
-                        <EmptyTitle>No locations</EmptyTitle>
-                        <EmptyDescription>This warehouse doesn&apos;t have any locations yet. Add your first location to start organizing products.</EmptyDescription>
+                        <EmptyTitle>{t('empty.title')}</EmptyTitle>
+                        <EmptyDescription>{t('empty.description')}</EmptyDescription>
                     </EmptyHeader>
                     <Button onClick={handleAddClick}>
                         <Plus className="mr-2 h-4 w-4" />
-            Add First Location
+                        {t('addFirstLocation')}
                     </Button>
                 </Empty>
 
@@ -295,44 +289,42 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold tracking-tight">Locations in {warehouseName}</h2>
-                    <p className="text-sm text-muted-foreground">
-                        {filteredLocations.length} of {locations.length} locations
-                    </p>
+                    <h2 className="text-2xl font-bold tracking-tight">{t('title', { warehouseName })}</h2>
+                    <p className="text-sm text-muted-foreground">{t('showing', { filtered: filteredLocations.length, total: locations.length })}</p>
                 </div>
                 <div className="flex gap-2">
-                    <PdfExportButton scope="WAREHOUSE" warehouseId={warehouseId} variant="outline" size="default" label="Export Warehouse PDF" />
+                    <PdfExportButton scope="WAREHOUSE" warehouseId={warehouseId} variant="outline" size="default" label={t('exportWarehousePdf')} />
                     <Button onClick={handleAddClick}>
                         <Plus className="mr-2 h-4 w-4" />
-            Add Location
+                        {t('addLocation')}
                     </Button>
                 </div>
             </div>
 
             {/* Filters */}
             <div className="flex flex-wrap gap-2">
-                <Input placeholder="Search by code..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="max-w-xs" />
+                <Input placeholder={t('search.placeholder')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="max-w-xs" />
 
                 <Select value={filterType} onValueChange={(value) => setFilterType(value as LocationType | 'ALL')}>
                     <SelectTrigger className="w-40">
-                        <SelectValue placeholder="Type" />
+                        <SelectValue placeholder={t('filters.type')} />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="ALL">All Types</SelectItem>
-                        <SelectItem value="PICKING">Picking</SelectItem>
-                        <SelectItem value="BULK">Bulk Storage</SelectItem>
-                        <SelectItem value="RECEIVING">Receiving</SelectItem>
-                        <SelectItem value="SHIPPING">Shipping</SelectItem>
-                        <SelectItem value="RETURNS">Returns</SelectItem>
+                        <SelectItem value="ALL">{t('filters.allTypes')}</SelectItem>
+                        <SelectItem value="PICKING">{t('types.PICKING')}</SelectItem>
+                        <SelectItem value="BULK">{t('types.BULK')}</SelectItem>
+                        <SelectItem value="RECEIVING">{t('types.RECEIVING')}</SelectItem>
+                        <SelectItem value="SHIPPING">{t('types.SHIPPING')}</SelectItem>
+                        <SelectItem value="RETURNS">{t('types.RETURNS')}</SelectItem>
                     </SelectContent>
                 </Select>
 
                 <Select value={filterZone} onValueChange={setFilterZone}>
                     <SelectTrigger className="w-40">
-                        <SelectValue placeholder="Zone" />
+                        <SelectValue placeholder={t('filters.zone')} />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="ALL">All Zones</SelectItem>
+                        <SelectItem value="ALL">{t('filters.allZones')}</SelectItem>
                         {uniqueZones.map((zone) => (
                             <SelectItem key={zone} value={zone}>
                                 {zone}
@@ -343,24 +335,24 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
 
                 <Select value={filterStatus} onValueChange={(value) => setFilterStatus(value as 'ALL' | 'ACTIVE' | 'INACTIVE' | 'LOCKED')}>
                     <SelectTrigger className="w-40">
-                        <SelectValue placeholder="Status" />
+                        <SelectValue placeholder={t('filters.status')} />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="ALL">All Status</SelectItem>
-                        <SelectItem value="ACTIVE">Active</SelectItem>
-                        <SelectItem value="INACTIVE">Inactive</SelectItem>
-                        <SelectItem value="LOCKED">Locked</SelectItem>
+                        <SelectItem value="ALL">{t('filters.allStatus')}</SelectItem>
+                        <SelectItem value="ACTIVE">{t('filters.active')}</SelectItem>
+                        <SelectItem value="INACTIVE">{t('filters.inactive')}</SelectItem>
+                        <SelectItem value="LOCKED">{t('filters.locked')}</SelectItem>
                     </SelectContent>
                 </Select>
 
                 <Select value={sortBy} onValueChange={(value) => setSortBy(value as 'code' | 'type' | 'zone')}>
                     <SelectTrigger className="w-40">
-                        <SelectValue placeholder="Sort by" />
+                        <SelectValue placeholder={t('filters.sortBy')} />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="code">Sort by Code</SelectItem>
-                        <SelectItem value="type">Sort by Type</SelectItem>
-                        <SelectItem value="zone">Sort by Zone</SelectItem>
+                        <SelectItem value="code">{t('filters.sortByCode')}</SelectItem>
+                        <SelectItem value="type">{t('filters.sortByType')}</SelectItem>
+                        <SelectItem value="zone">{t('filters.sortByZone')}</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
@@ -370,11 +362,11 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Location Code</TableHead>
-                            <TableHead>Type</TableHead>
-                            <TableHead>Zone</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
+                            <TableHead>{t('table.locationCode')}</TableHead>
+                            <TableHead>{t('table.type')}</TableHead>
+                            <TableHead>{t('table.zone')}</TableHead>
+                            <TableHead>{t('table.status')}</TableHead>
+                            <TableHead className="text-right">{t('table.actions')}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -385,7 +377,7 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
                                 </TableCell>
                                 <TableCell>
                                     <Badge variant="outline" className={LOCATION_TYPE_COLORS[location.locationType]}>
-                                        {LOCATION_TYPE_LABELS[location.locationType]}
+                                        {t(`types.${location.locationType}`)}
                                     </Badge>
                                 </TableCell>
                                 <TableCell>
@@ -396,11 +388,11 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex gap-1">
-                                        <Badge variant={location.isActive ? 'default' : 'secondary'}>{location.isActive ? 'Active' : 'Inactive'}</Badge>
+                                        <Badge variant={location.isActive ? 'default' : 'secondary'}>{location.isActive ? t('filters.active') : t('filters.inactive')}</Badge>
                                         {location.isLocked && (
                                             <Badge variant="outline" className="gap-1">
                                                 <Lock className="h-3 w-3" />
-                        Locked
+                                                {t('filters.locked')}
                                             </Badge>
                                         )}
                                     </div>

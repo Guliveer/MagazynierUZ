@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useTranslations } from 'next-intl';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,15 +12,16 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import type { Product } from '@/types';
 
-// Validation schema for product form
-const productFormSchema = z.object({
-    name: z.string().min(2, 'Name must be at least 2 characters'),
+// Base schema for type inference
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const baseProductFormSchema = z.object({
+    name: z.string().min(2),
     description: z.string().optional(),
-    price: z.number({ message: 'Price is required and must be a number' }).positive('Price must be greater than 0'),
-    quantity: z.number({ message: 'Quantity is required and must be a number' }).int('Quantity must be an integer').min(0, 'Quantity cannot be negative')
+    price: z.number().positive(),
+    quantity: z.number().int().min(0)
 });
 
-export type ProductFormData = z.infer<typeof productFormSchema>;
+export type ProductFormData = z.infer<typeof baseProductFormSchema>;
 
 interface ProductFormProps {
   product?: Product | null;
@@ -29,6 +31,19 @@ interface ProductFormProps {
 }
 
 export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: ProductFormProps) {
+    const t = useTranslations('products.form');
+
+    // Validation schema with translated messages
+    const productFormSchema = z.object({
+        name: z.string().min(2, t('validation.nameMin')),
+        description: z.string().optional(),
+        price: z.number({ message: t('validation.priceRequired') }).positive(t('validation.pricePositive')),
+        quantity: z
+            .number({ message: t('validation.quantityRequired') })
+            .int(t('validation.quantityInteger'))
+            .min(0, t('validation.quantityNonNegative'))
+    });
+
     const form = useForm<ProductFormData>({
         resolver: zodResolver(productFormSchema),
         defaultValues: {
@@ -65,9 +80,9 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: 
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Product Name *</FormLabel>
+                            <FormLabel>{t('fields.name')} *</FormLabel>
                             <FormControl>
-                                <Input placeholder="e.g. Dell XPS 15 Laptop" {...field} />
+                                <Input placeholder={t('fields.namePlaceholder')} {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -79,9 +94,9 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: 
                     name="description"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Description</FormLabel>
+                            <FormLabel>{t('fields.description')}</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="Optional product description..." className="resize-none" rows={3} {...field} />
+                                <Textarea placeholder={t('fields.descriptionPlaceholder')} className="resize-none" rows={3} {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -94,13 +109,13 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: 
                         name="price"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Price (PLN) *</FormLabel>
+                                <FormLabel>{t('fields.price')} *</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
                                         step="0.01"
                                         min="0.1"
-                                        placeholder="e.g. 4999.99"
+                                        placeholder={t('fields.pricePlaceholder')}
                                         {...field}
                                         onChange={(e) => {
                                             const value = e.target.value;
@@ -123,13 +138,13 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: 
                         name="quantity"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Quantity *</FormLabel>
+                                <FormLabel>{t('fields.quantity')} *</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
                                         step="1"
                                         min="0"
-                                        placeholder="e.g. 10"
+                                        placeholder={t('fields.quantityPlaceholder')}
                                         {...field}
                                         onChange={(e) => {
                                             const value = e.target.value;
@@ -151,11 +166,11 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: 
                 {/* Buttons */}
                 <div className="flex justify-end gap-2 pt-4">
                     <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-            Cancel
+                        {t('buttons.cancel')}
                     </Button>
                     <Button type="submit" disabled={isLoading}>
                         {isLoading && <Spinner className="mr-2" />}
-                        {product ? 'Save Changes' : 'Add Product'}
+                        {product ? t('buttons.save') : t('buttons.add')}
                     </Button>
                 </div>
             </form>

@@ -1,6 +1,7 @@
 'use client';
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip as RechartsTooltip } from 'recharts';
+import { useTranslations } from 'next-intl';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import type { Top10Product } from '@/types';
 
@@ -9,9 +10,27 @@ interface Top10ChartProps {
   sortBy: 'quantity' | 'price' | 'name';
   viewType?: 'bar' | 'pie';
   onBarClick?: (product: Top10Product) => void;
+  locale: string;
 }
 
-export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick }: Top10ChartProps) {
+export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick, locale }: Top10ChartProps) {
+    const t = useTranslations('statistics.charts');
+
+    // Format currency based on locale
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat(locale, {
+            style: 'currency',
+            currency: 'PLN',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(value);
+    };
+
+    // Format number based on locale
+    const formatNumber = (value: number) => {
+        return new Intl.NumberFormat(locale).format(value);
+    };
+
     // Transform data for the chart
     const chartData = data.map((product) => ({
         name: product.name,
@@ -27,7 +46,7 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick }: Top10
     // Chart configuration
     const chartConfig = {
         value: {
-            label: sortBy === 'quantity' ? 'Quantity' : 'Price',
+            label: sortBy === 'quantity' ? t('labels.quantity') : t('labels.price'),
             color: 'hsl(var(--primary))'
         }
     };
@@ -36,7 +55,7 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick }: Top10
     const CHART_COLORS = [
         'hsl(0, 84%, 60%)', // Red
         'hsl(30, 100%, 55%)', // Orange
-        'hsl(60, 100%, 50%)', // Yellowś
+        'hsl(60, 100%, 50%)', // Yellow
         'hsl(120, 76%, 44%)', // Lime
         'hsl(180, 100%, 35%)', // Cyan
         'hsl(210, 100%, 40%)', // Sky Blue
@@ -75,7 +94,9 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick }: Top10
                                     return (
                                         <div className="rounded-lg border bg-background p-2 shadow-sm">
                                             <div className="font-semibold">{data.name}</div>
-                                            <div className="text-sm text-muted-foreground">Value: {Number(data.value).toFixed(2)} PLN</div>
+                                            <div className="text-sm text-muted-foreground">
+                                                {t('labels.value')}: {formatCurrency(Number(data.value))}
+                                            </div>
                                         </div>
                                     );
                                 }
@@ -99,7 +120,7 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick }: Top10
                         tick={{ fontSize: 12 }}
                         className="text-muted-foreground"
                         label={{
-                            value: sortBy === 'quantity' ? 'Quantity' : 'Price (PLN)',
+                            value: sortBy === 'quantity' ? t('labels.quantity') : t('labels.price'),
                             angle: -90,
                             position: 'insideLeft',
                             style: { textAnchor: 'middle' }
@@ -115,16 +136,16 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick }: Top10
                                             <div className="font-semibold">{payload.name}</div>
                                             <div className="text-xs text-muted-foreground">{payload.description}</div>
                                             <div className="flex justify-between gap-4 pt-1">
-                                                <span>Quantity:</span>
-                                                <span className="font-mono">{payload.quantity}</span>
+                                                <span>{t('tooltip.quantity')}</span>
+                                                <span className="font-mono">{formatNumber(payload.quantity)}</span>
                                             </div>
                                             <div className="flex justify-between gap-4">
-                                                <span>Price:</span>
-                                                <span className="font-mono">{payload.price.toFixed(2)} PLN</span>
+                                                <span>{t('tooltip.price')}</span>
+                                                <span className="font-mono">{formatCurrency(payload.price)}</span>
                                             </div>
                                             <div className="flex justify-between gap-4 border-t pt-1">
-                                                <span>Total Value:</span>
-                                                <span className="font-mono font-semibold">{payload.totalValue.toFixed(2)} PLN</span>
+                                                <span>{t('tooltip.totalValue')}</span>
+                                                <span className="font-mono font-semibold">{formatCurrency(payload.totalValue)}</span>
                                             </div>
                                         </div>
                                     );

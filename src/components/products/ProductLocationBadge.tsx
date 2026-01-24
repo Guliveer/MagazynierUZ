@@ -1,6 +1,7 @@
 'use client';
 
 import { Building2, MapPin, Package } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { LocationType } from '@/types';
@@ -23,12 +24,14 @@ interface ProductLocationBadgeProps {
  * Supports click handlers for navigation
  */
 export function ProductLocationBadge({ warehouseName, warehouseCode, locationCode, zoneName, locationType, onWarehouseClick, onLocationClick, compact = false, className = '' }: ProductLocationBadgeProps) {
+    const t = useTranslations('products.location');
+
     // If no location data, show unknown
     if (!warehouseName && !warehouseCode && !locationCode) {
         return (
             <Badge variant="outline" className={`gap-1 ${className}`}>
                 <Package className="h-3 w-3" />
-        Unknown Location
+                {t('unknown')}
             </Badge>
         );
     }
@@ -55,20 +58,7 @@ export function ProductLocationBadge({ warehouseName, warehouseCode, locationCod
     // Get location type label
     const getLocationTypeLabel = (type?: LocationType) => {
         if (!type) { return ''; }
-        switch (type) {
-            case 'PICKING':
-                return 'Picking';
-            case 'BULK':
-                return 'Bulk Storage';
-            case 'RECEIVING':
-                return 'Receiving';
-            case 'SHIPPING':
-                return 'Shipping';
-            case 'RETURNS':
-                return 'Returns';
-            default:
-                return type;
-        }
+        return t(`types.${type}`);
     };
 
     // Compact view - single badge with tooltip
@@ -89,7 +79,11 @@ export function ProductLocationBadge({ warehouseName, warehouseCode, locationCod
                         {zoneName && <span className="text-muted-foreground">- {zoneName}</span>}
                     </div>
                 )}
-                {locationType && <div className="text-muted-foreground">Type: {getLocationTypeLabel(locationType)}</div>}
+                {locationType && (
+                    <div className="text-muted-foreground">
+                        {t('tooltip.type')}: {getLocationTypeLabel(locationType)}
+                    </div>
+                )}
             </div>
         );
 
@@ -133,8 +127,12 @@ export function ProductLocationBadge({ warehouseName, warehouseCode, locationCod
                         <TooltipContent side="top">
                             <div className="text-xs">
                                 <div className="font-medium">{warehouseName}</div>
-                                {warehouseCode && <code className="text-muted-foreground">Code: {warehouseCode}</code>}
-                                {onWarehouseClick && <div className="text-muted-foreground mt-1">Click to filter by warehouse</div>}
+                                {warehouseCode && (
+                                    <code className="text-muted-foreground">
+                                        {t('tooltip.code')}: {warehouseCode}
+                                    </code>
+                                )}
+                                {onWarehouseClick && <div className="text-muted-foreground mt-1">{t('tooltip.clickWarehouse')}</div>}
                             </div>
                         </TooltipContent>
                     </Tooltip>
@@ -154,9 +152,17 @@ export function ProductLocationBadge({ warehouseName, warehouseCode, locationCod
                         <TooltipContent side="top">
                             <div className="text-xs">
                                 <div className="font-medium">{locationCode}</div>
-                                {zoneName && <div className="text-muted-foreground">Zone: {zoneName}</div>}
-                                {locationType && <div className="text-muted-foreground">Type: {getLocationTypeLabel(locationType)}</div>}
-                                {onLocationClick && <div className="text-muted-foreground mt-1">Click to filter by location</div>}
+                                {zoneName && (
+                                    <div className="text-muted-foreground">
+                                        {t('tooltip.zone')}: {zoneName}
+                                    </div>
+                                )}
+                                {locationType && (
+                                    <div className="text-muted-foreground">
+                                        {t('tooltip.type')}: {getLocationTypeLabel(locationType)}
+                                    </div>
+                                )}
+                                {onLocationClick && <div className="text-muted-foreground mt-1">{t('tooltip.clickLocation')}</div>}
                             </div>
                         </TooltipContent>
                     </Tooltip>

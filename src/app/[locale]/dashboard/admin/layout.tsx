@@ -1,15 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { isAuthenticated, isAdmin } from '@/lib/auth';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { ShieldAlert, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+    const t = useTranslations('admin.layout');
     const router = useRouter();
+    const params = useParams();
+    const locale = params.locale as string;
 
     // Compute authorization state during render instead of in effect
     const [isAuthorized, setIsAuthorized] = useState<boolean | null>(() => {
@@ -25,7 +29,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     useEffect(() => {
     // Check authentication and admin role
         if (!isAuthenticated()) {
-            router.push('/login?redirect=/dashboard/admin');
+            router.push(`/${locale}/login?redirect=/${locale}/dashboard/admin`);
             return;
         }
 
@@ -34,7 +38,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             const authorized = isAdmin();
             setIsAuthorized(authorized);
         });
-    }, [router]);
+    }, [router, locale]);
 
     // Loading state
     if (isAuthorized === null) {
@@ -42,7 +46,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="flex items-center justify-center min-h-[400px]">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                    <p className="text-muted-foreground">Verifying access...</p>
+                    <p className="text-muted-foreground">{t('verifyingAccess')}</p>
                 </div>
             </div>
         );
@@ -55,19 +59,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <div className="max-w-md w-full">
                     <Alert variant="destructive">
                         <ShieldAlert className="h-4 w-4" />
-                        <AlertTitle>Access Denied</AlertTitle>
-                        <AlertDescription>You do not have permission to access the admin panel. This area is restricted to administrators only.</AlertDescription>
+                        <AlertTitle>{t('accessDenied')}</AlertTitle>
+                        <AlertDescription>{t('accessDeniedMessage')}</AlertDescription>
                     </Alert>
                     <div className="mt-6 flex gap-2">
-                        <Link href="/dashboard" className="flex-1">
+                        <Link href={`/${locale}/dashboard`} className="flex-1">
                             <Button variant="default" className="w-full">
                                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Dashboard
+                                {t('backToDashboard')}
                             </Button>
                         </Link>
-                        <Link href="/dashboard/profile" className="flex-1">
+                        <Link href={`/${locale}/dashboard/profile`} className="flex-1">
                             <Button variant="outline" className="w-full">
-                View Profile
+                                {t('viewProfile')}
                             </Button>
                         </Link>
                     </div>

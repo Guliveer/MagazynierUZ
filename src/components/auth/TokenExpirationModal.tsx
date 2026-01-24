@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { AlertTriangle, Clock, LogIn, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -38,6 +39,7 @@ export interface TokenExpirationModalProps {
  * ```
  */
 export function TokenExpirationModal({ open, timeRemaining, onDismiss, onExtend }: TokenExpirationModalProps) {
+    const t = useTranslations('dashboard.tokenExpiration');
     const [currentTimeRemaining, setCurrentTimeRemaining] = useState(timeRemaining);
 
     // Update countdown every second
@@ -78,9 +80,9 @@ export function TokenExpirationModal({ open, timeRemaining, onDismiss, onExtend 
                 <DialogHeader>
                     <div className="flex items-center gap-2">
                         <AlertTriangle className={`h-5 w-5 ${isCritical ? 'text-destructive' : isUrgent ? 'text-orange-500' : 'text-yellow-500'}`} />
-                        <DialogTitle>Session Expiring Soon</DialogTitle>
+                        <DialogTitle>{t('title')}</DialogTitle>
                     </div>
-                    <DialogDescription>Your session is about to expire. You&apos;ll be logged out automatically when the timer reaches zero.</DialogDescription>
+                    <DialogDescription>{t('description')}</DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4 py-4">
@@ -89,19 +91,19 @@ export function TokenExpirationModal({ open, timeRemaining, onDismiss, onExtend 
                         <Clock className={`h-8 w-8 ${isCritical ? 'text-destructive' : isUrgent ? 'text-orange-500' : 'text-yellow-600'}`} />
                         <div className="text-center">
                             <div className={`text-3xl font-bold ${isCritical ? 'text-destructive' : isUrgent ? 'text-orange-600 dark:text-orange-400' : 'text-yellow-700 dark:text-yellow-400'}`}>{formatTimeRemaining(currentTimeRemaining)}</div>
-                            <div className="text-sm text-muted-foreground mt-1">remaining</div>
+                            <div className="text-sm text-muted-foreground mt-1">{t('remaining')}</div>
                         </div>
                     </div>
 
                     {/* Information Alert */}
                     <Alert>
                         <AlertDescription>
-                            <strong>What happens next?</strong>
+                            <strong>{t('whatHappens')}</strong>
                             <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
-                                <li>Click &quot;Stay Logged In&quot; to extend your session</li>
-                                <li>You&apos;ll be redirected to login and returned to this page</li>
-                                <li>Or dismiss this warning and continue working</li>
-                                <li>Save your work to avoid losing any changes</li>
+                                <li>{t('steps.stayLoggedIn')}</li>
+                                <li>{t('steps.redirect')}</li>
+                                <li>{t('steps.dismiss')}</li>
+                                <li>{t('steps.saveWork')}</li>
                             </ul>
                         </AlertDescription>
                     </Alert>
@@ -110,11 +112,11 @@ export function TokenExpirationModal({ open, timeRemaining, onDismiss, onExtend 
                 <DialogFooter className="flex-col sm:flex-row gap-2">
                     <Button variant="outline" onClick={onDismiss} className="w-full sm:w-auto">
                         <X className="h-4 w-4 mr-2" />
-            Dismiss
+                        {t('actions.dismiss')}
                     </Button>
                     <Button onClick={onExtend} className="w-full sm:w-auto">
                         <LogIn className="h-4 w-4 mr-2" />
-            Stay Logged In
+                        {t('actions.stayLoggedIn')}
                     </Button>
                 </DialogFooter>
             </DialogContent>

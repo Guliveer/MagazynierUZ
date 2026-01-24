@@ -6,16 +6,17 @@ import { Input } from 'shadcn/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from 'shadcn/card';
 import { Alert, AlertDescription, AlertTitle } from 'shadcn/alert';
 import { AlertCircleIcon, CheckCircle2Icon, Loader2Icon } from 'lucide-react';
-import Link from 'next/link';
 import HCaptchaWrapper, { HCaptchaRef } from '@/components/HCaptcha';
 import { register, login, ApiError } from '@/lib/api';
 import { setToken } from '@/lib/auth';
 import { z } from 'zod/v4';
-
-// Password validation schema
-const passwordSchema = z.string().min(6, 'Password must be at least 6 characters long').max(500, 'Password must be at most 500 characters long');
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
+import LocaleSwitcher from '@/components/LocaleSwitcher';
 
 export default function RegisterPage() {
+    const t = useTranslations('auth.register');
+    const tCommon = useTranslations('common');
     const router = useRouter();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -25,6 +26,9 @@ export default function RegisterPage() {
     const [passwordError, setPasswordError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const captchaRef = useRef<HCaptchaRef>(null);
+
+    // Password validation schema with translated messages
+    const passwordSchema = z.string().min(6, t('validation.passwordMinLength')).max(500, t('validation.passwordMaxLength'));
 
     const validatePassword = (value: string): boolean => {
         const result = passwordSchema.safeParse(value);
@@ -59,7 +63,7 @@ export default function RegisterPage() {
     };
 
     const handleCaptchaError = (err: string) => {
-        setAlert({ type: 'error', message: `Captcha error: ${err}` });
+        setAlert({ type: 'error', message: t('errors.captchaError', { error: err }) });
         setCaptchaToken(null);
     };
 
@@ -68,17 +72,17 @@ export default function RegisterPage() {
 
         // Validate password strength
         if (!validatePassword(password)) {
-            setAlert({ type: 'error', message: passwordError || 'Password does not meet requirements' });
+            setAlert({ type: 'error', message: passwordError || t('errors.passwordRequirements') });
             return;
         }
 
         if (password !== confirmPassword) {
-            setAlert({ type: 'error', message: 'Passwords need to match!' });
+            setAlert({ type: 'error', message: t('errors.passwordMismatch') });
             return;
         }
 
         if (!captchaToken) {
-            setAlert({ type: 'error', message: 'Please complete the captcha verification' });
+            setAlert({ type: 'error', message: t('errors.captchaRequired') });
             return;
         }
 
@@ -88,7 +92,7 @@ export default function RegisterPage() {
         try {
             await register(username, password);
 
-            setAlert({ type: 'success', message: 'Registration was successful! Logging you in...' });
+            setAlert({ type: 'success', message: t('success.registered') });
 
             // Reset captcha after submission
             captchaRef.current?.resetCaptcha();
@@ -101,7 +105,7 @@ export default function RegisterPage() {
                 router.push('/dashboard');
             } catch {
                 // If auto-login fails, redirect to login page
-                setAlert({ type: 'success', message: 'Registration was successful! Please log in.' });
+                setAlert({ type: 'success', message: t('success.registeredLogin') });
                 setTimeout(() => {
                     router.push('/login');
                 }, 2000);
@@ -109,12 +113,12 @@ export default function RegisterPage() {
         } catch (err) {
             if (err instanceof ApiError) {
                 if (err.statusCode === 409) {
-                    setAlert({ type: 'error', message: 'An account with this username already exists' });
+                    setAlert({ type: 'error', message: t('errors.userExists') });
                 } else {
-                    setAlert({ type: 'error', message: err.message || 'Registration failed. Please try again.' });
+                    setAlert({ type: 'error', message: err.message || t('errors.registrationFailed') });
                 }
             } else {
-                setAlert({ type: 'error', message: 'An unexpected error occurred. Please try again.' });
+                setAlert({ type: 'error', message: t('errors.unexpectedError') });
             }
 
             // Reset captcha on error
@@ -127,10 +131,15 @@ export default function RegisterPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat p-4" style={{ backgroundImage: "url('/warehouse-bg.png')" }}>
+            {/* Locale Switcher in top-right corner */}
+            <div className="absolute top-4 right-4 z-20">
+                <LocaleSwitcher />
+            </div>
+
             <Card className="w-full max-w-sm">
                 <CardHeader>
-                    <CardTitle className="text-center">Registration</CardTitle>
-                    <CardDescription className="text-center">Create your account</CardDescription>
+                    <CardTitle className="text-center">{t('title')}</CardTitle>
+                    <CardDescription className="text-center">{t('subtitle')}</CardDescription>
                 </CardHeader>
 
                 <CardContent className="space-y-4">
@@ -138,21 +147,21 @@ export default function RegisterPage() {
                         <Alert variant={alert.type === 'error' ? 'destructive' : 'default'} className="flex items-start space-x-2">
                             {alert.type === 'error' ? <AlertCircleIcon className="h-5 w-5 mt-0.5" /> : <CheckCircle2Icon className="h-5 w-5 mt-0.5" />}
                             <div>
-                                <AlertTitle>{alert.type === 'error' ? 'Error' : 'Success'}</AlertTitle>
+                                <AlertTitle>{alert.type === 'error' ? tCommon('status.error') : tCommon('status.success')}</AlertTitle>
                                 <AlertDescription>{alert.message}</AlertDescription>
                             </div>
                         </Alert>
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <Input id="username" type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} className={'space-y-2'} disabled={isLoading} required />
+                        <Input id="username" type="text" placeholder={tCommon('labels.username')} value={username} onChange={(e) => setUsername(e.target.value)} className={'space-y-2'} disabled={isLoading} required />
 
                         <div className="space-y-1">
-                            <Input id="password" type="password" placeholder="Password" value={password} onChange={handlePasswordChange} className={passwordError ? 'border-red-500' : ''} disabled={isLoading} required />
+                            <Input id="password" type="password" placeholder={tCommon('labels.password')} value={password} onChange={handlePasswordChange} className={passwordError ? 'border-red-500' : ''} disabled={isLoading} required />
                             {passwordError && <p className="text-sm text-red-500">{passwordError}</p>}
                         </div>
 
-                        <Input id="confirmPassword" type="password" placeholder="Confirm password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className={'space-y-2'} disabled={isLoading} required />
+                        <Input id="confirmPassword" type="password" placeholder={tCommon('labels.confirmPassword')} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className={'space-y-2'} disabled={isLoading} required />
 
                         <div className="flex justify-center">
                             <HCaptchaWrapper ref={captchaRef} onVerify={handleCaptchaVerify} onExpire={handleCaptchaExpire} onError={handleCaptchaError} />
@@ -162,19 +171,19 @@ export default function RegisterPage() {
                             {isLoading ? (
                                 <>
                                     <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-                  Registering...
+                                    {t('registering')}
                                 </>
                             ) : (
-                                'Register'
+                                t('title')
                             )}
                         </Button>
                     </form>
                 </CardContent>
 
                 <CardFooter className="text-sm text-muted-foreground text-center flex justify-center">
-          Already have an account?{' '}
+                    {t('hasAccount')}{' '}
                     <Link href="/login" className="ml-1 text-primary hover:underline">
-            Log in
+                        {t('loginLink')}
                     </Link>
                 </CardFooter>
             </Card>

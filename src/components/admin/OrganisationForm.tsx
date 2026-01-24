@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ interface OrganisationFormProps {
 }
 
 export function OrganisationForm({ organisation, onSubmit, isLoading }: OrganisationFormProps) {
+    const t = useTranslations('admin.organisationForm');
     const [name, setName] = useState(organisation?.name || '');
     const [tin, setTin] = useState(organisation?.tin || '');
 
@@ -23,19 +25,31 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
   }>({});
 
     const validateName = (value: string): string | undefined => {
-        if (!value) { return 'Organisation name is required'; }
-        if (value.length > 20) { return 'Organisation name must not exceed 20 characters'; }
-        if (value.length < 1) { return 'Organisation name must be at least 1 character'; }
+        if (!value) {
+            return t('nameRequired');
+        }
+        if (value.length > 20) {
+            return t('nameMaxLength');
+        }
+        if (value.length < 1) {
+            return t('nameMinLength');
+        }
         return undefined;
     };
 
     const validateTin = (value: string): string | undefined => {
-        if (!value) { return 'TIN is required'; }
-        if (value.length > 20) { return 'TIN must not exceed 20 characters'; }
-        if (value.length < 1) { return 'TIN must be at least 1 character'; }
+        if (!value) {
+            return t('tinRequired');
+        }
+        if (value.length > 20) {
+            return t('tinMaxLength');
+        }
+        if (value.length < 1) {
+            return t('tinMinLength');
+        }
         // Basic TIN format validation (alphanumeric and hyphens)
         if (!/^[A-Za-z0-9-]+$/.test(value)) {
-            return 'TIN can only contain letters, numbers, and hyphens';
+            return t('tinInvalidFormat');
         }
         return undefined;
     };
@@ -60,8 +74,12 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
         if (isEdit) {
             // Update organisation - only include changed fields
             const updateData: UpdateOrganisationRequest = {};
-            if (name !== organisation.name) { updateData.name = name; }
-            if (tin !== organisation.tin) { updateData.tin = tin; }
+            if (name !== organisation.name) {
+                updateData.name = name;
+            }
+            if (tin !== organisation.tin) {
+                updateData.tin = tin;
+            }
             onSubmit(updateData);
         } else {
             // Create organisation
@@ -91,7 +109,9 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
                     }}
                     onBlur={() => {
                         const error = validateName(name);
-                        if (error) { setErrors((prev) => ({ ...prev, name: error })); }
+                        if (error) {
+                            setErrors((prev) => ({ ...prev, name: error }));
+                        }
                     }}
                     placeholder="Enter organisation name (max 20 characters)"
                     disabled={isLoading}
@@ -125,7 +145,9 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
                     }}
                     onBlur={() => {
                         const error = validateTin(tin);
-                        if (error) { setErrors((prev) => ({ ...prev, tin: error })); }
+                        if (error) {
+                            setErrors((prev) => ({ ...prev, tin: error }));
+                        }
                     }}
                     placeholder="Enter TIN (e.g., 123-456-789)"
                     disabled={isLoading}

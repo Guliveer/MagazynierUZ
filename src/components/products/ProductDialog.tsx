@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ProductForm, type ProductFormData } from './ProductForm';
 import { ProductLocationBadge } from './ProductLocationBadge';
@@ -20,6 +21,7 @@ interface ProductDialogProps {
 }
 
 export function ProductDialog({ open, onOpenChange, product, onSubmit, isLoading = false, warehouseName, warehouseCode, locationCode, zoneName }: ProductDialogProps) {
+    const t = useTranslations('products.form');
     const isEditing = !!product;
     const productWithContext = product as ProductWithContext | undefined;
 
@@ -52,8 +54,8 @@ export function ProductDialog({ open, onOpenChange, product, onSubmit, isLoading
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-lg">
                 <DialogHeader>
-                    <DialogTitle>{isEditing ? 'Edit Product' : 'Add New Product'}</DialogTitle>
-                    <DialogDescription>{isEditing ? 'Update the product details and save changes.' : 'Fill in the form to add a new product to this location.'}</DialogDescription>
+                    <DialogTitle>{isEditing ? t('title.edit') : t('title.add')}</DialogTitle>
+                    <DialogDescription>{isEditing ? t('description.edit') : t('description.add')}</DialogDescription>
                 </DialogHeader>
 
                 {/* Show current location information */}
@@ -61,7 +63,7 @@ export function ProductDialog({ open, onOpenChange, product, onSubmit, isLoading
                     <Alert>
                         <Info className="h-4 w-4" />
                         <AlertDescription className="flex items-center gap-2">
-                            <span className="text-sm">{isEditing ? 'Current location:' : 'Adding to:'}</span>
+                            <span className="text-sm">{isEditing ? t('currentLocation') : t('addingTo')}</span>
                             <ProductLocationBadge warehouseName={displayWarehouseName} warehouseCode={displayWarehouseCode} locationCode={displayLocationCode} zoneName={displayZoneName} locationType={productWithContext?.locationType} compact />
                         </AlertDescription>
                     </Alert>

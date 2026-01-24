@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -16,13 +17,8 @@ interface UserFormProps {
   isLoading: boolean;
 }
 
-const AVAILABLE_ROLES = [
-    { value: 'ROLE_USER', label: 'User', description: 'Standard user access' },
-    { value: 'ROLE_ADMIN', label: 'Admin', description: 'Full system access' },
-    { value: 'ROLE_MANAGER', label: 'Manager', description: 'Warehouse management' }
-];
-
 export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
+    const t = useTranslations('admin.userForm');
     const [username, setUsername] = useState(user?.username || '');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -54,23 +50,23 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
 
     const validateUsername = (value: string): string | undefined => {
         if (!value) {
-            return 'Username is required';
+            return t('usernameRequired');
         }
         if (value.length < 3) {
-            return 'Username must be at least 3 characters';
+            return t('usernameMinLength');
         }
         if (value.length > 50) {
-            return 'Username must not exceed 50 characters';
+            return t('usernameMaxLength');
         }
         return undefined;
     };
 
     const validatePassword = (value: string, isEdit: boolean): string | undefined => {
         if (!isEdit && !value) {
-            return 'Password is required';
+            return t('passwordRequired');
         }
         if (value && value.length < 4) {
-            return 'Password must be at least 4 characters';
+            return t('passwordMinLength');
         }
         return undefined;
     };
@@ -98,13 +94,19 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
         }
 
         if (strength <= 1) {
-            return { strength, label: 'Weak', color: 'text-red-500' };
+            return { strength, label: t('passwordStrength.weak'), color: 'text-red-500' };
         }
         if (strength <= 3) {
-            return { strength, label: 'Medium', color: 'text-yellow-500' };
+            return { strength, label: t('passwordStrength.medium'), color: 'text-yellow-500' };
         }
-        return { strength, label: 'Strong', color: 'text-green-500' };
+        return { strength, label: t('passwordStrength.strong'), color: 'text-green-500' };
     };
+
+    const AVAILABLE_ROLES = [
+        { value: 'ROLE_USER', label: t('roleUser'), description: t('roleUserDesc') },
+        { value: 'ROLE_ADMIN', label: t('roleAdmin'), description: t('roleAdminDesc') },
+        { value: 'ROLE_MANAGER', label: t('roleManager'), description: t('roleManagerDesc') }
+    ];
 
     const passwordStrength = getPasswordStrength(password);
 
@@ -162,7 +164,7 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
             {/* Username */}
             <div className="space-y-2">
                 <Label htmlFor="username">
-          Username <span className="text-destructive">*</span>
+                    {t('username')} <span className="text-destructive">*</span>
                 </Label>
                 <Input
                     id="username"
@@ -171,7 +173,7 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
                         setUsername(e.target.value);
                         setErrors((prev) => ({ ...prev, username: undefined }));
                     }}
-                    placeholder="Enter username (3-50 characters)"
+                    placeholder={t('usernamePlaceholder')}
                     disabled={isLoading}
                     className={errors.username ? 'border-destructive' : ''}
                 />
@@ -186,8 +188,8 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
             {/* Password */}
             <div className="space-y-2">
                 <Label htmlFor="password">
-          Password {!user && <span className="text-destructive">*</span>}
-                    {user && <span className="text-muted-foreground text-xs">(leave blank to keep current)</span>}
+                    {t('password')} {!user && <span className="text-destructive">*</span>}
+                    {user && <span className="text-muted-foreground text-xs">{t('leaveBlankToKeep')}</span>}
                 </Label>
                 <div className="relative">
                     <Input
@@ -198,7 +200,7 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
                             setPassword(e.target.value);
                             setErrors((prev) => ({ ...prev, password: undefined }));
                         }}
-                        placeholder={user ? 'Enter new password (optional)' : 'Enter password (min 4 characters)'}
+                        placeholder={user ? t('passwordPlaceholderNew') : t('passwordPlaceholderCreate')}
                         disabled={isLoading}
                         className={errors.password ? 'border-destructive pr-10' : 'pr-10'}
                     />

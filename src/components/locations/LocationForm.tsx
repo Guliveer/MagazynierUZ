@@ -10,6 +10,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import type { Location, LocationType } from '@/types';
+import { useTranslations } from 'next-intl';
 
 // Validation schema for location form
 const locationFormSchema = z.object({
@@ -29,16 +30,17 @@ interface LocationFormProps {
   isLoading?: boolean;
 }
 
-const LOCATION_TYPES: { value: LocationType; label: string; description: string }[] = [
-    { value: 'PICKING', label: 'Picking', description: 'Area for order picking operations' },
-    { value: 'BULK', label: 'Bulk Storage', description: 'High-capacity storage area' },
-    { value: 'RECEIVING', label: 'Receiving', description: 'Incoming goods processing' },
-    { value: 'SHIPPING', label: 'Shipping', description: 'Outgoing goods staging' },
-    { value: 'RETURNS', label: 'Returns', description: 'Returned items processing' }
-];
-
 export function LocationForm({ location, onSubmit, onCancel, isLoading = false }: LocationFormProps) {
+    const t = useTranslations('locations');
     const isEditing = !!location;
+
+    const LOCATION_TYPES: { value: LocationType; label: string; description: string }[] = [
+        { value: 'PICKING', label: t('types.PICKING'), description: t('types.descriptions.PICKING') },
+        { value: 'BULK', label: t('types.BULK'), description: t('types.descriptions.BULK') },
+        { value: 'RECEIVING', label: t('types.RECEIVING'), description: t('types.descriptions.RECEIVING') },
+        { value: 'SHIPPING', label: t('types.SHIPPING'), description: t('types.descriptions.SHIPPING') },
+        { value: 'RETURNS', label: t('types.RETURNS'), description: t('types.descriptions.RETURNS') }
+    ];
 
     const form = useForm<LocationFormData>({
         resolver: zodResolver(locationFormSchema),
@@ -64,15 +66,11 @@ export function LocationForm({ location, onSubmit, onCancel, isLoading = false }
                     name="locationCode"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Location Code *</FormLabel>
+                            <FormLabel>{t('form.fields.locationCode')} *</FormLabel>
                             <FormControl>
-                                <Input
-                                    placeholder="e.g. A-01-01"
-                                    {...field}
-                                    disabled={isEditing} // Location code cannot be changed after creation
-                                />
+                                <Input placeholder={t('form.fields.locationCodePlaceholder')} {...field} disabled={isEditing} />
                             </FormControl>
-                            <FormDescription>{isEditing ? 'Location code cannot be changed' : 'Unique identifier for this location'}</FormDescription>
+                            <FormDescription>{isEditing ? t('form.fields.locationCodeCannotChange') : t('form.fields.locationCodeDescription')}</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -84,11 +82,11 @@ export function LocationForm({ location, onSubmit, onCancel, isLoading = false }
                     name="locationType"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Location Type *</FormLabel>
+                            <FormLabel>{t('form.fields.locationType')} *</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select location type" />
+                                        <SelectValue placeholder={t('form.fields.locationTypePlaceholder')} />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
@@ -113,11 +111,11 @@ export function LocationForm({ location, onSubmit, onCancel, isLoading = false }
                     name="zoneName"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Zone Name *</FormLabel>
+                            <FormLabel>{t('form.fields.zoneName')} *</FormLabel>
                             <FormControl>
-                                <Input placeholder="e.g. Zone A" {...field} />
+                                <Input placeholder={t('form.fields.zoneNamePlaceholder')} {...field} />
                             </FormControl>
-                            <FormDescription>Logical grouping for organizing locations</FormDescription>
+                            <FormDescription>{t('form.fields.zoneNameDescription')}</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -126,7 +124,7 @@ export function LocationForm({ location, onSubmit, onCancel, isLoading = false }
                 {/* Status toggles - only shown in edit mode */}
                 {isEditing && (
                     <div className="space-y-4 rounded-lg border p-4">
-                        <h4 className="text-sm font-medium">Location Status</h4>
+                        <h4 className="text-sm font-medium">{t('form.status.title')}</h4>
 
                         <FormField
                             control={form.control}
@@ -134,8 +132,8 @@ export function LocationForm({ location, onSubmit, onCancel, isLoading = false }
                             render={({ field }) => (
                                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
                                     <div className="space-y-0.5">
-                                        <FormLabel>Active</FormLabel>
-                                        <FormDescription>Location is available for use</FormDescription>
+                                        <FormLabel>{t('form.status.active')}</FormLabel>
+                                        <FormDescription>{t('form.status.activeDescription')}</FormDescription>
                                     </div>
                                     <FormControl>
                                         <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -150,8 +148,8 @@ export function LocationForm({ location, onSubmit, onCancel, isLoading = false }
                             render={({ field }) => (
                                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
                                     <div className="space-y-0.5">
-                                        <FormLabel>Locked</FormLabel>
-                                        <FormDescription>Prevent modifications to this location</FormDescription>
+                                        <FormLabel>{t('form.status.locked')}</FormLabel>
+                                        <FormDescription>{t('form.status.lockedDescription')}</FormDescription>
                                     </div>
                                     <FormControl>
                                         <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -165,11 +163,11 @@ export function LocationForm({ location, onSubmit, onCancel, isLoading = false }
                 {/* Buttons */}
                 <div className="flex justify-end gap-2 pt-4">
                     <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-            Cancel
+                        {t('form.buttons.cancel')}
                     </Button>
                     <Button type="submit" disabled={isLoading}>
                         {isLoading && <Spinner className="mr-2" />}
-                        {location ? 'Save Changes' : 'Add Location'}
+                        {location ? t('form.buttons.save') : t('form.buttons.add')}
                     </Button>
                 </div>
             </form>

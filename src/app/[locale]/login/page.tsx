@@ -4,7 +4,6 @@ import { ApiError, login } from '@/lib/api';
 import { setToken } from '@/lib/auth';
 import { storeEncryptedCredentials } from '@/lib/crypto';
 import { AlertCircleIcon, InfoIcon, Loader2Icon } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from 'shadcn/alert';
@@ -14,8 +13,13 @@ import { Input } from 'shadcn/input';
 import { Checkbox } from 'shadcn/checkbox';
 import { Label } from 'shadcn/label';
 import { Spinner } from '@/components/ui/spinner';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
+import LocaleSwitcher from '@/components/LocaleSwitcher';
 
 function LoginForm() {
+    const t = useTranslations('auth.login');
+    const tCommon = useTranslations('common');
     const router = useRouter();
     const searchParams = useSearchParams();
     const [username, setUsername] = useState('');
@@ -36,15 +40,15 @@ function LoginForm() {
         const storedMessage = typeof window !== 'undefined' && sessionStorage.getItem('session_expired_message');
 
         if (expired === 'true' || sessionExpired === 'true') {
-            setSessionExpiredMessage(storedMessage || 'Your session has expired. Please log in again.');
+            setSessionExpiredMessage(storedMessage || t('sessionExpired.message'));
             if (typeof window !== 'undefined') {
                 sessionStorage.removeItem('session_expired');
                 sessionStorage.removeItem('session_expired_message');
             }
         } else if (extend === 'true') {
-            setSessionExtendMessage('Please log in again to extend your session and continue where you left off.');
+            setSessionExtendMessage(t('extendSession.message'));
         }
-    }, [searchParams]);
+    }, [searchParams, t]);
 
     const handleCaptchaVerify = (token: string) => {
         setCaptchaToken(token);
@@ -56,7 +60,7 @@ function LoginForm() {
     };
 
     const handleCaptchaError = (err: string) => {
-        setError(`Captcha error: ${err}`);
+        setError(t('errors.captchaError', { error: err }));
         setCaptchaToken(null);
     };
 
@@ -64,7 +68,7 @@ function LoginForm() {
         e.preventDefault();
 
         if (!captchaToken) {
-            setError('Please complete the captcha verification');
+            setError(t('errors.captchaRequired'));
             return;
         }
 
@@ -101,12 +105,12 @@ function LoginForm() {
         } catch (err) {
             if (err instanceof ApiError) {
                 if (err.statusCode === 401) {
-                    setError('Invalid username or password');
+                    setError(t('errors.invalidCredentials'));
                 } else {
-                    setError(err.message || 'Login failed. Please try again.');
+                    setError(err.message || t('errors.loginFailed'));
                 }
             } else {
-                setError('An unexpected error occurred. Please try again.');
+                setError(t('errors.unexpectedError'));
             }
 
             // Reset captcha on error
@@ -119,9 +123,14 @@ function LoginForm() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat p-4" style={{ backgroundImage: "url('/warehouse-bg.png')" }}>
+            {/* Locale Switcher in top-right corner */}
+            <div className="absolute top-4 right-4 z-20">
+                <LocaleSwitcher />
+            </div>
+
             <Card className="w-full max-w-sm">
                 <CardHeader>
-                    <CardTitle className="text-center">Login</CardTitle>
+                    <CardTitle className="text-center">{t('title')}</CardTitle>
                 </CardHeader>
 
                 <CardContent className="space-y-4">
@@ -129,7 +138,7 @@ function LoginForm() {
                         <Alert variant="default" className="flex items-start space-x-2 border-yellow-500 bg-yellow-50 dark:bg-yellow-950">
                             <InfoIcon className="h-5 w-5 mt-0.5 text-yellow-600 dark:text-yellow-400" />
                             <div>
-                                <AlertTitle className="text-yellow-800 dark:text-yellow-200">Session Expired</AlertTitle>
+                                <AlertTitle className="text-yellow-800 dark:text-yellow-200">{t('sessionExpired.title')}</AlertTitle>
                                 <AlertDescription className="text-yellow-700 dark:text-yellow-300">{sessionExpiredMessage}</AlertDescription>
                             </div>
                         </Alert>
@@ -139,7 +148,7 @@ function LoginForm() {
                         <Alert variant="default" className="flex items-start space-x-2 border-blue-500 bg-blue-50 dark:bg-blue-950">
                             <InfoIcon className="h-5 w-5 mt-0.5 text-blue-600 dark:text-blue-400" />
                             <div>
-                                <AlertTitle className="text-blue-800 dark:text-blue-200">Extend Session</AlertTitle>
+                                <AlertTitle className="text-blue-800 dark:text-blue-200">{t('extendSession.title')}</AlertTitle>
                                 <AlertDescription className="text-blue-700 dark:text-blue-300">{sessionExtendMessage}</AlertDescription>
                             </div>
                         </Alert>
@@ -149,21 +158,21 @@ function LoginForm() {
                         <Alert variant="destructive" className="flex items-start space-x-2">
                             <AlertCircleIcon className="h-5 w-5 mt-0.5" />
                             <div>
-                                <AlertTitle>Error</AlertTitle>
+                                <AlertTitle>{tCommon('status.error')}</AlertTitle>
                                 <AlertDescription>{error}</AlertDescription>
                             </div>
                         </Alert>
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <Input id="username" type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} className={'space-y-2'} disabled={isLoading} required />
+                        <Input id="username" type="text" placeholder={tCommon('labels.username')} value={username} onChange={(e) => setUsername(e.target.value)} className={'space-y-2'} disabled={isLoading} required />
 
-                        <Input id="password" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className={'space-y-2'} disabled={isLoading} required />
+                        <Input id="password" type="password" placeholder={tCommon('labels.password')} value={password} onChange={(e) => setPassword(e.target.value)} className={'space-y-2'} disabled={isLoading} required />
 
                         <div className="flex items-center space-x-2">
                             <Checkbox id="remember-me" checked={rememberMe} onCheckedChange={(checked) => setRememberMe(checked === true)} disabled={isLoading} />
                             <Label htmlFor="remember-me" className="text-sm font-normal cursor-pointer">
-                Remember me for automatic session extension
+                                {tCommon('labels.rememberMe')}
                             </Label>
                         </div>
 
@@ -175,19 +184,19 @@ function LoginForm() {
                             {isLoading ? (
                                 <>
                                     <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-                  Logging in...
+                                    {t('loggingIn')}
                                 </>
                             ) : (
-                                'Login'
+                                t('title')
                             )}
                         </Button>
                     </form>
                 </CardContent>
 
                 <CardFooter className="text-sm text-muted-foreground text-center flex justify-center">
-          Don&#39;t have an account?{' '}
+                    {t('noAccount')}{' '}
                     <Link href="/register" className="ml-1 text-primary hover:underline">
-            Register now
+                        {t('registerNow')}
                     </Link>
                 </CardFooter>
             </Card>
