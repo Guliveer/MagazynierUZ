@@ -16,6 +16,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 
 function LoginForm() {
     const t = useTranslations('auth.login');
@@ -125,8 +126,9 @@ function LoginForm() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat p-4" style={{ backgroundImage: "url('/warehouse-bg.png')" }}>
-            {/* Locale Switcher in top-right corner */}
-            <div className="absolute top-4 right-4 z-20">
+            {/* Theme and Locale Switchers in top-right corner */}
+            <div className="absolute top-4 right-4 z-20 flex gap-2">
+                <ThemeSwitcher />
                 <LocaleSwitcher />
             </div>
 

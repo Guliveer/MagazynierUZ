@@ -13,6 +13,7 @@ import { z } from 'zod/v4';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 
 export default function RegisterPage() {
     const t = useTranslations('auth.register');
@@ -133,8 +134,9 @@ export default function RegisterPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat p-4" style={{ backgroundImage: "url('/warehouse-bg.png')" }}>
-            {/* Locale Switcher in top-right corner */}
-            <div className="absolute top-4 right-4 z-20">
+            {/* Theme and Locale Switchers in top-right corner */}
+            <div className="absolute top-4 right-4 z-20 flex gap-2">
+                <ThemeSwitcher />
                 <LocaleSwitcher />
             </div>
 
