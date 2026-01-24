@@ -183,10 +183,11 @@
     }
   },
   "notFound": {
-    "title": "404",
-    "subtitle": "Strona nie znaleziona",
-    "message": "Przepraszamy, strona której szukasz nie istnieje lub została przeniesiona.",
-    "goHome": "Strona główna"
+    "title": "Nie znaleziono strony",
+    "description": "Strona, której szukasz, nie istnieje lub została przeniesiona. Pomożemy Ci wrócić na właściwą ścieżkę.",
+    "goHome": "Strona główna",
+    "dashboard": "Panel",
+    "signIn": "Zaloguj się"
   },
   "products": {
     "title": "Wyszukiwanie produktów",
