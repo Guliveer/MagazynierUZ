@@ -68,19 +68,23 @@ export function useSetBreadcrumbLabel(label: string | undefined | null): void {
     const { setDynamicLabel, clearDynamicLabel } = useBreadcrumbContext();
 
     useEffect(() => {
-        if (!label) { return; }
+        if (!label) {
+            return;
+        }
 
         const { pattern, params } = matchRoutePattern(pathname);
-        if (!pattern) { return; }
+        if (!pattern) {
+            return;
+        }
 
-        // Create context key from pattern and param value
         const paramValue = Object.values(params)[0];
-        if (!paramValue) { return; }
+        if (!paramValue) {
+            return;
+        }
 
         const contextKey = `${pattern}:${paramValue}`;
         setDynamicLabel(contextKey, label);
 
-        // Cleanup on unmount
         return () => {
             clearDynamicLabel(contextKey);
         };

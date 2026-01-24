@@ -10,7 +10,6 @@ export default async function HomePage() {
         <main className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat p-4" style={{ backgroundImage: "url('/warehouse-bg.png')" }}>
             <div className="absolute inset-0 bg-black/50" />
 
-            {/* Locale Switcher in top-right corner */}
             <div className="absolute top-4 right-4 z-20">
                 <LocaleSwitcher />
             </div>

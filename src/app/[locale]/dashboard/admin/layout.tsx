@@ -19,31 +19,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     useEffect(() => {
         const checkAdminAccess = async () => {
-            console.log('DEBUG AdminLayout - Checking admin access...');
-
-            // Check authentication first
             if (!isAuthenticated()) {
-                console.log('DEBUG AdminLayout - Not authenticated, redirecting to login...');
                 router.push(`/${locale}/login?redirect=/${locale}/dashboard/admin`);
                 return;
             }
 
             try {
-                // Fetch roles from API
                 const fetchedRoles = await refreshRolesCache();
-                console.log('DEBUG AdminLayout - Roles fetched:', fetchedRoles);
 
-                // Check if user has admin access
                 const hasAdminAccess = fetchedRoles.includes('ROLE_ADMIN') || fetchedRoles.includes('SUPERADMIN') || fetchedRoles.includes('ROLE_SUPERADMIN');
 
-                console.log('DEBUG AdminLayout - Has admin access:', hasAdminAccess);
                 setIsAuthorized(hasAdminAccess);
-
-                if (!hasAdminAccess) {
-                    console.log('DEBUG AdminLayout - Access denied');
-                }
-            } catch (error) {
-                console.error('DEBUG AdminLayout - Error checking access:', error);
+            } catch {
                 setIsAuthorized(false);
             }
         };
@@ -51,7 +38,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         checkAdminAccess();
     }, [router, locale]);
 
-    // Loading state
     if (isAuthorized === null) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
@@ -63,7 +49,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         );
     }
 
-    // Unauthorized state
     if (!isAuthorized) {
         return (
             <div className="flex items-center justify-center min-h-[400px] p-6">
@@ -91,6 +76,5 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         );
     }
 
-    // Authorized - render admin content
     return <>{children}</>;
 }

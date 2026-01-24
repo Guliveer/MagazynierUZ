@@ -47,7 +47,6 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
         if (value.length < 1) {
             return t('tinMinLength');
         }
-        // Basic TIN format validation (alphanumeric and hyphens)
         if (!/^[A-Za-z0-9-]+$/.test(value)) {
             return t('tinInvalidFormat');
         }
@@ -72,7 +71,6 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
         setErrors({});
 
         if (isEdit) {
-            // Update organisation - only include changed fields
             const updateData: UpdateOrganisationRequest = {};
             if (name !== organisation.name) {
                 updateData.name = name;
@@ -82,7 +80,6 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
             }
             onSubmit(updateData);
         } else {
-            // Create organisation
             const createData: CreateOrganisationRequest = {
                 name,
                 tin
@@ -95,7 +92,6 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Organisation Name */}
             <div className="space-y-2">
                 <Label htmlFor="name">
           Organisation Name <span className="text-destructive">*</span>
@@ -129,7 +125,6 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
                 </div>
             </div>
 
-            {/* TIN (Tax Identification Number) */}
             <div className="space-y-2">
                 <Label htmlFor="tin">
           TIN (Tax Identification Number) <span className="text-destructive">*</span>
@@ -138,7 +133,6 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
                     id="tin"
                     value={tin}
                     onChange={(e) => {
-                        // Auto-format: uppercase and remove invalid characters
                         const formatted = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
                         setTin(formatted);
                         setErrors((prev) => ({ ...prev, tin: undefined }));
@@ -166,7 +160,6 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
                 <p className="text-xs text-muted-foreground">Tax Identification Number must be unique across all organisations</p>
             </div>
 
-            {/* Submit Button */}
             <div className="flex justify-end gap-3 pt-4">
                 <Button type="submit" disabled={isLoading || !isFormValid} className="min-w-[140px]">
                     {isLoading ? (

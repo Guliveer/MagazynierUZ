@@ -23,12 +23,10 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Data states
     const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
     const [topProducts, setTopProducts] = useState<Top10Product[]>([]);
 
-    // Summary statistics
     const [stats, setStats] = useState({
         totalWarehouses: 0,
         totalProducts: 0,
@@ -36,7 +34,6 @@ export default function DashboardPage() {
         lowStockCount: 0
     });
 
-    // Check authentication
     useEffect(() => {
         const token = getToken();
         if (!token) {
@@ -52,14 +49,12 @@ export default function DashboardPage() {
         setError(null);
 
         try {
-            // Fetch all data in parallel
             const [warehousesData, productsData, topProductsData] = await Promise.all([getWarehouses().catch(() => []), searchProductsUnpaginated().catch(() => []), getTop10Products({ sortBy: 'quantity', sortDirection: 'desc' }).catch(() => [])]);
 
             setWarehouses(warehousesData);
             setProducts(productsData);
-            setTopProducts(topProductsData.slice(0, 3)); // Only top 3 for dashboard
+            setTopProducts(topProductsData.slice(0, 3));
 
-            // Calculate statistics
             const totalValue = productsData.reduce((sum: number, p) => sum + p.price * p.quantity, 0);
             const lowStock = productsData.filter((p: Product) => p.quantity < 10).length;
 
@@ -69,15 +64,13 @@ export default function DashboardPage() {
                 totalInventoryValue: totalValue,
                 lowStockCount: lowStock
             });
-        } catch (err) {
-            console.error('Failed to fetch dashboard data:', err);
+        } catch {
             setError(t('errors.loadFailed'));
         } finally {
             setLoading(false);
         }
     };
 
-    // Format price as PLN currency
     const formatPrice = (price: number) =>
         new Intl.NumberFormat('pl-PL', {
             style: 'currency',
@@ -86,7 +79,6 @@ export default function DashboardPage() {
 
     return (
         <div className="container mx-auto p-6 space-y-6">
-            {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
@@ -101,7 +93,6 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            {/* Error Alert */}
             {error && (
                 <Alert variant="destructive">
                     <AlertTriangle className="h-4 w-4" />
@@ -109,9 +100,7 @@ export default function DashboardPage() {
                 </Alert>
             )}
 
-            {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Total Warehouses */}
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">{t('stats.totalWarehouses')}</CardTitle>
@@ -129,7 +118,6 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
 
-                {/* Total Products */}
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">{t('stats.totalProducts')}</CardTitle>
@@ -147,7 +135,6 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
 
-                {/* Total Inventory Value */}
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">{t('stats.inventoryValue')}</CardTitle>
@@ -165,7 +152,6 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
 
-                {/* Low Stock Alerts */}
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">{t('stats.lowStockAlerts')}</CardTitle>
@@ -184,7 +170,6 @@ export default function DashboardPage() {
                 </Card>
             </div>
 
-            {/* Quick Actions */}
             <Card>
                 <CardHeader>
                     <CardTitle>{t('quickActions.title')}</CardTitle>
@@ -228,7 +213,6 @@ export default function DashboardPage() {
             </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Top Products */}
                 <Card>
                     <CardHeader>
                         <div className="flex items-center justify-between">
@@ -283,7 +267,6 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
 
-                {/* Warehouses Overview */}
                 <Card>
                     <CardHeader>
                         <div className="flex items-center justify-between">
@@ -354,7 +337,6 @@ export default function DashboardPage() {
                 </Card>
             </div>
 
-            {/* Stock Level Indicators */}
             {!loading && products.length > 0 && (
                 <Card>
                     <CardHeader>

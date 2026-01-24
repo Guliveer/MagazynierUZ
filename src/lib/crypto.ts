@@ -16,18 +16,15 @@
  * For truly sensitive data, consider server-side encryption or secure token storage.
  */
 
-// Storage keys
 const ENCRYPTED_CREDENTIALS_KEY = 'auth_encrypted_creds';
 const ENCRYPTION_KEY_CACHE = 'auth_encryption_key_cache';
 
-// Encryption algorithm configuration
 const ALGORITHM = 'AES-GCM';
 const KEY_LENGTH = 256;
-const IV_LENGTH = 12; // 96 bits for GCM
+const IV_LENGTH = 12;
 
-// PBKDF2 configuration for key derivation
-const PBKDF2_ITERATIONS = 100000; // OWASP recommended minimum
-const SALT_LENGTH = 16; // 128 bits
+const PBKDF2_ITERATIONS = 100000;
+const SALT_LENGTH = 16;
 
 /**
  * Get the encryption secret from environment variables
@@ -37,13 +34,7 @@ function getEncryptionSecret(): string {
     const secret = process.env.NEXT_PUBLIC_ENCRYPTION_SECRET;
 
     if (!secret) {
-        console.warn('NEXT_PUBLIC_ENCRYPTION_SECRET is not configured. Using fallback secret. ' + 'Please set this environment variable for production use.');
-        // Fallback secret - should only be used in development
         return 'default-encryption-secret-please-change-in-production';
-    }
-
-    if (secret.length < 32) {
-        console.warn('NEXT_PUBLIC_ENCRYPTION_SECRET is too short. ' + 'Please use a secret of at least 32 characters for better security.');
     }
 
     return secret;
@@ -55,21 +46,17 @@ function getEncryptionSecret(): string {
  * This ensures the same key is derived across sessions
  */
 function getDerivationSalt(): Uint8Array {
-    // Create a fingerprint from browser characteristics
     const fingerprint = [navigator.userAgent, navigator.language, new Date().getTimezoneOffset().toString(), screen.colorDepth.toString(), screen.width.toString(), screen.height.toString()].join('|');
 
-    // Hash the fingerprint to create a consistent salt
     const encoder = new TextEncoder();
     const data = encoder.encode(fingerprint);
 
-    // Use a simple hash for salt
     let hash = 0;
     for (let i = 0; i < data.length; i++) {
         hash = (hash << 5) - hash + data[i];
         hash = hash & hash; // Convert to 32-bit integer
     }
 
-    // Create a 16-byte salt from the hash
     const salt = new Uint8Array(SALT_LENGTH);
     for (let i = 0; i < SALT_LENGTH; i++) {
         salt[i] = (hash >> ((i % 4) * 8)) & 0xff;
@@ -86,10 +73,8 @@ async function deriveEncryptionKey(secret: string, salt: Uint8Array): Promise<Cr
     const encoder = new TextEncoder();
     const secretBuffer = encoder.encode(secret);
 
-    // Import secret as key material
     const keyMaterial = await crypto.subtle.importKey('raw', secretBuffer, 'PBKDF2', false, ['deriveBits', 'deriveKey']);
 
-    // Derive AES key using PBKDF2
     return crypto.subtle.deriveKey(
         {
             name: 'PBKDF2',
@@ -114,7 +99,6 @@ async function getEncryptionKey(): Promise<CryptoKey> {
         throw new Error('Encryption key can only be generated in browser context');
     }
 
-    // Check if we have a cached derived key
     const cachedKeyData = sessionStorage.getItem(ENCRYPTION_KEY_CACHE);
 
     if (cachedKeyData) {
@@ -123,18 +107,15 @@ async function getEncryptionKey(): Promise<CryptoKey> {
             const keyBuffer = Uint8Array.from(atob(keyData.key), (c) => c.charCodeAt(0));
 
             return await crypto.subtle.importKey('raw', keyBuffer, { name: ALGORITHM, length: KEY_LENGTH }, true, ['encrypt', 'decrypt']);
-        } catch (error) {
-            console.error('Failed to import cached key, deriving new one:', error);
+        } catch {
             sessionStorage.removeItem(ENCRYPTION_KEY_CACHE);
         }
     }
 
-    // Derive a new key from the environment secret
     const secret = getEncryptionSecret();
     const salt = getDerivationSalt();
     const key = await deriveEncryptionKey(secret, salt);
 
-    // Cache the derived key for performance
     try {
         const exportedKey = await crypto.subtle.exportKey('raw', key);
         const keyArray = new Uint8Array(exportedKey);
@@ -143,10 +124,7 @@ async function getEncryptionKey(): Promise<CryptoKey> {
             timestamp: Date.now()
         };
         sessionStorage.setItem(ENCRYPTION_KEY_CACHE, JSON.stringify(keyData));
-    } catch (error) {
-        console.error('Failed to cache encryption key:', error);
-    // Continue even if caching fails - the key will still work
-    }
+    } catch {}
 
     return key;
 }
@@ -163,13 +141,10 @@ export async function encryptCredentials(username: string, password: string): Pr
         const data = JSON.stringify({ username, password });
         const dataBuffer = encoder.encode(data);
 
-        // Generate a random IV
         const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
 
-        // Get encryption key
         const key = await getEncryptionKey();
 
-        // Encrypt the data
         const encryptedBuffer = await crypto.subtle.encrypt(
             {
                 name: ALGORITHM,
@@ -179,15 +154,12 @@ export async function encryptCredentials(username: string, password: string): Pr
             dataBuffer
         );
 
-        // Combine IV and encrypted data
         const combined = new Uint8Array(iv.length + encryptedBuffer.byteLength);
         combined.set(iv, 0);
         combined.set(new Uint8Array(encryptedBuffer), iv.length);
 
-        // Convert to base64 for storage
         return btoa(String.fromCharCode(...combined));
-    } catch (error) {
-        console.error('Encryption failed:', error);
+    } catch {
         throw new Error('Failed to encrypt credentials');
     }
 }
@@ -199,17 +171,13 @@ export async function encryptCredentials(username: string, password: string): Pr
  */
 export async function decryptCredentials(encrypted: string): Promise<{ username: string; password: string }> {
     try {
-    // Decode from base64
         const combined = Uint8Array.from(atob(encrypted), (c) => c.charCodeAt(0));
 
-        // Extract IV and encrypted data
         const iv = combined.slice(0, IV_LENGTH);
         const encryptedData = combined.slice(IV_LENGTH);
 
-        // Get decryption key
         const key = await getEncryptionKey();
 
-        // Decrypt the data
         const decryptedBuffer = await crypto.subtle.decrypt(
             {
                 name: ALGORITHM,
@@ -219,14 +187,12 @@ export async function decryptCredentials(encrypted: string): Promise<{ username:
             encryptedData
         );
 
-        // Convert to string and parse JSON
         const decoder = new TextDecoder();
         const decryptedString = decoder.decode(decryptedBuffer);
         const credentials = JSON.parse(decryptedString);
 
         return credentials;
-    } catch (error) {
-        console.error('Decryption failed:', error);
+    } catch {
         throw new Error('Failed to decrypt credentials');
     }
 }
@@ -245,7 +211,6 @@ export async function storeEncryptedCredentials(username: string, password: stri
         const encrypted = await encryptCredentials(username, password);
         sessionStorage.setItem(ENCRYPTED_CREDENTIALS_KEY, encrypted);
     } catch (error) {
-        console.error('Failed to store credentials:', error);
         throw error;
     }
 }
@@ -266,9 +231,7 @@ export async function getStoredCredentials(): Promise<{ username: string; passwo
         }
 
         return await decryptCredentials(encrypted);
-    } catch (error) {
-        console.error('Failed to retrieve credentials:', error);
-        // Clear invalid credentials
+    } catch {
         clearStoredCredentials();
         return null;
     }

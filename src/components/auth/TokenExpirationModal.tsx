@@ -42,15 +42,12 @@ export function TokenExpirationModal({ open, timeRemaining, onDismiss, onExtend 
     const t = useTranslations('dashboard.tokenExpiration');
     const [currentTimeRemaining, setCurrentTimeRemaining] = useState(timeRemaining);
 
-    // Update countdown every second
     useEffect(() => {
         if (!open || !timeRemaining) {
             return;
         }
 
-        // Use microtask to avoid synchronous setState in effect
         Promise.resolve().then(() => {
-            // Only update if the value has changed significantly
             if (Math.abs((currentTimeRemaining || 0) - timeRemaining) > 1000) {
                 setCurrentTimeRemaining(timeRemaining);
             }
@@ -70,9 +67,8 @@ export function TokenExpirationModal({ open, timeRemaining, onDismiss, onExtend 
         };
     }, [open, timeRemaining, currentTimeRemaining]);
 
-    // Determine urgency level based on time remaining
-    const isUrgent = currentTimeRemaining !== null && currentTimeRemaining < 2 * 60 * 1000; // Less than 2 minutes
-    const isCritical = currentTimeRemaining !== null && currentTimeRemaining < 60 * 1000; // Less than 1 minute
+    const isUrgent = currentTimeRemaining !== null && currentTimeRemaining < 2 * 60 * 1000;
+    const isCritical = currentTimeRemaining !== null && currentTimeRemaining < 60 * 1000;
 
     return (
         <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onDismiss()}>
@@ -86,7 +82,6 @@ export function TokenExpirationModal({ open, timeRemaining, onDismiss, onExtend 
                 </DialogHeader>
 
                 <div className="space-y-4 py-4">
-                    {/* Countdown Display */}
                     <div className={`flex items-center justify-center gap-3 p-6 rounded-lg border-2 ${isCritical ? 'border-destructive bg-destructive/5' : isUrgent ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/20' : 'border-yellow-500 bg-yellow-50 dark:bg-yellow-950/20'}`}>
                         <Clock className={`h-8 w-8 ${isCritical ? 'text-destructive' : isUrgent ? 'text-orange-500' : 'text-yellow-600'}`} />
                         <div className="text-center">
@@ -95,7 +90,6 @@ export function TokenExpirationModal({ open, timeRemaining, onDismiss, onExtend 
                         </div>
                     </div>
 
-                    {/* Information Alert */}
                     <Alert>
                         <AlertDescription>
                             <strong>{t('whatHappens')}</strong>

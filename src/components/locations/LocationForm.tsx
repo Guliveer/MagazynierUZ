@@ -12,7 +12,6 @@ import { Switch } from 'shadcn/switch';
 import type { Location, LocationType } from '@/types';
 import { useTranslations } from 'next-intl';
 
-// Validation schema for location form
 const locationFormSchema = z.object({
     locationCode: z.string().min(1, 'Location code is required').max(20, 'Location code can be at most 20 characters'),
     locationType: z.enum(['PICKING', 'BULK', 'RECEIVING', 'SHIPPING', 'RETURNS']),
@@ -60,7 +59,6 @@ export function LocationForm({ location, onSubmit, onCancel, isLoading = false }
     return (
         <Form {...form}>
             <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Location Code */}
                 <FormField
                     control={form.control}
                     name="locationCode"
@@ -76,7 +74,6 @@ export function LocationForm({ location, onSubmit, onCancel, isLoading = false }
                     )}
                 />
 
-                {/* Location Type */}
                 <FormField
                     control={form.control}
                     name="locationType"
@@ -105,7 +102,6 @@ export function LocationForm({ location, onSubmit, onCancel, isLoading = false }
                     )}
                 />
 
-                {/* Zone Name */}
                 <FormField
                     control={form.control}
                     name="zoneName"
@@ -121,7 +117,6 @@ export function LocationForm({ location, onSubmit, onCancel, isLoading = false }
                     )}
                 />
 
-                {/* Status toggles - only shown in edit mode */}
                 {isEditing && (
                     <div className="space-y-4 rounded-lg border p-4">
                         <h4 className="text-sm font-medium">{t('form.status.title')}</h4>
@@ -160,7 +155,6 @@ export function LocationForm({ location, onSubmit, onCancel, isLoading = false }
                     </div>
                 )}
 
-                {/* Buttons */}
                 <div className="flex justify-end gap-2 pt-4">
                     <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
                         {t('form.buttons.cancel')}

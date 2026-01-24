@@ -18,15 +18,13 @@ export default function ProfilePage() {
     const [roles, setRoles] = useState<string[]>([]);
     const [loadingRoles, setLoadingRoles] = useState(true);
 
-    // Fetch roles from server on mount
     useEffect(() => {
         async function fetchRoles() {
             try {
                 setLoadingRoles(true);
                 const fetchedRoles = await refreshRolesCache();
                 setRoles(fetchedRoles);
-            } catch (error) {
-                console.error('Failed to fetch roles:', error);
+            } catch {
                 setRoles([]);
             } finally {
                 setLoadingRoles(false);
@@ -36,7 +34,6 @@ export default function ProfilePage() {
         fetchRoles();
     }, []);
 
-    // User data from authentication token
     const user = {
         username: username || 'Unknown',
         roles: roles.map((role, index) => ({
@@ -84,7 +81,6 @@ export default function ProfilePage() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
@@ -96,7 +92,6 @@ export default function ProfilePage() {
                 </Button>
             </div>
 
-            {/* Profile Overview */}
             <Card>
                 <CardHeader>
                     <div className="flex items-center gap-3">
@@ -122,7 +117,6 @@ export default function ProfilePage() {
                 </CardContent>
             </Card>
 
-            {/* Roles & Permissions */}
             <Card>
                 <CardHeader>
                     <div className="flex items-center gap-2">
@@ -151,7 +145,6 @@ export default function ProfilePage() {
                 </CardContent>
             </Card>
 
-            {/* Account Status */}
             <Card>
                 <CardHeader>
                     <CardTitle>{t('accountStatus.title')}</CardTitle>
@@ -194,7 +187,6 @@ export default function ProfilePage() {
                 </CardContent>
             </Card>
 
-            {/* Session Information */}
             <Card>
                 <CardHeader>
                     <div className="flex items-center gap-2">

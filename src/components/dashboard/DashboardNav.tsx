@@ -19,34 +19,23 @@ export function DashboardNav() {
     const [adminStatus, setAdminStatus] = useState(isAdmin());
     const [roles, setRoles] = useState<string[]>([]);
 
-    // Initial role fetch and listen for role updates
     useEffect(() => {
-    // Initial check - refresh roles from server
         const checkAdmin = async () => {
-            console.log('DEBUG DashboardNav - Refreshing roles from server...');
             try {
                 const fetchedRoles = await refreshRolesCache();
-                console.log('DEBUG DashboardNav - Roles fetched:', fetchedRoles);
 
-                // Update state with fetched roles
                 setRoles(fetchedRoles);
 
-                // Check admin status with the fetched roles directly
                 const adminCheck = fetchedRoles.includes('ROLE_ADMIN') || fetchedRoles.includes('SUPERADMIN') || fetchedRoles.includes('ROLE_SUPERADMIN');
 
-                console.log('DEBUG DashboardNav - Admin check result:', adminCheck);
                 setAdminStatus(adminCheck);
-            } catch (error) {
-                console.error('DEBUG DashboardNav - Error fetching roles:', error);
-            }
+            } catch {}
         };
 
         checkAdmin();
 
-        // Listen for role updates
         const handleRolesUpdated = () => {
-            console.log('DEBUG DashboardNav - Roles updated event received');
-            checkAdmin(); // Re-check when roles update
+            checkAdmin();
         };
 
         window.addEventListener('rolesUpdated', handleRolesUpdated);
@@ -56,14 +45,6 @@ export function DashboardNav() {
         };
     }, []);
 
-    // Debug logging to see admin status
-    useEffect(() => {
-        console.log('DEBUG DashboardNav - isAdmin():', adminStatus);
-        console.log('DEBUG DashboardNav - All roles:', roles);
-        console.log('DEBUG DashboardNav - Username:', username);
-    }, [adminStatus, roles, username]);
-
-    // Extract locale from pathname
     const locale = pathname?.split('/')[1] || 'en';
 
     const navItems = [
@@ -80,14 +61,12 @@ export function DashboardNav() {
 
     return (
         <nav className="flex flex-col h-screen">
-            {/* Header with branding and user profile menu - fixed at top */}
             <div className="p-4 flex-shrink-0">
                 <h2 className="text-lg font-semibold mb-3">MagazynierUZ</h2>
                 <UserProfileMenu username={username} roles={roles} isAdmin={adminStatus} onLogout={handleLogout} />
             </div>
             <Separator />
 
-            {/* Main navigation - scrollable content */}
             <div className="flex-1 p-2 overflow-y-auto">
                 <ul className="flex flex-col gap-1">
                     {navItems.map((item) => {
@@ -102,7 +81,6 @@ export function DashboardNav() {
                         );
                     })}
 
-                    {/* Admin Panel - only visible to admins */}
                     {adminStatus && (
                         <>
                             <Separator className="my-2" />

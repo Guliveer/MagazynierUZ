@@ -18,7 +18,6 @@ export default function OrganisationsPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-    // Statistics
     const [warehouseCounts, setWarehouseCounts] = useState<Map<number, number>>(new Map());
     const [userCounts, setUserCounts] = useState<Map<number, number>>(new Map());
 
@@ -33,7 +32,6 @@ export default function OrganisationsPage() {
 
             setOrganisations(orgsData);
 
-            // Calculate user counts
             const userCountMap = new Map<number, number>();
             usersData.forEach((user) => {
                 if (user.organisationId) {
@@ -42,22 +40,19 @@ export default function OrganisationsPage() {
             });
             setUserCounts(userCountMap);
 
-            // Load warehouse counts for each organisation
             const warehouseCountMap = new Map<number, number>();
             await Promise.all(
                 orgsData.map(async (org) => {
                     try {
                         const warehouses = await getWarehousesByOrganisation(org.id);
                         warehouseCountMap.set(org.id, warehouses.length);
-                    } catch (error) {
-                        console.error(`Failed to load warehouses for org ${org.id}:`, error);
+                    } catch {
                         warehouseCountMap.set(org.id, 0);
                     }
                 })
             );
             setWarehouseCounts(warehouseCountMap);
-        } catch (error) {
-            console.error('Failed to load organisations:', error);
+        } catch {
             toast.error('Failed to load organisations. Please try again.');
         } finally {
             setIsLoading(false);
@@ -83,20 +78,17 @@ export default function OrganisationsPage() {
         loadOrganisations();
     };
 
-    // Calculate totals for statistics
     const totalOrganisations = organisations.length;
     const totalWarehouses = Array.from(warehouseCounts.values()).reduce((sum, count) => sum + count, 0);
     const totalUsers = Array.from(userCounts.values()).reduce((sum, count) => sum + count, 0);
 
     return (
         <div className="space-y-6">
-            {/* Page Header */}
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Organisation Management</h1>
                 <p className="text-muted-foreground mt-2">Manage organisations, view their warehouses and users, and maintain organisation data.</p>
             </div>
 
-            {/* Statistics Cards */}
             <div className="grid gap-4 md:grid-cols-3">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -132,7 +124,6 @@ export default function OrganisationsPage() {
                 </Card>
             </div>
 
-            {/* Organisation List */}
             <Card>
                 <CardHeader>
                     <CardTitle>Organisations</CardTitle>
@@ -143,7 +134,6 @@ export default function OrganisationsPage() {
                 </CardContent>
             </Card>
 
-            {/* Dialogs */}
             <OrganisationDialog organisation={selectedOrganisation} open={isDialogOpen} onOpenChange={setIsDialogOpen} onSuccess={handleDialogSuccess} />
 
             <DeleteOrganisationDialog organisation={organisationToDelete} open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} onSuccess={handleDialogSuccess} />

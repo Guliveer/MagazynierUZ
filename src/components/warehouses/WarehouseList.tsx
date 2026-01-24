@@ -27,7 +27,6 @@ export function WarehouseList() {
     const [error, setError] = useState<string | null>(null);
     const [isMapOpen, setIsMapOpen] = useState(false);
 
-    // Dialog states
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [selectedWarehouse, setSelectedWarehouse] = useState<Warehouse | null>(null);
@@ -39,7 +38,6 @@ export function WarehouseList() {
             setIsLoading(true);
             setError(null);
             const data = await getWarehouses();
-            // Protection against null/undefined - always set an array
             setWarehouses(Array.isArray(data) ? data : []);
         } catch (err) {
             const message = err instanceof ApiError ? err.message : t('messages.fetchError');
@@ -108,7 +106,6 @@ export function WarehouseList() {
         }
     };
 
-    // Loading state
     if (isLoading) {
         return (
             <div className="space-y-4">
@@ -161,7 +158,6 @@ export function WarehouseList() {
         );
     }
 
-    // Error state
     if (error) {
         return (
             <div className="space-y-4">
@@ -182,7 +178,6 @@ export function WarehouseList() {
         );
     }
 
-    // Empty state
     if (warehouses.length === 0) {
         return (
             <div className="space-y-4">
@@ -212,7 +207,6 @@ export function WarehouseList() {
         );
     }
 
-    // Normal state with data
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">

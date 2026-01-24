@@ -24,7 +24,6 @@ export default function UsersPage() {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [currentUserId, setCurrentUserId] = useState<number | undefined>();
 
-    // Get current user ID by matching username
     useEffect(() => {
         const username = getUsername();
         if (username && users.length > 0) {
@@ -41,8 +40,7 @@ export default function UsersPage() {
         try {
             const data = await getAllUsers();
             setUsers(data);
-        } catch (err) {
-            console.error('Failed to load users:', err);
+        } catch {
             setError(t('../../admin.messages.loadUsersFailed'));
             toast.error(t('../../admin.messages.loadUsersFailed'));
         } finally {
@@ -80,13 +78,11 @@ export default function UsersPage() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
                 <p className="text-muted-foreground mt-2">{t('subtitle')}</p>
             </div>
 
-            {/* Error Alert */}
             {error && (
                 <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
@@ -95,7 +91,6 @@ export default function UsersPage() {
                 </Alert>
             )}
 
-            {/* Statistics Card */}
             <div className="grid gap-4 md:grid-cols-3">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -131,7 +126,6 @@ export default function UsersPage() {
                 </Card>
             </div>
 
-            {/* User List */}
             <Card>
                 <CardHeader>
                     <CardTitle>{t('allUsers')}</CardTitle>
@@ -142,10 +136,8 @@ export default function UsersPage() {
                 </CardContent>
             </Card>
 
-            {/* User Dialog (Create/Edit) */}
             <UserDialog user={selectedUser} open={isDialogOpen} onOpenChange={setIsDialogOpen} onSuccess={handleDialogSuccess} />
 
-            {/* Delete Confirmation Dialog */}
             <DeleteUserDialog user={userToDelete} open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} onSuccess={handleDeleteSuccess} currentUserId={currentUserId} />
         </div>
     );

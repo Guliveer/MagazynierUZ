@@ -26,7 +26,6 @@ interface ProductLocationBadgeProps {
 export function ProductLocationBadge({ warehouseName, warehouseCode, locationCode, zoneName, locationType, onWarehouseClick, onLocationClick, compact = false, className = '' }: ProductLocationBadgeProps) {
     const t = useTranslations('products.location');
 
-    // If no location data, show unknown
     if (!warehouseName && !warehouseCode && !locationCode) {
         return (
             <Badge variant="outline" className={`gap-1 ${className}`}>
@@ -36,9 +35,10 @@ export function ProductLocationBadge({ warehouseName, warehouseCode, locationCod
         );
     }
 
-    // Get location type badge variant
     const getLocationTypeBadgeVariant = (type?: LocationType) => {
-        if (!type) { return 'secondary'; }
+        if (!type) {
+            return 'secondary';
+        }
         switch (type) {
             case 'PICKING':
                 return 'default';
@@ -55,13 +55,13 @@ export function ProductLocationBadge({ warehouseName, warehouseCode, locationCod
         }
     };
 
-    // Get location type label
     const getLocationTypeLabel = (type?: LocationType) => {
-        if (!type) { return ''; }
+        if (!type) {
+            return '';
+        }
         return t(`types.${type}`);
     };
 
-    // Compact view - single badge with tooltip
     if (compact) {
         const tooltipContent = (
             <div className="space-y-1 text-xs">
@@ -111,10 +111,8 @@ export function ProductLocationBadge({ warehouseName, warehouseCode, locationCod
         );
     }
 
-    // Full view - separate badges for warehouse and location
     return (
         <div className={`flex flex-wrap items-center gap-1 ${className}`}>
-            {/* Warehouse badge */}
             {(warehouseName || warehouseCode) && (
                 <TooltipProvider>
                     <Tooltip>
@@ -139,7 +137,6 @@ export function ProductLocationBadge({ warehouseName, warehouseCode, locationCod
                 </TooltipProvider>
             )}
 
-            {/* Location badge */}
             {locationCode && (
                 <TooltipProvider>
                     <Tooltip>

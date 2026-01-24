@@ -34,10 +34,8 @@ export function OrganisationDialog({ organisation, open, onOpenChange, onSuccess
             onOpenChange(false);
             onSuccess();
         } catch (error) {
-            console.error('Failed to save organisation:', error);
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
-            // Check for common errors
             if (errorMessage.includes('already exists') || errorMessage.includes('duplicate')) {
                 toast.error(isEdit ? t('updateFailedDuplicate') : t('createFailedDuplicate'));
             } else {

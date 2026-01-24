@@ -32,7 +32,6 @@ export default function AdminPanelPage() {
                 setLoadingRoles(true);
                 setError(null);
 
-                // Fetch roles and statistics in parallel
                 const [fetchedRoles, stats, users] = await Promise.all([refreshRolesCache(), getSystemStatistics(), getAllUsers().catch(() => [])]);
 
                 setRoles(fetchedRoles);
@@ -40,7 +39,6 @@ export default function AdminPanelPage() {
                 setUserCount(users.length);
             } catch (err) {
                 setError(err instanceof Error ? err.message : t('messages.loadStatisticsFailed'));
-                // Set offline statistics on error
                 setStatistics({
                     totalWarehouses: 0,
                     totalLocations: 0,
@@ -69,7 +67,6 @@ export default function AdminPanelPage() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
@@ -83,14 +80,12 @@ export default function AdminPanelPage() {
                 </div>
             </div>
 
-            {/* Error Alert */}
             {error && (
                 <Alert variant="destructive">
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             )}
 
-            {/* Current User Info */}
             <Card>
                 <CardHeader>
                     <CardTitle className="text-lg">{t('session.title')}</CardTitle>
@@ -124,7 +119,6 @@ export default function AdminPanelPage() {
                 </CardContent>
             </Card>
 
-            {/* System Statistics */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -214,9 +208,7 @@ export default function AdminPanelPage() {
                 </Card>
             </div>
 
-            {/* Admin Features */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {/* Organisation Management */}
                 <Card className="hover:shadow-lg transition-shadow">
                     <CardHeader>
                         <div className="flex items-center gap-2">
@@ -232,7 +224,6 @@ export default function AdminPanelPage() {
                     </CardContent>
                 </Card>
 
-                {/* My Organisation */}
                 <Card className="hover:shadow-lg transition-shadow">
                     <CardHeader>
                         <div className="flex items-center gap-2">
@@ -248,7 +239,6 @@ export default function AdminPanelPage() {
                     </CardContent>
                 </Card>
 
-                {/* User Management */}
                 <Card className="hover:shadow-lg transition-shadow">
                     <CardHeader>
                         <div className="flex items-center gap-2">

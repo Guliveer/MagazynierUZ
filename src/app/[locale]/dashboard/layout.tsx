@@ -25,7 +25,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const [isLoading, setIsLoading] = useState(true);
     const [isAuth, setIsAuth] = useState(false);
 
-    // Token refresh monitoring
     const { showWarning, timeRemaining, dismissWarning, extendSession } = useTokenRefresh();
 
     useEffect(() => {
@@ -55,16 +54,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     return (
         <>
-            {/* Token Expiration Warning Modal */}
             <TokenExpirationModal open={showWarning} timeRemaining={timeRemaining} onDismiss={dismissWarning} onExtend={extendSession} />
 
             <div className="flex min-h-screen">
-                {/* Sidebar - desktop - fixed position */}
                 <aside className="w-64 border-r bg-card hidden md:block fixed left-0 top-0 h-screen z-40">
                     <DashboardNav />
                 </aside>
 
-                {/* Mobile navigation - bottom bar */}
                 <div className="md:hidden fixed bottom-0 left-0 right-0 border-t bg-card z-50">
                     <nav className="flex justify-around p-2">
                         {mobileNavItems.map((item) => {
@@ -79,7 +75,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </nav>
                 </div>
 
-                {/* Main content - with left margin to account for fixed sidebar */}
                 <main className="flex-1 p-6 pb-20 md:pb-6 md:ml-64 overflow-auto">
                     <BreadcrumbProvider>
                         <Breadcrumbs />

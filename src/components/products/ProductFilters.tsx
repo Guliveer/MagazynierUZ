@@ -44,7 +44,6 @@ export function ProductFilters({ filters, onFiltersChange, onSearch, isSearching
     const [isLoadingLocations, setIsLoadingLocations] = useState(false);
     const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
-    // Fetch warehouses on mount
     useEffect(() => {
         const fetchWarehouses = async () => {
             try {
@@ -62,7 +61,6 @@ export function ProductFilters({ filters, onFiltersChange, onSearch, isSearching
         fetchWarehouses();
     }, [t]);
 
-    // Fetch locations when warehouse changes
     useEffect(() => {
         if (!filters.warehouseId) {
             setLocations([]);
@@ -91,7 +89,7 @@ export function ProductFilters({ filters, onFiltersChange, onSearch, isSearching
         onFiltersChange({
             ...filters,
             warehouseId,
-            locationId: null // Reset location when warehouse changes
+            locationId: null
         });
     };
 
@@ -139,7 +137,6 @@ export function ProductFilters({ filters, onFiltersChange, onSearch, isSearching
         return t(`location.types.${type}`);
     };
 
-    // Validate price range
     const isPriceRangeValid = () => {
         if (!filters.minPrice || !filters.maxPrice) {
             return true;
@@ -149,7 +146,6 @@ export function ProductFilters({ filters, onFiltersChange, onSearch, isSearching
         return !isNaN(min) && !isNaN(max) && min <= max;
     };
 
-    // Validate quantity range
     const isQuantityRangeValid = () => {
         if (!filters.minQuantity || !filters.maxQuantity) {
             return true;
@@ -163,7 +159,6 @@ export function ProductFilters({ filters, onFiltersChange, onSearch, isSearching
         <Card>
             <CardContent className="pt-6">
                 <div className="space-y-4">
-                    {/* Search input */}
                     <div className="space-y-2">
                         <Label htmlFor="search-input" className="flex items-center gap-2">
                             <Search className="h-4 w-4" />
@@ -191,9 +186,7 @@ export function ProductFilters({ filters, onFiltersChange, onSearch, isSearching
                         </div>
                     </div>
 
-                    {/* Basic filters */}
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        {/* Warehouse selector */}
                         <div className="space-y-2">
                             <Label htmlFor="warehouse-select" className="flex items-center gap-2">
                                 <Building2 className="h-4 w-4" />
@@ -221,7 +214,6 @@ export function ProductFilters({ filters, onFiltersChange, onSearch, isSearching
                             )}
                         </div>
 
-                        {/* Location selector */}
                         <div className="space-y-2">
                             <Label htmlFor="location-select" className="flex items-center gap-2">
                                 <MapPin className="h-4 w-4" />
@@ -252,7 +244,6 @@ export function ProductFilters({ filters, onFiltersChange, onSearch, isSearching
                         </div>
                     </div>
 
-                    {/* Advanced filters */}
                     <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
                         <CollapsibleTrigger asChild>
                             <Button variant="ghost" className="w-full justify-between">
@@ -268,7 +259,6 @@ export function ProductFilters({ filters, onFiltersChange, onSearch, isSearching
                             </Button>
                         </CollapsibleTrigger>
                         <CollapsibleContent className="space-y-4 pt-4">
-                            {/* Price range */}
                             <div className="space-y-2">
                                 <Label className="flex items-center gap-2">
                                     <DollarSign className="h-4 w-4" />
@@ -281,7 +271,6 @@ export function ProductFilters({ filters, onFiltersChange, onSearch, isSearching
                                 {!isPriceRangeValid() && <p className="text-sm text-destructive">{t('filters.priceRangeError')}</p>}
                             </div>
 
-                            {/* Quantity range */}
                             <div className="space-y-2">
                                 <Label className="flex items-center gap-2">
                                     <Package className="h-4 w-4" />
@@ -294,7 +283,6 @@ export function ProductFilters({ filters, onFiltersChange, onSearch, isSearching
                                 {!isQuantityRangeValid() && <p className="text-sm text-destructive">{t('filters.quantityRangeError')}</p>}
                             </div>
 
-                            {/* Availability toggle */}
                             <div className="flex items-center justify-between space-x-2">
                                 <Label htmlFor="availability-toggle" className="flex-1 cursor-pointer">
                                     {t('filters.availableOnly')}
@@ -304,7 +292,6 @@ export function ProductFilters({ filters, onFiltersChange, onSearch, isSearching
                         </CollapsibleContent>
                     </Collapsible>
 
-                    {/* Active filters chips */}
                     {hasActiveFilters && (
                         <div className="flex flex-wrap items-center gap-2 pt-2 border-t">
                             <span className="text-sm text-muted-foreground">{t('filters.activeFilters')}</span>

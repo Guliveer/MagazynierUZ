@@ -22,7 +22,6 @@ interface LocationListProps {
   warehouseName: string;
 }
 
-// Location type badge colors
 const LOCATION_TYPE_COLORS: Record<LocationType, string> = {
     PICKING: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20',
     BULK: 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20',
@@ -37,14 +36,12 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Dialog states
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    // Filter and sort states
     const [searchQuery, setSearchQuery] = useState('');
     const [filterType, setFilterType] = useState<LocationType | 'ALL'>('ALL');
     const [filterZone, setFilterZone] = useState<string>('ALL');
@@ -70,31 +67,25 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
         fetchLocations();
     }, [fetchLocations]);
 
-    // Get unique zones for filter
     const uniqueZones = useMemo(() => {
         const zones = new Set(locations.map((loc) => loc.zoneName));
         return Array.from(zones).sort();
     }, [locations]);
 
-    // Filter and sort locations
     const filteredLocations = useMemo(() => {
         const filtered = locations.filter((location) => {
-            // Search filter
             if (searchQuery && !location.locationCode.toLowerCase().includes(searchQuery.toLowerCase())) {
                 return false;
             }
 
-            // Type filter
             if (filterType !== 'ALL' && location.locationType !== filterType) {
                 return false;
             }
 
-            // Zone filter
             if (filterZone !== 'ALL' && location.zoneName !== filterZone) {
                 return false;
             }
 
-            // Status filter
             if (filterStatus === 'ACTIVE' && !location.isActive) {
                 return false;
             }
@@ -108,7 +99,6 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
             return true;
         });
 
-        // Sort
         filtered.sort((a, b) => {
             if (sortBy === 'code') {
                 return a.locationCode.localeCompare(b.locationCode);
@@ -179,7 +169,6 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
         }
     };
 
-    // Loading state
     if (isLoading) {
         return (
             <div className="space-y-4">
@@ -233,7 +222,6 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
         );
     }
 
-    // Error state
     if (error) {
         return (
             <div className="space-y-4">
@@ -254,7 +242,6 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
         );
     }
 
-    // Empty state
     if (locations.length === 0) {
         return (
             <div className="space-y-4">
@@ -284,7 +271,6 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
         );
     }
 
-    // Normal state with data
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -301,7 +287,6 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
                 </div>
             </div>
 
-            {/* Filters */}
             <div className="flex flex-wrap gap-2">
                 <Input placeholder={t('search.placeholder')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="max-w-xs" />
 
@@ -357,7 +342,6 @@ export function LocationList({ warehouseId, warehouseName }: LocationListProps) 
                 </Select>
             </div>
 
-            {/* Table */}
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>

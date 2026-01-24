@@ -15,14 +15,12 @@ import type { BreadcrumbConfigMap, BreadcrumbRouteConfig, RouteMatchResult, Brea
  * Parent references create the hierarchy chain
  */
 export const BREADCRUMB_CONFIG: BreadcrumbConfigMap = {
-    // Dashboard root
     '/dashboard': {
         labelKey: 'dashboard',
         parent: null,
         icon: LayoutDashboard
     },
 
-    // Warehouses section
     '/dashboard/warehouses': {
         labelKey: 'warehouses',
         parent: '/dashboard',
@@ -35,28 +33,24 @@ export const BREADCRUMB_CONFIG: BreadcrumbConfigMap = {
         icon: Building2
     },
 
-    // Products section
     '/dashboard/products': {
         labelKey: 'products',
         parent: '/dashboard',
         icon: Package
     },
 
-    // Statistics section
     '/dashboard/statistics': {
         labelKey: 'statistics',
         parent: '/dashboard',
         icon: BarChart3
     },
 
-    // Profile section
     '/dashboard/profile': {
         labelKey: 'profile',
         parent: '/dashboard',
         icon: User
     },
 
-    // Admin section
     '/dashboard/admin': {
         labelKey: 'admin',
         parent: '/dashboard',
@@ -87,27 +81,25 @@ export const BREADCRUMB_CONFIG: BreadcrumbConfigMap = {
  * @returns The matched pattern and extracted params
  */
 export function matchRoutePattern(pathname: string): RouteMatchResult {
-    // Remove locale prefix - e.g., /en/dashboard -> /dashboard
     const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}(?=\/|$)/, '');
 
-    // Try exact match first
     if (BREADCRUMB_CONFIG[pathWithoutLocale]) {
         return { pattern: pathWithoutLocale, params: {} };
     }
 
-    // Try pattern matching for dynamic routes
     for (const pattern of Object.keys(BREADCRUMB_CONFIG)) {
         const patternParts = pattern.split('/');
         const pathParts = pathWithoutLocale.split('/');
 
-        if (patternParts.length !== pathParts.length) { continue; }
+        if (patternParts.length !== pathParts.length) {
+            continue;
+        }
 
         const params: Record<string, string> = {};
         let isMatch = true;
 
         for (let i = 0; i < patternParts.length; i++) {
             if (patternParts[i].startsWith(':')) {
-                // Dynamic segment - extract param
                 const paramName = patternParts[i].slice(1);
                 params[paramName] = pathParts[i];
             } else if (patternParts[i] !== pathParts[i]) {
@@ -131,7 +123,6 @@ export function matchRoutePattern(pathname: string): RouteMatchResult {
  * @returns Array of breadcrumb chain items from root to current
  */
 export function buildBreadcrumbChain(pathname: string): BreadcrumbChainItem[] {
-    // Match current route to pattern
     const { pattern, params } = matchRoutePattern(pathname);
 
     if (!pattern) {
@@ -143,10 +134,10 @@ export function buildBreadcrumbChain(pathname: string): BreadcrumbChainItem[] {
 
     while (currentPattern) {
         const config: BreadcrumbRouteConfig | undefined = BREADCRUMB_CONFIG[currentPattern];
-        if (!config) { break; }
+        if (!config) {
+            break;
+        }
 
-        // Build actual href by replacing :param with values
-        // Note: href should NOT include locale prefix - the Link component from @/i18n/routing handles that automatically
         let href = currentPattern;
         for (const [key, value] of Object.entries(params)) {
             href = href.replace(`:${key}`, value);

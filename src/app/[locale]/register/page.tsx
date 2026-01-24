@@ -28,7 +28,6 @@ export default function RegisterPage() {
     const [isLoading, setIsLoading] = useState(false);
     const captchaRef = useRef<HCaptchaRef>(null);
 
-    // Password validation schema with translated messages
     const passwordSchema = z.string().min(6, t('validation.passwordMinLength')).max(500, t('validation.passwordMaxLength'));
 
     const validatePassword = (value: string): boolean => {
@@ -53,7 +52,6 @@ export default function RegisterPage() {
 
     const handleCaptchaVerify = (token: string) => {
         setCaptchaToken(token);
-        // Clear any captcha-related errors
         if (alert?.message.includes('captcha')) {
             setAlert(null);
         }
@@ -71,7 +69,6 @@ export default function RegisterPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validate password strength
         if (!validatePassword(password)) {
             setAlert({ type: 'error', message: passwordError || t('errors.passwordRequirements') });
             return;
@@ -82,7 +79,6 @@ export default function RegisterPage() {
             return;
         }
 
-        // Skip CAPTCHA validation in development mode
         const isDevelopment = process.env.NODE_ENV === 'development';
         if (!isDevelopment && !captchaToken) {
             setAlert({ type: 'error', message: t('errors.captchaRequired') });
@@ -97,17 +93,14 @@ export default function RegisterPage() {
 
             setAlert({ type: 'success', message: t('success.registered') });
 
-            // Reset captcha after submission
             captchaRef.current?.resetCaptcha();
             setCaptchaToken(null);
 
-            // Auto-login after successful registration
             try {
                 const loginResponse = await login(username, password);
                 setToken(loginResponse.token);
                 router.push('/dashboard');
             } catch {
-                // If auto-login fails, redirect to login page
                 setAlert({ type: 'success', message: t('success.registeredLogin') });
                 setTimeout(() => {
                     router.push('/login');
@@ -124,7 +117,6 @@ export default function RegisterPage() {
                 setAlert({ type: 'error', message: t('errors.unexpectedError') });
             }
 
-            // Reset captcha on error
             captchaRef.current?.resetCaptcha();
             setCaptchaToken(null);
         } finally {
@@ -134,7 +126,6 @@ export default function RegisterPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat p-4" style={{ backgroundImage: "url('/warehouse-bg.png')" }}>
-            {/* Theme and Locale Switchers in top-right corner */}
             <div className="absolute top-4 right-4 z-20 flex gap-2">
                 <ThemeSwitcher />
                 <LocaleSwitcher />

@@ -32,7 +32,6 @@ export function ProductDialog({ open, onOpenChange, product, onSubmit, isLoading
     const productWithContext = product as ProductWithContext | undefined;
 
     const handleSubmit = async (data: ProductFormData) => {
-    // Get warehouse and location IDs from form data or product context
         const warehouseId = isEditing ? productWithContext?.warehouseId || product?.warehouseId || product?.warehouse?.id : data.warehouseId;
         const locationId = isEditing ? productWithContext?.locationId || product?.locationId || product?.location?.id : data.locationId;
 
@@ -58,7 +57,6 @@ export function ProductDialog({ open, onOpenChange, product, onSubmit, isLoading
         onOpenChange(false);
     };
 
-    // Determine which location info to show
     const displayWarehouseName = productWithContext?.warehouseName || warehouseName;
     const displayWarehouseCode = productWithContext?.warehouseCode || warehouseCode;
     const displayLocationCode = productWithContext?.locationCode || locationCode;
@@ -72,7 +70,6 @@ export function ProductDialog({ open, onOpenChange, product, onSubmit, isLoading
                     <DialogDescription>{isEditing ? t('description.edit') : t('description.add')}</DialogDescription>
                 </DialogHeader>
 
-                {/* Show current location information when editing */}
                 {isEditing && (displayWarehouseName || displayLocationCode) && (
                     <Alert>
                         <Info className="h-4 w-4" />

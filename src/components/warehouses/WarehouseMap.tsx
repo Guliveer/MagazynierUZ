@@ -27,15 +27,15 @@ function FitBoundsToMarkers({ warehouses }: FitBoundsProps) {
     const map = useMap();
 
     useEffect(() => {
-        if (warehouses.length === 0) { return; }
+        if (warehouses.length === 0) {
+            return;
+        }
 
-        // Create bounds from all markers
         const bounds = L.latLngBounds([]);
         warehouses.forEach((warehouse) => {
             bounds.extend([warehouse.address.latitude, warehouse.address.longitude]);
         });
 
-        // Fit map to bounds
         if (bounds.isValid()) {
             map.fitBounds(bounds, { padding: [50, 50] });
         }

@@ -31,19 +31,16 @@ export function ProductList({ warehouseId, locationId }: ProductListProps) {
     const [error, setError] = useState<string | null>(null);
     const [search, setSearch] = useState('');
 
-    // Dialog states
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    // Format price based on locale
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat(locale, { style: 'currency', currency: 'PLN' }).format(price);
     };
 
-    // Truncate description
     const truncateDescription = (description?: string) => {
         if (!description) {
             return '-';
@@ -130,7 +127,6 @@ export function ProductList({ warehouseId, locationId }: ProductListProps) {
         }
     };
 
-    // Loading state
     const renderLoadingState = () => (
         <div className="rounded-md border">
             <Table>
@@ -175,7 +171,6 @@ export function ProductList({ warehouseId, locationId }: ProductListProps) {
         </div>
     );
 
-    // Error state
     const renderErrorState = () => (
         <div className="rounded-md border border-destructive/50 bg-destructive/10 p-6 text-center">
             <p className="text-destructive">{error}</p>
@@ -185,7 +180,6 @@ export function ProductList({ warehouseId, locationId }: ProductListProps) {
         </div>
     );
 
-    // Empty state
     const renderEmptyState = () => (
         <Empty className="border rounded-lg py-12">
             <EmptyHeader>
@@ -202,7 +196,6 @@ export function ProductList({ warehouseId, locationId }: ProductListProps) {
         </Empty>
     );
 
-    // Products table
     const renderProductsTable = () => (
         <div className="rounded-md border">
             <Table>
@@ -243,7 +236,6 @@ export function ProductList({ warehouseId, locationId }: ProductListProps) {
 
     return (
         <div className="space-y-6">
-            {/* Header with Add button */}
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold tracking-tight">{t('list.title')}</h2>
                 <Input placeholder={t('list.searchPlaceholder')} value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-sm" />
@@ -253,10 +245,8 @@ export function ProductList({ warehouseId, locationId }: ProductListProps) {
                 </Button>
             </div>
 
-            {/* Content */}
             {isLoading ? renderLoadingState() : error ? renderErrorState() : products.length === 0 ? renderEmptyState() : renderProductsTable()}
 
-            {/* Dialogs */}
             <ProductDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} product={selectedProduct} onSubmit={handleSubmit} isLoading={isSaving} />
 
             <DeleteProductDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} product={selectedProduct} onConfirm={handleDeleteConfirm} isLoading={isDeleting} />

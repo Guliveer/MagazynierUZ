@@ -34,14 +34,12 @@ export function ExportButton({ products, disabled = false, variant = 'outline', 
         try {
             setIsExporting(true);
 
-            // Add small delay to show loading state for better UX
             await new Promise((resolve) => setTimeout(resolve, 300));
 
             exportProductsToCSV(products);
 
             toast.success(t('success', { count: formatExportCount(products.length) }));
         } catch (error) {
-            console.error('Export error:', error);
             const message = error instanceof Error ? error.message : t('error');
             toast.error(message);
         } finally {

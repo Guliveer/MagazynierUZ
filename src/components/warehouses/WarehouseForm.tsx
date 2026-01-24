@@ -18,7 +18,6 @@ interface WarehouseFormProps {
   isLoading?: boolean;
 }
 
-// Exported type includes parsed latitude/longitude for API compatibility
 export type WarehouseFormData = {
   name: string;
   code: string;
@@ -32,7 +31,6 @@ export type WarehouseFormData = {
   longitude: number;
 };
 
-// Helper function to parse coordinates from string
 function parseCoordinates(coordString: string): { latitude: number; longitude: number } | null {
     const parts = coordString.split(',').map((s) => s.trim());
     if (parts.length === 2) {
@@ -45,7 +43,6 @@ function parseCoordinates(coordString: string): { latitude: number; longitude: n
     return null;
 }
 
-// Helper function to format coordinates to string
 function formatCoordinates(lat?: number, lng?: number): string {
     if (lat !== undefined && lng !== undefined && (lat !== 0 || lng !== 0)) {
         return `${lat}, ${lng}`;
@@ -56,7 +53,6 @@ function formatCoordinates(lat?: number, lng?: number): string {
 export function WarehouseForm({ warehouse, onSubmit, onCancel, isLoading = false }: WarehouseFormProps) {
     const t = useTranslations('warehouses.form');
 
-    // Validation schema for warehouse form
     const warehouseFormSchema = z.object({
         name: z.string().min(2, t('validation.nameMin')),
         code: z.string().min(2, t('validation.codeMin')).max(10, t('validation.codeMax')),
@@ -97,7 +93,6 @@ export function WarehouseForm({ warehouse, onSubmit, onCancel, isLoading = false
   return (
       <Form {...form}>
           <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Basic information */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <FormField
                       control={form.control}
@@ -142,7 +137,6 @@ export function WarehouseForm({ warehouse, onSubmit, onCancel, isLoading = false
                   )}
               />
 
-              {/* Address */}
               <div className="space-y-4">
                   <h4 className="text-sm font-medium text-muted-foreground">{t('sections.address')}</h4>
 
@@ -233,7 +227,6 @@ export function WarehouseForm({ warehouse, onSubmit, onCancel, isLoading = false
                   />
               </div>
 
-              {/* Buttons */}
               <div className="flex justify-end gap-2 pt-4">
                   <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
                       {t('buttons.cancel')}

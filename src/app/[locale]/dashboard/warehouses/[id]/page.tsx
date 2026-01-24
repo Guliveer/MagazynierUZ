@@ -32,7 +32,6 @@ export default function WarehouseDetailPage({ params }: WarehouseDetailPageProps
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Set dynamic breadcrumb label with warehouse name
     useSetBreadcrumbLabel(warehouse?.name ?? null);
 
     useEffect(() => {
@@ -60,7 +59,6 @@ export default function WarehouseDetailPage({ params }: WarehouseDetailPageProps
         fetchWarehouse();
     }, [warehouseId, t, tMessages]);
 
-    // Loading state
     if (isLoading) {
         return (
             <div className="container mx-auto py-6 space-y-6">
@@ -77,7 +75,6 @@ export default function WarehouseDetailPage({ params }: WarehouseDetailPageProps
         );
     }
 
-    // Error state
     if (error || !warehouse) {
         return (
             <div className="container mx-auto py-6 space-y-6">
@@ -99,7 +96,6 @@ export default function WarehouseDetailPage({ params }: WarehouseDetailPageProps
 
     return (
         <div className="container mx-auto py-6 space-y-6">
-            {/* Header */}
             <div className="flex items-center gap-4">
                 <Button variant="ghost" size="icon" onClick={() => router.push('/dashboard/warehouses')} title="Back to warehouses">
                     <ArrowLeft className="h-4 w-4" />
@@ -109,7 +105,6 @@ export default function WarehouseDetailPage({ params }: WarehouseDetailPageProps
                 </div>
             </div>
 
-            {/* Warehouse Info Card */}
             <Card>
                 <CardHeader>
                     <div className="flex items-start justify-between">
@@ -168,7 +163,6 @@ export default function WarehouseDetailPage({ params }: WarehouseDetailPageProps
 
             <Separator />
 
-            {/* Locations Section */}
             <LocationList warehouseId={warehouse.id} warehouseName={warehouse.name} />
         </div>
     );

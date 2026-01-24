@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 's
 import { Skeleton } from 'shadcn/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'shadcn/tooltip';
 import type { Product } from '@/types';
+import { escapeRegex } from '@/lib/utils';
 
 // Highlight search terms in text
 const highlightText = (text: string, searchTerm?: string) => {
@@ -19,7 +20,9 @@ const highlightText = (text: string, searchTerm?: string) => {
         return text;
     }
 
-    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    // Escape special regex characters to prevent errors with characters like \, [, ], etc.
+    const escapedSearchTerm = escapeRegex(searchTerm);
+    const regex = new RegExp(`(${escapedSearchTerm})`, 'gi');
     const parts = text.split(regex);
 
     return parts.map((part, index) =>

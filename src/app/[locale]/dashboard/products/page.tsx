@@ -23,7 +23,6 @@ export default function ProductsPage() {
     const searchParams = useSearchParams();
     const t = useTranslations('products');
 
-    // Initialize filters from URL params
     const getInitialFilters = (): ProductFilterValues => ({
         searchQuery: searchParams.get('q') || '',
         warehouseId: searchParams.get('warehouse') ? parseInt(searchParams.get('warehouse')!, 10) : null,
@@ -40,47 +39,39 @@ export default function ProductsPage() {
     const [isSearching, setIsSearching] = useState(false);
     const [hasSearched, setHasSearched] = useState(true); // Changed to true to load all products on mount
 
-    // Cache for warehouse and location data
     const [warehouseCache, setWarehouseCache] = useState<Map<number, Warehouse>>(new Map());
     const [locationCache, setLocationCache] = useState<Map<string, Location>>(new Map());
 
-    // Pagination and sorting - now handled server-side
     const [page, setPage] = useState(parseInt(searchParams.get('page') || '1', 10));
     const [pageSize, setPageSize] = useState(parseInt(searchParams.get('size') || '25', 10));
     const [sortBy, setSortBy] = useState<SortField>((searchParams.get('sortBy') as SortField) || 'name');
     const [sortDirection, setSortDirection] = useState<SortDirection>((searchParams.get('sortDir') as SortDirection) || 'asc');
     const [viewMode, setViewMode] = useState<ViewMode>((searchParams.get('view') as ViewMode) || 'table');
 
-    // Dialog states
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    // Warehouse and location data for the dialog
     const [dialogWarehouses, setDialogWarehouses] = useState<Warehouse[]>([]);
     const [dialogLocations, setDialogLocations] = useState<Location[]>([]);
     const [dialogSelectedWarehouseId, setDialogSelectedWarehouseId] = useState<number | null>(null);
     const [dialogSelectedLocationId, setDialogSelectedLocationId] = useState<number | null>(null);
     const [isLoadingDialogLocations, setIsLoadingDialogLocations] = useState(false);
 
-    // Debounce search query
     const debouncedSearchQuery = useDebounce(filters.searchQuery, 300);
 
-    // Fetch warehouses for dialog when it opens
     useEffect(() => {
         if (isDialogOpen && dialogWarehouses.length === 0) {
             getWarehouses()
                 .then(setDialogWarehouses)
-                .catch((err) => {
-                    console.error('Failed to fetch warehouses:', err);
+                .catch(() => {
                     toast.error(t('messages.warehousesError'));
                 });
         }
     }, [isDialogOpen, dialogWarehouses.length, t]);
 
-    // Fetch locations when warehouse changes in dialog
     const handleDialogWarehouseChange = useCallback(
         async (warehouseId: number | null) => {
             setDialogSelectedWarehouseId(warehouseId);
@@ -92,8 +83,7 @@ export default function ProductsPage() {
                 try {
                     const locations = await getLocations(warehouseId);
                     setDialogLocations(locations);
-                } catch (err) {
-                    console.error('Failed to fetch locations:', err);
+                } catch {
                     toast.error(t('messages.locationsError'));
                 } finally {
                     setIsLoadingDialogLocations(false);
@@ -103,7 +93,6 @@ export default function ProductsPage() {
         [t]
     );
 
-    // Update URL when filters change
     const updateURL = useCallback(
         (newFilters: ProductFilterValues, newPage: number, newPageSize: number, newSortBy: SortField, newSortDir: SortDirection, newViewMode: ViewMode) => {
             const params = new URLSearchParams();
@@ -154,10 +143,8 @@ export default function ProductsPage() {
         [router, locale]
     );
 
-    // Enrich products with warehouse and location context
     const enrichProductsWithContext = useCallback(
         async (products: Product[]): Promise<ProductWithContext[]> => {
-            // First, extract IDs from nested objects if present
             const productsWithIds = products.map((p) => ({
                 ...p,
                 warehouseId: p.warehouseId || p.warehouse?.id,
@@ -179,24 +166,20 @@ export default function ProductsPage() {
             }
 
             try {
-                // Check cache first
                 const cacheKey = `${filters.warehouseId}-${filters.locationId}`;
                 let warehouse = warehouseCache.get(filters.warehouseId);
                 let location = locationCache.get(cacheKey);
 
-                // Fetch if not in cache
                 if (!warehouse || !location) {
                     const [warehouseData, locationData] = await Promise.all([warehouse ? Promise.resolve(warehouse) : getWarehouse(filters.warehouseId), location ? Promise.resolve(location) : getLocation(filters.warehouseId, filters.locationId)]);
 
                     warehouse = warehouseData;
                     location = locationData;
 
-                    // Update cache
                     setWarehouseCache((prev) => new Map(prev).set(filters.warehouseId!, warehouse!));
                     setLocationCache((prev) => new Map(prev).set(cacheKey, location!));
                 }
 
-                // Enrich products with context from filters
                 return productsWithIds.map((product) => ({
                     ...product,
                     warehouseId: filters.warehouseId!,
@@ -207,9 +190,7 @@ export default function ProductsPage() {
                     zoneName: location!.zoneName,
                     locationType: location!.locationType
                 }));
-            } catch (err) {
-                console.error('Failed to enrich products with context:', err);
-                // Return products with basic context on error
+            } catch {
                 return productsWithIds.map((p) => ({
                     ...p,
                     warehouseId: filters.warehouseId || p.warehouseId || 0,
@@ -225,7 +206,6 @@ export default function ProductsPage() {
         [filters.warehouseId, filters.locationId, warehouseCache, locationCache]
     );
 
-    // Perform search with server-side pagination
     const performSearch = useCallback(async () => {
         try {
             setIsSearching(true);
@@ -265,7 +245,6 @@ export default function ProductsPage() {
 
             const data = await searchProducts(params);
 
-            // Enrich products with full warehouse and location context
             const enrichedProducts = await enrichProductsWithContext(data.content);
 
             setPaginatedData({
@@ -273,7 +252,6 @@ export default function ProductsPage() {
                 content: enrichedProducts
             });
 
-            // Update URL with current filters
             updateURL(filters, page, pageSize, sortBy, sortDirection, viewMode);
         } catch (err) {
             const message = err instanceof ApiError ? err.message : t('messages.searchError');
@@ -284,16 +262,14 @@ export default function ProductsPage() {
         }
     }, [filters, page, pageSize, sortBy, sortDirection, viewMode, updateURL, enrichProductsWithContext, t]);
 
-    // Auto-search when debounced query changes
     useEffect(() => {
         if (hasSearched) {
-            setPage(1); // Reset to first page when search query changes
+            setPage(1);
             performSearch();
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debouncedSearchQuery]);
 
-    // Re-search when pagination or sorting changes
     useEffect(() => {
         if (hasSearched) {
             performSearch();
@@ -301,82 +277,66 @@ export default function ProductsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, pageSize, sortBy, sortDirection]);
 
-    // Handle filter changes
     const handleFiltersChange = (newFilters: ProductFilterValues) => {
         setFilters(newFilters);
-        setPage(1); // Reset to first page when filters change
+        setPage(1);
     };
 
-    // Handle manual search button click
     const handleSearch = () => {
         setPage(1);
         performSearch();
     };
 
-    // Handle sorting - no client-side sorting needed anymore
     const handleSort = (field: SortField) => {
         if (sortBy === field) {
-            // Toggle direction if same field
             const newDirection = sortDirection === 'asc' ? 'desc' : 'asc';
             setSortDirection(newDirection);
             updateURL(filters, page, pageSize, field, newDirection, viewMode);
         } else {
-            // Set new field with ascending direction
             setSortBy(field);
             setSortDirection('asc');
             updateURL(filters, page, pageSize, field, 'asc', viewMode);
         }
     };
 
-    // Handle view mode change
     const handleViewModeChange = (mode: ViewMode) => {
         setViewMode(mode);
         updateURL(filters, page, pageSize, sortBy, sortDirection, mode);
     };
 
-    // Handle page change
     const handlePageChange = (newPage: number) => {
         setPage(newPage);
         updateURL(filters, newPage, pageSize, sortBy, sortDirection, viewMode);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // Handle page size change
     const handlePageSizeChange = (newSize: number) => {
         setPageSize(newSize);
-        setPage(1); // Reset to first page
+        setPage(1);
         updateURL(filters, 1, newSize, sortBy, sortDirection, viewMode);
     };
 
-    // Handle add product
     const handleAddClick = () => {
         setSelectedProduct(null);
-        // Pre-select warehouse and location from current filters if available
         setDialogSelectedWarehouseId(filters.warehouseId);
         setDialogSelectedLocationId(filters.locationId);
 
-        // If we have a warehouse filter, fetch its locations
         if (filters.warehouseId) {
             setIsLoadingDialogLocations(true);
             getLocations(filters.warehouseId)
                 .then(setDialogLocations)
-                .catch((err) => {
-                    console.error('Failed to fetch locations:', err);
-                })
+                .catch(() => {})
                 .finally(() => setIsLoadingDialogLocations(false));
         }
 
         setIsDialogOpen(true);
     };
 
-    // Handle edit product - fetch full context if needed
     const handleEditClick = (product: Product) => {
-    // Check if product already has warehouse and location IDs
         const warehouseId = product.warehouseId || product.warehouse?.id;
         const locationId = product.locationId || product.location?.id;
 
         if (warehouseId && locationId) {
-            // Product has context, use it directly
             setSelectedProduct({
                 ...product,
                 warehouseId,
@@ -384,15 +344,11 @@ export default function ProductsPage() {
             });
             setIsDialogOpen(true);
         } else {
-            // Product missing context - try to fetch it
             toast.error(t('messages.missingContext'));
-            console.error('Product missing context:', product);
         }
     };
 
-    // Handle delete product - ensure context is available
     const handleDeleteClick = (product: Product) => {
-    // Check if product has warehouse and location IDs
         const warehouseId = product.warehouseId || product.warehouse?.id;
         const locationId = product.locationId || product.location?.id;
 
@@ -405,11 +361,9 @@ export default function ProductsPage() {
             setIsDeleteDialogOpen(true);
         } else {
             toast.error(t('messages.missingContextDelete'));
-            console.error('Product missing context:', product);
         }
     };
 
-    // Handle product submission
     const handleSubmit = async (data: CreateProductRequest, warehouseId: number, locationId: number) => {
         const isEditing = !!selectedProduct;
 
@@ -423,11 +377,10 @@ export default function ProductsPage() {
                 toast.success(t('messages.created'));
             }
             setIsDialogOpen(false);
-            // Reset dialog state
             setDialogSelectedWarehouseId(null);
             setDialogSelectedLocationId(null);
             setDialogLocations([]);
-            await performSearch(); // Refresh results
+            await performSearch();
         } catch (err) {
             const message = err instanceof ApiError ? err.message : t('messages.createError');
             toast.error(message);
@@ -436,13 +389,11 @@ export default function ProductsPage() {
         }
     };
 
-    // Handle product deletion
     const handleDeleteConfirm = async () => {
         if (!selectedProduct) {
             return;
         }
 
-        // Get warehouse and location IDs from the product
         const warehouseId = selectedProduct.warehouseId || selectedProduct.warehouse?.id;
         const locationId = selectedProduct.locationId || selectedProduct.location?.id;
 
@@ -456,7 +407,7 @@ export default function ProductsPage() {
             await deleteProduct(warehouseId, locationId, selectedProduct.id);
             toast.success(t('messages.deleted'));
             setIsDeleteDialogOpen(false);
-            await performSearch(); // Refresh results
+            await performSearch();
         } catch (err) {
             const message = err instanceof ApiError ? err.message : t('messages.deleteError');
             toast.error(message);
@@ -465,11 +416,9 @@ export default function ProductsPage() {
         }
     };
 
-    // Handle dialog close - reset state
     const handleDialogOpenChange = (open: boolean) => {
         setIsDialogOpen(open);
         if (!open) {
-            // Reset dialog state when closing
             setDialogSelectedWarehouseId(null);
             setDialogSelectedLocationId(null);
             setDialogLocations([]);
@@ -478,7 +427,6 @@ export default function ProductsPage() {
 
     return (
         <div className="container mx-auto py-6 space-y-6">
-            {/* Page header */}
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
@@ -490,20 +438,16 @@ export default function ProductsPage() {
                 </Button>
             </div>
 
-            {/* Search filters */}
             <ProductFilters filters={filters} onFiltersChange={handleFiltersChange} onSearch={handleSearch} isSearching={isSearching} />
 
-            {/* Search results */}
             {hasSearched && paginatedData && <ProductSearchResults products={paginatedData.content} isLoading={isSearching} searchTerm={filters.searchQuery} sortBy={sortBy} sortDirection={sortDirection} viewMode={viewMode} page={page} pageSize={pageSize} totalResults={paginatedData.totalElements} onSort={handleSort} onViewModeChange={handleViewModeChange} onPageChange={handlePageChange} onPageSizeChange={handlePageSizeChange} onEdit={handleEditClick} onDelete={handleDeleteClick} />}
 
-            {/* No results state */}
             {hasSearched && paginatedData && paginatedData.content.length === 0 && (
                 <div className="text-center py-12 border rounded-lg bg-muted/50">
                     <p className="text-muted-foreground">{t('search.noResults')}</p>
                 </div>
             )}
 
-            {/* Dialogs */}
             <ProductDialog open={isDialogOpen} onOpenChange={handleDialogOpenChange} product={selectedProduct} onSubmit={handleSubmit} isLoading={isSaving} warehouses={dialogWarehouses} locations={dialogLocations} selectedWarehouseId={dialogSelectedWarehouseId} selectedLocationId={dialogSelectedLocationId} onWarehouseChange={handleDialogWarehouseChange} isLoadingLocations={isLoadingDialogLocations} />
 
             <DeleteProductDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} product={selectedProduct} onConfirm={handleDeleteConfirm} isLoading={isDeleting} />

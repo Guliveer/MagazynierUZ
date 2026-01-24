@@ -34,7 +34,6 @@ export function UserDialog({ user, open, onOpenChange, onSuccess }: UserDialogPr
             onOpenChange(false);
             onSuccess();
         } catch (error) {
-            console.error('Failed to save user:', error);
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             toast.error(isEdit ? t('updateFailed', { error: errorMessage }) : t('createFailed', { error: errorMessage }));
         } finally {

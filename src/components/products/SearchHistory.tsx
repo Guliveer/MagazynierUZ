@@ -24,7 +24,6 @@ export function SearchHistory({ history, isLoading, onSelectSearch, onRemoveSear
     const t = useTranslations('products.history');
     const locale = useLocale();
 
-    // Format timestamp to relative time
     const formatTimestamp = (timestamp: number): string => {
     // eslint-disable-next-line react-hooks/purity
         const now = Date.now();
@@ -86,7 +85,6 @@ export function SearchHistory({ history, isLoading, onSelectSearch, onRemoveSear
                                         <p className="text-sm font-medium truncate flex-1">{item.description}</p>
                                         <span className="text-xs text-muted-foreground whitespace-nowrap">{formatTimestamp(item.timestamp)}</span>
                                     </div>
-                                    {/* Show filter details */}
                                     <div className="flex flex-wrap gap-1 mt-1">
                                         {item.filters.searchQuery && (
                                             <Badge variant="outline" className="text-xs">

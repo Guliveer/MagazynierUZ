@@ -32,15 +32,13 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
     password?: string;
   }>({});
 
-    // Load organisations for organisation selection
     useEffect(() => {
         const loadOrganisations = async () => {
             setLoadingOrganisations(true);
             try {
                 const data = await getAllOrganisations();
                 setOrganisations(data);
-            } catch (error) {
-                console.error('Failed to load organisations:', error);
+            } catch {
             } finally {
                 setLoadingOrganisations(false);
             }
@@ -132,7 +130,6 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
         setErrors({});
 
         if (isEdit) {
-            // Update user - only include changed fields
             const updateData: AdminUpdateUserRequest = {};
             if (username !== user.username) {
                 updateData.username = username;
@@ -148,7 +145,6 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
             }
             onSubmit(updateData);
         } else {
-            // Create user
             const createData: AdminCreateUserRequest = {
                 username,
                 password,
@@ -161,7 +157,6 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Username */}
             <div className="space-y-2">
                 <Label htmlFor="username">
                     {t('username')} <span className="text-destructive">*</span>
@@ -185,7 +180,6 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
                 )}
             </div>
 
-            {/* Password */}
             <div className="space-y-2">
                 <Label htmlFor="password">
                     {t('password')} {!user && <span className="text-destructive">*</span>}
@@ -226,7 +220,6 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
                 )}
             </div>
 
-            {/* Roles */}
             <div className="space-y-3">
                 <Label>
           Roles <span className="text-destructive">*</span>
@@ -252,7 +245,6 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
                 )}
             </div>
 
-            {/* Organisation */}
             <div className="space-y-2">
                 <Label htmlFor="organisation">Organisation (Optional)</Label>
                 <Select value={organisationId} onValueChange={setOrganisationId} disabled={isLoading || loadingOrganisations}>
@@ -270,7 +262,6 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
                 <p className="text-xs text-muted-foreground">Assign user to a specific organisation</p>
             </div>
 
-            {/* Submit Button */}
             <div className="flex justify-end gap-3 pt-4">
                 <Button type="submit" disabled={isLoading || selectedRoles.length === 0} className="min-w-[120px]">
                     {isLoading ? (

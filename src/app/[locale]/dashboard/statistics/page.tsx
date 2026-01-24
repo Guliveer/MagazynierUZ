@@ -32,7 +32,6 @@ export default function StatisticsPage() {
     const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
     const [autoRefresh, setAutoRefresh] = useState(false);
 
-    // Filter states
     const [sortBy, setSortBy] = useState<'quantity' | 'price' | 'name'>('quantity');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
     const [selectedWarehouse, setSelectedWarehouse] = useState<string>('all');
@@ -40,7 +39,6 @@ export default function StatisticsPage() {
     const [showAvailableOnly, setShowAvailableOnly] = useState(false);
     const [chartView, setChartView] = useState<ChartViewType>('quantity');
 
-    // Summary statistics
     const [summaryStats, setSummaryStats] = useState({
         totalProducts: 0,
         totalInventoryValue: 0,
@@ -49,7 +47,6 @@ export default function StatisticsPage() {
         lowStockCount: 0
     });
 
-    // Format currency based on locale
     const formatCurrency = useCallback(
         (value: number) => {
             return new Intl.NumberFormat(locale, {
@@ -62,7 +59,6 @@ export default function StatisticsPage() {
         [locale]
     );
 
-    // Format number based on locale
     const formatNumber = useCallback(
         (value: number) => {
             return new Intl.NumberFormat(locale).format(value);
@@ -70,7 +66,6 @@ export default function StatisticsPage() {
         [locale]
     );
 
-    // Check authentication
     useEffect(() => {
         const token = getToken();
         if (!token) {
@@ -78,13 +73,11 @@ export default function StatisticsPage() {
         }
     }, [router]);
 
-    // Fetch all data in parallel
     const fetchAllData = useCallback(async () => {
         setLoading(true);
         setError(null);
 
         try {
-            // Parallel API calls for better performance
             const [warehousesData, top10Data, searchData] = await Promise.all([
                 getWarehouses().catch(() => []),
                 getTop10Products({
@@ -104,7 +97,6 @@ export default function StatisticsPage() {
             setWarehouses(warehousesData);
             setProducts(top10Data);
 
-            // Calculate summary statistics
             const totalProducts = searchData.length;
             const totalValue = searchData.reduce((sum: number, p) => sum + p.price * p.quantity, 0);
             const avgPrice = totalProducts > 0 ? totalValue / totalProducts : 0;
@@ -119,28 +111,24 @@ export default function StatisticsPage() {
             });
 
             setLastUpdated(new Date());
-        } catch (err) {
-            console.error('Failed to fetch data:', err);
+        } catch {
             setError(t('messages.error'));
         } finally {
             setLoading(false);
         }
     }, [sortBy, sortDirection, selectedWarehouse, selectedLocation, showAvailableOnly, t]);
 
-    // Initial data fetch
     useEffect(() => {
         fetchAllData();
     }, [fetchAllData]);
 
-    // Fetch locations when warehouse changes
     useEffect(() => {
         const fetchLocations = async () => {
             if (selectedWarehouse !== 'all') {
                 try {
                     const data = await getLocations(parseInt(selectedWarehouse));
                     setLocations(data);
-                } catch (err) {
-                    console.error('Failed to fetch locations:', err);
+                } catch {
                     setLocations([]);
                 }
             } else {
@@ -152,18 +140,16 @@ export default function StatisticsPage() {
         fetchLocations();
     }, [selectedWarehouse]);
 
-    // Auto-refresh functionality
     useEffect(() => {
         if (autoRefresh) {
             const interval = setInterval(() => {
                 fetchAllData();
-            }, 30000); // Refresh every 30 seconds
+            }, 30000);
 
             return () => clearInterval(interval);
         }
     }, [autoRefresh, fetchAllData]);
 
-    // Export to CSV
     const exportToCSV = () => {
         const headers = [t('table.headers.rank'), t('table.headers.name'), t('table.headers.description'), t('table.headers.quantity'), t('table.headers.price'), t('table.headers.totalValue')];
         const rows = products.map((product, index) => [index + 1, product.name, product.description, product.quantity, product.price.toFixed(2), (product.quantity * product.price).toFixed(2)]);
@@ -181,7 +167,6 @@ export default function StatisticsPage() {
         document.body.removeChild(link);
     };
 
-    // Quick filter presets
     const applyQuickFilter = (filter: 'highValue' | 'lowStock' | 'mostPopular') => {
         switch (filter) {
             case 'highValue':
@@ -201,7 +186,6 @@ export default function StatisticsPage() {
 
     return (
         <div className="container mx-auto p-6 space-y-6">
-            {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <BarChart3 className="h-8 w-8 text-primary" />
@@ -226,7 +210,6 @@ export default function StatisticsPage() {
                 </div>
             </div>
 
-            {/* Summary Statistics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -314,7 +297,6 @@ export default function StatisticsPage() {
                 </Card>
             </div>
 
-            {/* Filters Card */}
             <Card>
                 <CardHeader>
                     <div className="flex items-center justify-between">
@@ -334,7 +316,6 @@ export default function StatisticsPage() {
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    {/* Quick Filters */}
                     <div className="space-y-2">
                         <Label>{t('filters.quickFilters')}</Label>
                         <div className="flex flex-wrap gap-2">
@@ -353,9 +334,7 @@ export default function StatisticsPage() {
                         </div>
                     </div>
 
-                    {/* Main Filters */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                        {/* Sort By */}
                         <div className="space-y-2">
                             <Label htmlFor="sortBy">{t('filters.sortBy')}</Label>
                             <Select value={sortBy} onValueChange={(value) => setSortBy(value as 'quantity' | 'price' | 'name')}>
@@ -370,7 +349,6 @@ export default function StatisticsPage() {
                             </Select>
                         </div>
 
-                        {/* Sort Direction */}
                         <div className="space-y-2">
                             <Label htmlFor="sortDirection">{t('filters.sortDirection')}</Label>
                             <Select value={sortDirection} onValueChange={(value) => setSortDirection(value as 'asc' | 'desc')}>
@@ -384,7 +362,6 @@ export default function StatisticsPage() {
                             </Select>
                         </div>
 
-                        {/* Warehouse Filter */}
                         <div className="space-y-2">
                             <Label htmlFor="warehouse">{t('filters.warehouse')}</Label>
                             <Select value={selectedWarehouse} onValueChange={setSelectedWarehouse}>
@@ -402,7 +379,6 @@ export default function StatisticsPage() {
                             </Select>
                         </div>
 
-                        {/* Location Filter */}
                         <div className="space-y-2">
                             <Label htmlFor="location">{t('filters.location')}</Label>
                             <Select value={selectedLocation} onValueChange={setSelectedLocation} disabled={selectedWarehouse === 'all' || locations.length === 0}>
@@ -420,7 +396,6 @@ export default function StatisticsPage() {
                             </Select>
                         </div>
 
-                        {/* Availability Toggle */}
                         <div className="space-y-2">
                             <Label htmlFor="available">{t('filters.showAvailableOnly')}</Label>
                             <div className="flex items-center h-10 px-3 border rounded-md">
@@ -432,7 +407,6 @@ export default function StatisticsPage() {
                 </CardContent>
             </Card>
 
-            {/* Charts Section */}
             <Tabs value={chartView} onValueChange={(value) => setChartView(value as ChartViewType)} className="space-y-4">
                 <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="quantity">
@@ -570,7 +544,6 @@ export default function StatisticsPage() {
                 </TabsContent>
             </Tabs>
 
-            {/* Products Table */}
             {!loading && !error && products.length > 0 && (
                 <Card>
                     <CardHeader>

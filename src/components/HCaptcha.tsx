@@ -29,10 +29,8 @@ const HCaptchaWrapper = forwardRef<HCaptchaRef, HCaptchaWrapperProps>(({ onVerif
         }
     }));
 
-    // Auto-verify in development mode
     useEffect(() => {
         if (isDevelopment) {
-            // Simulate CAPTCHA verification with a dev token
             onVerify('dev-bypass-token');
         }
     }, [isDevelopment, onVerify]);
@@ -56,7 +54,6 @@ const HCaptchaWrapper = forwardRef<HCaptchaRef, HCaptchaWrapperProps>(({ onVerif
     );
 
     if (!siteKey) {
-        console.warn('hCaptcha site key is not configured');
         return null;
     }
 

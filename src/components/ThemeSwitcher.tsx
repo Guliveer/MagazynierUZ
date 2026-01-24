@@ -16,7 +16,6 @@ export default function ThemeSwitcher() {
     const { theme, setTheme, resolvedTheme } = useTheme();
     const t = useTranslations('theme');
 
-    // Avoid hydration mismatch by checking resolvedTheme
     if (!resolvedTheme) {
         return (
             <Button variant="outline" size="sm" className="gap-2">

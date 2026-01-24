@@ -14,7 +14,6 @@ import { Spinner } from 'shadcn/spinner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'shadcn/select';
 import type { Product, Warehouse, Location } from '@/types';
 
-// Base schema for type inference
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const baseProductFormSchema = z.object({
     name: z.string().min(2),
@@ -44,7 +43,6 @@ interface ProductFormProps {
 export function ProductForm({ product, onSubmit, onCancel, isLoading = false, warehouses = [], locations = [], selectedWarehouseId, selectedLocationId, onWarehouseChange, isLoadingLocations = false, isEditing = false }: ProductFormProps) {
     const t = useTranslations('products.form');
 
-    // Validation schema with translated messages
     const productFormSchema = z.object({
         name: z.string().min(2, t('validation.nameMin')),
         description: z.string().optional(),
@@ -75,7 +73,6 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false, wa
         }
     });
 
-    // Reset form when product prop changes
     useEffect(() => {
         form.reset({
             name: product?.name ?? '',
@@ -87,7 +84,6 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false, wa
         });
     }, [product, form, selectedWarehouseId, selectedLocationId]);
 
-    // Update form values when selectedWarehouseId or selectedLocationId changes externally
     useEffect(() => {
         if (selectedWarehouseId !== undefined) {
             form.setValue('warehouseId', selectedWarehouseId);
@@ -111,7 +107,7 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false, wa
     const handleWarehouseChange = (value: string) => {
         const warehouseId = value ? parseInt(value, 10) : null;
         form.setValue('warehouseId', warehouseId);
-        form.setValue('locationId', null); // Reset location when warehouse changes
+        form.setValue('locationId', null);
         if (onWarehouseChange) {
             onWarehouseChange(warehouseId);
         }
@@ -129,7 +125,6 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false, wa
     return (
         <Form {...form}>
             <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Warehouse and Location Selection - only show when not editing */}
                 {!isEditing && (
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <FormField
@@ -272,7 +267,6 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false, wa
                     />
                 </div>
 
-                {/* Buttons */}
                 <div className="flex justify-end gap-2 pt-4">
                     <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
                         {t('buttons.cancel')}

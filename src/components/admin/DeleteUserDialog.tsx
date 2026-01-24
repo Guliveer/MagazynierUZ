@@ -25,7 +25,6 @@ export function DeleteUserDialog({ user, open, onOpenChange, onSuccess, currentU
             return;
         }
 
-        // Prevent deletion of current user
         if (currentUserId && user.id === currentUserId) {
             toast.error(t('cannotDeleteOwnAccount'));
             return;
@@ -37,8 +36,7 @@ export function DeleteUserDialog({ user, open, onOpenChange, onSuccess, currentU
             toast.success(t('userDeleted', { username: user.username }));
             onOpenChange(false);
             onSuccess();
-        } catch (error) {
-            console.error('Failed to delete user:', error);
+        } catch {
             toast.error(t('deleteFailed'));
         } finally {
             setIsDeleting(false);

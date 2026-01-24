@@ -27,7 +27,6 @@ export function useSearchHistory() {
     const [history, setHistory] = useState<SearchHistoryItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Load history from localStorage on mount
     useEffect(() => {
         try {
             const stored = localStorage.getItem(STORAGE_KEY);
@@ -35,37 +34,28 @@ export function useSearchHistory() {
                 const parsed = JSON.parse(stored) as SearchHistoryItem[];
                 setHistory(parsed);
             }
-        } catch (error) {
-            console.error('Failed to load search history:', error);
-            // Clear corrupted data
+        } catch {
             localStorage.removeItem(STORAGE_KEY);
         } finally {
             setIsLoading(false);
         }
     }, []);
 
-    // Save history to localStorage whenever it changes
     const saveHistory = useCallback((newHistory: SearchHistoryItem[]) => {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(newHistory));
             setHistory(newHistory);
         } catch (error) {
-            console.error('Failed to save search history:', error);
-            // Handle quota exceeded error
             if (error instanceof Error && error.name === 'QuotaExceededError') {
-                // Clear old items and try again
                 const reducedHistory = newHistory.slice(0, 5);
                 try {
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(reducedHistory));
                     setHistory(reducedHistory);
-                } catch {
-                    console.error('Failed to save even reduced history');
-                }
+                } catch {}
             }
         }
     }, []);
 
-    // Generate description from filters
     const generateDescription = useCallback((filters: SearchHistoryItem['filters']): string => {
         const parts: string[] = [];
 
@@ -93,7 +83,6 @@ export function useSearchHistory() {
         return parts.length > 0 ? parts.join(' • ') : 'All products';
     }, []);
 
-    // Check if filters match an existing history item
     const isDuplicate = useCallback(
         (filters: SearchHistoryItem['filters']): boolean => {
             return history.some((item) => {
@@ -103,10 +92,8 @@ export function useSearchHistory() {
         [history]
     );
 
-    // Add a new search to history
     const addSearch = useCallback(
         (filters: SearchHistoryItem['filters']) => {
-            // Don't add if it's a duplicate
             if (isDuplicate(filters)) {
                 return;
             }
@@ -118,14 +105,12 @@ export function useSearchHistory() {
                 description: generateDescription(filters)
             };
 
-            // Add to beginning and limit to MAX_HISTORY_ITEMS
             const newHistory = [newItem, ...history].slice(0, MAX_HISTORY_ITEMS);
             saveHistory(newHistory);
         },
         [history, isDuplicate, generateDescription, saveHistory]
     );
 
-    // Remove a specific search from history
     const removeSearch = useCallback(
         (id: string) => {
             const newHistory = history.filter((item) => item.id !== id);
@@ -134,14 +119,11 @@ export function useSearchHistory() {
         [history, saveHistory]
     );
 
-    // Clear all history
     const clearHistory = useCallback(() => {
         try {
             localStorage.removeItem(STORAGE_KEY);
             setHistory([]);
-        } catch (error) {
-            console.error('Failed to clear search history:', error);
-        }
+        } catch {}
     }, []);
 
     return {

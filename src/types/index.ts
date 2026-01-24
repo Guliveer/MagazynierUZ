@@ -1,5 +1,3 @@
-// API Response types
-
 /**
  * Response from the login endpoint
  */
@@ -15,8 +13,6 @@ export interface ApiErrorResponse {
   status: number;
 }
 
-// JWT Payload type
-
 /**
  * JWT token payload
  */
@@ -26,10 +22,6 @@ export interface JwtPayload {
   iat: number;
   roles?: string[];
 }
-
-// ============================================
-// User & Auth Types
-// ============================================
 
 /**
  * Organisation entity
@@ -79,10 +71,6 @@ export interface User {
   credentialsNonExpired: boolean;
 }
 
-// ============================================
-// Address Types
-// ============================================
-
 /**
  * Warehouse address
  */
@@ -102,10 +90,6 @@ export interface Address {
   /** Longitude */
   longitude: number;
 }
-
-// ============================================
-// Product Types
-// ============================================
 
 /**
  * API response with product data
@@ -188,10 +172,6 @@ export interface Top10Product {
   quantity: number;
 }
 
-// ============================================
-// Warehouse Types
-// ============================================
-
 /**
  * API response with warehouse data
  */
@@ -226,10 +206,6 @@ export interface CreateWarehouseRequest {
  * Alias for WarehouseResponse - represents a warehouse in the system
  */
 export type Warehouse = WarehouseResponse;
-
-// ============================================
-// Location Types
-// ============================================
 
 /**
  * Location type in warehouse
@@ -271,10 +247,6 @@ export interface CreateLocationRequest {
  */
 export type Location = LocationResponse;
 
-// ============================================
-// Pagination Types
-// ============================================
-
 /**
  * Generic type for paginated responses
  * @template T - Type of elements in the list
@@ -295,10 +267,6 @@ export interface PaginatedResponse<T> {
   /** Whether this is the last page */
   last: boolean;
 }
-
-// ============================================
-// Statistics Types
-// ============================================
 
 /**
  * Summary statistics for the dashboard
@@ -334,10 +302,6 @@ export interface WarehouseDistribution {
  * Chart view type
  */
 export type ChartViewType = 'quantity' | 'price' | 'totalValue' | 'comparison';
-
-// ============================================
-// Admin User Management Types
-// ============================================
 
 /**
  * User response from admin API
@@ -383,10 +347,6 @@ export interface AdminUpdateUserRequest {
   organisationId?: number | null;
 }
 
-// ============================================
-// Admin Organisation Management Types
-// ============================================
-
 /**
  * Organisation response from API
  */
@@ -428,10 +388,6 @@ export interface OrganisationWithStats extends OrganisationResponse {
   /** Number of users */
   userCount?: number;
 }
-
-// ============================================
-// User Role Response Type
-// ============================================
 
 /**
  * Response from /api/v1/users/role endpoint

@@ -39,7 +39,6 @@ export function Breadcrumbs({ items: customItems, className, showHome = true, se
     const pathname = usePathname();
     const { dynamicLabels } = useBreadcrumbContext();
 
-    // Generate breadcrumb items from current route
     const autoItems = useMemo<BreadcrumbItem[]>(() => {
         const chain = buildBreadcrumbChain(pathname);
 
@@ -47,17 +46,13 @@ export function Breadcrumbs({ items: customItems, className, showHome = true, se
             const config = BREADCRUMB_CONFIG[item.pattern];
             const isLast = index === chain.length - 1;
 
-            // Check for dynamic label in context
             let dynamicLabel: string | undefined;
             if (config?.isDynamic) {
-                // Try to get dynamic label from context
-                // Key format: pattern:paramValue - e.g., /dashboard/warehouses/:id:123
                 const paramValue = Object.values(item.params)[0];
                 const contextKey = `${item.pattern}:${paramValue}`;
                 dynamicLabel = dynamicLabels[contextKey];
             }
 
-            // Get the translated label or use dynamic label
             const label = dynamicLabel || (config ? t(config.labelKey) : '');
 
             return {
@@ -69,17 +64,10 @@ export function Breadcrumbs({ items: customItems, className, showHome = true, se
         });
     }, [pathname, dynamicLabels, t]);
 
-    // Use custom items if provided, otherwise use auto-generated
     const items = customItems || autoItems;
 
-    // Handle collapsing for long breadcrumb chains
     const shouldCollapse = items.length > maxItems;
-    const visibleItems = shouldCollapse
-        ? [
-            items[0], // First item - always show
-            ...items.slice(-(maxItems - 1)) // Last items - always show
-        ]
-        : items;
+    const visibleItems = shouldCollapse ? [items[0], ...items.slice(-(maxItems - 1))] : items;
 
     if (items.length === 0) {
         return null;
@@ -95,7 +83,6 @@ export function Breadcrumbs({ items: customItems, className, showHome = true, se
 
                     return (
                         <React.Fragment key={item.href}>
-                            {/* Ellipsis for collapsed items */}
                             {showEllipsis && (
                                 <>
                                     <BreadcrumbItemUI>

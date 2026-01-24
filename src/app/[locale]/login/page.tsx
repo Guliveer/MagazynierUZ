@@ -33,7 +33,6 @@ function LoginForm() {
     const [isLoading, setIsLoading] = useState(false);
     const captchaRef = useRef<HCaptchaRef>(null);
 
-    // Check for session expiration or extension message
     useEffect(() => {
         const expired = searchParams.get('expired');
         const extend = searchParams.get('extend');
@@ -68,7 +67,6 @@ function LoginForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Skip CAPTCHA validation in development mode
         const isDevelopment = process.env.NODE_ENV === 'development';
         if (!isDevelopment && !captchaToken) {
             setError(t('errors.captchaRequired'));
@@ -81,45 +79,25 @@ function LoginForm() {
 
         try {
             const response = await login(username, password);
-            console.log('DEBUG Login - Token received:', response.token);
             setToken(response.token);
 
-            // Import getTokenPayload dynamically to avoid issues
-            const { getTokenPayload } = await import('@/lib/auth');
-            const payload = getTokenPayload();
-            console.log('DEBUG Login - Token payload after setToken:', payload);
-            console.log('DEBUG Login - Roles in JWT:', payload?.roles);
-
-            // Fetch roles from server since JWT doesn't contain them
-            console.log('DEBUG Login - Token set, now fetching roles from server...');
             try {
-                const roles = await refreshRolesCache();
-                console.log('DEBUG Login - Roles fetched from server:', roles);
-            } catch (error) {
-                console.error('DEBUG Login - Error fetching roles:', error);
-                // Continue with login even if role fetch fails
-            }
+                await refreshRolesCache();
+            } catch {}
 
-            // Store credentials if "Remember me" is checked
             if (rememberMe) {
                 try {
                     await storeEncryptedCredentials(username, password);
-                } catch (error) {
-                    console.error('Failed to store credentials:', error);
-                    // Continue with login even if credential storage fails
-                }
+                } catch {}
             }
 
-            // Reset captcha after submission
             captchaRef.current?.resetCaptcha();
             setCaptchaToken(null);
 
-            // Check for redirect parameter
             const redirectUrl = searchParams.get('redirect');
             if (redirectUrl && redirectUrl.startsWith('/')) {
                 router.push(redirectUrl);
             } else {
-                // Redirect to dashboard after successful login
                 router.push('/dashboard');
             }
         } catch (err) {
@@ -133,7 +111,6 @@ function LoginForm() {
                 setError(t('errors.unexpectedError'));
             }
 
-            // Reset captcha on error
             captchaRef.current?.resetCaptcha();
             setCaptchaToken(null);
         } finally {
@@ -143,7 +120,6 @@ function LoginForm() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat p-4" style={{ backgroundImage: "url('/warehouse-bg.png')" }}>
-            {/* Theme and Locale Switchers in top-right corner */}
             <div className="absolute top-4 right-4 z-20 flex gap-2">
                 <ThemeSwitcher />
                 <LocaleSwitcher />

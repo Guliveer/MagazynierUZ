@@ -16,7 +16,6 @@ interface Top10ChartProps {
 export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick, locale }: Top10ChartProps) {
     const t = useTranslations('statistics.charts');
 
-    // Format currency based on locale
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat(locale, {
             style: 'currency',
@@ -26,12 +25,10 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick, locale 
         }).format(value);
     };
 
-    // Format number based on locale
     const formatNumber = (value: number) => {
         return new Intl.NumberFormat(locale).format(value);
     };
 
-    // Transform data for the chart
     const chartData = data.map((product) => ({
         name: product.name,
         value: sortBy === 'quantity' ? product.quantity : product.price,
@@ -43,7 +40,6 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick, locale 
         product: product
     }));
 
-    // Chart configuration
     const chartConfig = {
         value: {
             label: sortBy === 'quantity' ? t('labels.quantity') : t('labels.price'),
@@ -51,7 +47,6 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick, locale 
         }
     };
 
-    // Colors for charts - 10 distinct, accessible colors
     const CHART_COLORS = [
         'hsl(0, 84%, 60%)', // Red
         'hsl(30, 100%, 55%)', // Orange

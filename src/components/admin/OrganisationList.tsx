@@ -29,17 +29,14 @@ export function OrganisationList({ organisations, isLoading, onEdit, onDelete, o
     const [sortField, setSortField] = useState<SortField>('name');
     const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
-    // Filter and sort organisations
     const filteredAndSortedOrganisations = useMemo(() => {
         let filtered = organisations;
 
-        // Search filter
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
             filtered = filtered.filter((org) => org.name.toLowerCase().includes(query) || org.tin.toLowerCase().includes(query));
         }
 
-        // Sort
         filtered.sort((a, b) => {
             let comparison = 0;
 
@@ -95,7 +92,6 @@ export function OrganisationList({ organisations, isLoading, onEdit, onDelete, o
 
     return (
         <div className="space-y-4">
-            {/* Search and Create */}
             <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -108,12 +104,10 @@ export function OrganisationList({ organisations, isLoading, onEdit, onDelete, o
                 </Button>
             </div>
 
-            {/* Results count */}
             <div className="text-sm text-muted-foreground">
         Showing {filteredAndSortedOrganisations.length} of {organisations.length} organisations
             </div>
 
-            {/* Organisations Table */}
             {filteredAndSortedOrganisations.length === 0 ? (
                 <Card>
                     <CardContent className="p-12">

@@ -36,30 +36,24 @@ export default function UserProfileMenu({ username, roles, onLogout }: UserProfi
     const t = useTranslations('dashboard.nav');
     const tTheme = useTranslations('theme');
 
-    // Server-side role fetching state
     const [serverRoles, setServerRoles] = useState<string[]>(roles);
     const [loadingRoles, setLoadingRoles] = useState(false);
 
-    // Fetch roles from server on mount and periodically
     useEffect(() => {
         const fetchRoles = async () => {
             setLoadingRoles(true);
             try {
                 const roleResponse = await getCurrentUserRole();
                 setServerRoles(roleResponse.roles);
-            } catch (error) {
-                console.error('Failed to fetch roles from server:', error);
-                // Fallback to prop-based roles
+            } catch {
                 setServerRoles(roles);
             } finally {
                 setLoadingRoles(false);
             }
         };
 
-        // Initial fetch
         fetchRoles();
 
-        // Set up periodic refresh (every 5 minutes)
         const intervalId = setInterval(fetchRoles, 5 * 60 * 1000);
 
         return () => clearInterval(intervalId);
@@ -69,7 +63,6 @@ export default function UserProfileMenu({ username, roles, onLogout }: UserProfi
         router.replace(pathname, { locale: newLocale });
     };
 
-    // Use server roles if available, otherwise fall back to prop roles
     const displayRoles = serverRoles.length > 0 ? serverRoles : roles;
 
     return (
@@ -82,7 +75,6 @@ export default function UserProfileMenu({ username, roles, onLogout }: UserProfi
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-64">
-                {/* Section 1: User Info */}
                 <DropdownMenuLabel>
                     <div className="flex flex-col gap-1">
                         <p className="text-sm font-medium truncate">{username || 'User'}</p>
@@ -106,7 +98,6 @@ export default function UserProfileMenu({ username, roles, onLogout }: UserProfi
 
                 <DropdownMenuSeparator />
 
-                {/* Section 2: Settings - Theme */}
                 <DropdownMenuLabel className="text-xs text-muted-foreground">Theme</DropdownMenuLabel>
                 {themes.map((themeOption) => {
                     const Icon = themeOption.icon;
@@ -122,7 +113,6 @@ export default function UserProfileMenu({ username, roles, onLogout }: UserProfi
 
                 <DropdownMenuSeparator />
 
-                {/* Section 2: Settings - Language */}
                 <DropdownMenuLabel className="text-xs text-muted-foreground">Language</DropdownMenuLabel>
                 {locales.map((loc) => {
                     const isActive = locale === loc.code;
@@ -137,7 +127,6 @@ export default function UserProfileMenu({ username, roles, onLogout }: UserProfi
 
                 <DropdownMenuSeparator />
 
-                {/* Section 3: Navigation */}
                 <DropdownMenuItem onClick={() => router.push('/dashboard/profile')}>
                     <UserCircle className="h-4 w-4" />
                     <span>{t('profile')}</span>
@@ -145,7 +134,6 @@ export default function UserProfileMenu({ username, roles, onLogout }: UserProfi
 
                 <DropdownMenuSeparator />
 
-                {/* Section 4: Logout */}
                 <DropdownMenuItem variant="destructive" onClick={onLogout}>
                     <LogOut className="h-4 w-4" />
                     <span>{t('logout')}</span>

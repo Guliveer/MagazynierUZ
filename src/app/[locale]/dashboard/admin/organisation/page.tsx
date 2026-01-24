@@ -53,7 +53,6 @@ export default function OrganisationPage() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Organisation Management</h1>
@@ -65,14 +64,12 @@ export default function OrganisationPage() {
                 </Button>
             </div>
 
-            {/* Error Alert */}
             {error && (
                 <Alert variant="destructive">
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             )}
 
-            {/* Organisation Overview */}
             <Card>
                 <CardHeader>
                     <div className="flex items-center justify-between">
@@ -90,7 +87,6 @@ export default function OrganisationPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="grid gap-6 md:grid-cols-2">
-                        {/* Organisation Information */}
                         <div className="space-y-4">
                             <div>
                                 <h3 className="text-sm font-medium text-muted-foreground mb-3">Organisation Information</h3>
@@ -114,7 +110,6 @@ export default function OrganisationPage() {
 
                             <Separator />
 
-                            {/* Contact Information Placeholder */}
                             <div>
                                 <h3 className="text-sm font-medium text-muted-foreground mb-3">Contact Information</h3>
                                 <div className="space-y-3">
@@ -143,7 +138,6 @@ export default function OrganisationPage() {
                             </div>
                         </div>
 
-                        {/* Organisation Details */}
                         <div className="space-y-4">
                             <div>
                                 <h3 className="text-sm font-medium text-muted-foreground mb-3">Administrator Details</h3>
@@ -178,7 +172,6 @@ export default function OrganisationPage() {
                 </CardContent>
             </Card>
 
-            {/* Statistics */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -249,7 +242,6 @@ export default function OrganisationPage() {
                 </Card>
             </div>
 
-            {/* Quick Links */}
             <Card>
                 <CardHeader>
                     <CardTitle>Quick Links</CardTitle>

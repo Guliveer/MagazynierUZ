@@ -16,14 +16,13 @@ interface RoleGuardProps {
   useServerVerification?: boolean;
 }
 
-// Cache for server role verification
 interface RoleCache {
   roles: string[];
   timestamp: number;
 }
 
 const roleCache: Map<string, RoleCache> = new Map();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 5 * 60 * 1000;
 
 /**
  * Component wrapper that shows/hides content based on user roles
@@ -70,19 +69,16 @@ export function RoleGuard({ roles, requireAll = false, fallback = null, children
 
     useEffect(() => {
         if (!useServerVerification) {
-            // Use JWT-based verification (fast, client-side)
             const access = requireAll ? roles.every((role) => hasRole(role)) : hasAnyRole(roles);
             setHasAccess(access);
             setIsVerifying(false);
             return;
         }
 
-        // Use server-based verification (secure, but slower)
         const verifyRoles = async () => {
             const cacheKey = roles.join(',');
             const cached = roleCache.get(cacheKey);
 
-            // Check cache first
             if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
                 const access = requireAll ? roles.every((role) => cached.roles.includes(role)) : roles.some((role) => cached.roles.includes(role));
                 setHasAccess(access);
@@ -90,11 +86,9 @@ export function RoleGuard({ roles, requireAll = false, fallback = null, children
                 return;
             }
 
-            // Fetch from server
             try {
                 const serverHasAccess = await hasAnyRoleFromServer(roles);
 
-                // Update cache
                 import('@/lib/api').then(({ getCurrentUserRole }) => {
                     getCurrentUserRole()
                         .then((roleResponse) => {
@@ -103,15 +97,11 @@ export function RoleGuard({ roles, requireAll = false, fallback = null, children
                                 timestamp: Date.now()
                             });
                         })
-                        .catch(() => {
-                            // Ignore cache update errors
-                        });
+                        .catch(() => {});
                 });
 
                 setHasAccess(serverHasAccess);
-            } catch (error) {
-                console.error('Server role verification failed, falling back to JWT:', error);
-                // Fallback to JWT verification
+            } catch {
                 const access = requireAll ? roles.every((role) => hasRole(role)) : hasAnyRole(roles);
                 setHasAccess(access);
             } finally {
@@ -122,7 +112,6 @@ export function RoleGuard({ roles, requireAll = false, fallback = null, children
         verifyRoles();
     }, [roles, requireAll, useServerVerification]);
 
-    // Show nothing while verifying (or show a loading state if needed)
     if (isVerifying || hasAccess === null) {
         return null;
     }
