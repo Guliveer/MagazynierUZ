@@ -1,14 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useTranslations } from 'next-intl';
+import { Label } from 'shadcn/label';
+import { Input } from 'shadcn/input';
+import { Button } from 'shadcn/button';
+import { Checkbox } from 'shadcn/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'shadcn/select';
 import { Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react';
-import type { UserResponse, AdminCreateUserRequest, AdminUpdateUserRequest, Warehouse } from '@/types';
-import { getWarehouses } from '@/lib/api';
+import type { UserResponse, AdminCreateUserRequest, AdminUpdateUserRequest, OrganisationResponse } from '@/types';
+import { getAllOrganisations } from '@/lib/api';
 
 interface UserFormProps {
   user?: UserResponse | null;
@@ -16,61 +17,54 @@ interface UserFormProps {
   isLoading: boolean;
 }
 
-const AVAILABLE_ROLES = [
-    { value: 'ROLE_USER', label: 'User', description: 'Standard user access' },
-    { value: 'ROLE_ADMIN', label: 'Admin', description: 'Full system access' },
-    { value: 'ROLE_MANAGER', label: 'Manager', description: 'Warehouse management' }
-];
-
 export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
+    const t = useTranslations('admin.userForm');
     const [username, setUsername] = useState(user?.username || '');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [selectedRoles, setSelectedRoles] = useState<string[]>(user?.roles || ['ROLE_USER']);
     const [organisationId, setOrganisationId] = useState<string>(user?.organisationId?.toString() || '');
-    const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
-    const [loadingWarehouses, setLoadingWarehouses] = useState(false);
+    const [organisations, setOrganisations] = useState<OrganisationResponse[]>([]);
+    const [loadingOrganisations, setLoadingOrganisations] = useState(false);
 
     const [errors, setErrors] = useState<{
     username?: string;
     password?: string;
   }>({});
 
-    // Load warehouses for organisation selection
     useEffect(() => {
-        const loadWarehouses = async () => {
-            setLoadingWarehouses(true);
+        const loadOrganisations = async () => {
+            setLoadingOrganisations(true);
             try {
-                const data = await getWarehouses();
-                setWarehouses(data);
-            } catch (error) {
-                console.error('Failed to load warehouses:', error);
+                const data = await getAllOrganisations();
+                setOrganisations(data);
+            } catch {
             } finally {
-                setLoadingWarehouses(false);
+                setLoadingOrganisations(false);
             }
         };
-        loadWarehouses();
+        loadOrganisations();
     }, []);
 
     const validateUsername = (value: string): string | undefined => {
         if (!value) {
-            return 'Username is required';
+            return t('usernameRequired');
         }
         if (value.length < 3) {
-            return 'Username must be at least 3 characters';
+            return t('usernameMinLength');
         }
         if (value.length > 50) {
-            return 'Username must not exceed 50 characters';
+            return t('usernameMaxLength');
         }
         return undefined;
     };
 
     const validatePassword = (value: string, isEdit: boolean): string | undefined => {
         if (!isEdit && !value) {
-            return 'Password is required';
+            return t('passwordRequired');
         }
         if (value && value.length < 4) {
-            return 'Password must be at least 4 characters';
+            return t('passwordMinLength');
         }
         return undefined;
     };
@@ -98,13 +92,19 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
         }
 
         if (strength <= 1) {
-            return { strength, label: 'Weak', color: 'text-red-500' };
+            return { strength, label: t('passwordStrength.weak'), color: 'text-red-500' };
         }
         if (strength <= 3) {
-            return { strength, label: 'Medium', color: 'text-yellow-500' };
+            return { strength, label: t('passwordStrength.medium'), color: 'text-yellow-500' };
         }
-        return { strength, label: 'Strong', color: 'text-green-500' };
+        return { strength, label: t('passwordStrength.strong'), color: 'text-green-500' };
     };
+
+    const AVAILABLE_ROLES = [
+        { value: 'ROLE_USER', label: t('roleUser'), description: t('roleUserDesc') },
+        { value: 'ROLE_ADMIN', label: t('roleAdmin'), description: t('roleAdminDesc') },
+        { value: 'ROLE_MANAGER', label: t('roleManager'), description: t('roleManagerDesc') }
+    ];
 
     const passwordStrength = getPasswordStrength(password);
 
@@ -130,7 +130,6 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
         setErrors({});
 
         if (isEdit) {
-            // Update user - only include changed fields
             const updateData: AdminUpdateUserRequest = {};
             if (username !== user.username) {
                 updateData.username = username;
@@ -146,7 +145,6 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
             }
             onSubmit(updateData);
         } else {
-            // Create user
             const createData: AdminCreateUserRequest = {
                 username,
                 password,
@@ -159,10 +157,9 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Username */}
             <div className="space-y-2">
                 <Label htmlFor="username">
-          Username <span className="text-destructive">*</span>
+                    {t('username')} <span className="text-destructive">*</span>
                 </Label>
                 <Input
                     id="username"
@@ -171,7 +168,7 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
                         setUsername(e.target.value);
                         setErrors((prev) => ({ ...prev, username: undefined }));
                     }}
-                    placeholder="Enter username (3-50 characters)"
+                    placeholder={t('usernamePlaceholder')}
                     disabled={isLoading}
                     className={errors.username ? 'border-destructive' : ''}
                 />
@@ -183,11 +180,10 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
                 )}
             </div>
 
-            {/* Password */}
             <div className="space-y-2">
                 <Label htmlFor="password">
-          Password {!user && <span className="text-destructive">*</span>}
-                    {user && <span className="text-muted-foreground text-xs">(leave blank to keep current)</span>}
+                    {t('password')} {!user && <span className="text-destructive">*</span>}
+                    {user && <span className="text-muted-foreground text-xs">{t('leaveBlankToKeep')}</span>}
                 </Label>
                 <div className="relative">
                     <Input
@@ -198,7 +194,7 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
                             setPassword(e.target.value);
                             setErrors((prev) => ({ ...prev, password: undefined }));
                         }}
-                        placeholder={user ? 'Enter new password (optional)' : 'Enter password (min 4 characters)'}
+                        placeholder={user ? t('passwordPlaceholderNew') : t('passwordPlaceholderCreate')}
                         disabled={isLoading}
                         className={errors.password ? 'border-destructive pr-10' : 'pr-10'}
                     />
@@ -224,7 +220,6 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
                 )}
             </div>
 
-            {/* Roles */}
             <div className="space-y-3">
                 <Label>
           Roles <span className="text-destructive">*</span>
@@ -250,26 +245,23 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
                 )}
             </div>
 
-            {/* Organisation */}
             <div className="space-y-2">
                 <Label htmlFor="organisation">Organisation (Optional)</Label>
-                <Select value={organisationId} onValueChange={setOrganisationId} disabled={isLoading || loadingWarehouses}>
+                <Select value={organisationId} onValueChange={setOrganisationId} disabled={isLoading || loadingOrganisations}>
                     <SelectTrigger id="organisation">
-                        <SelectValue placeholder="Select organisation (optional)" />
+                        <SelectValue placeholder="No organisation" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="">No Organisation</SelectItem>
-                        {warehouses.map((warehouse) => (
-                            <SelectItem key={warehouse.id} value={warehouse.id.toString()}>
-                                {warehouse.name} ({warehouse.code})
+                        {organisations.map((organisation) => (
+                            <SelectItem key={organisation.id} value={organisation.id.toString()}>
+                                {organisation.name} (TIN: {organisation.tin})
                             </SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
-                <p className="text-xs text-muted-foreground">Assign user to a specific organisation/warehouse</p>
+                <p className="text-xs text-muted-foreground">Assign user to a specific organisation</p>
             </div>
 
-            {/* Submit Button */}
             <div className="flex justify-end gap-3 pt-4">
                 <Button type="submit" disabled={isLoading || selectedRoles.length === 0} className="min-w-[120px]">
                     {isLoading ? (

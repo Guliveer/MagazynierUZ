@@ -26,7 +26,7 @@ interface AdminOnlyProps {
  */
 export function AdminOnly({ fallback, children }: AdminOnlyProps) {
     return (
-        <RoleGuard roles={['ROLE_ADMIN']} fallback={fallback}>
+        <RoleGuard roles={['ROLE_ADMIN', 'SUPERADMIN', 'ROLE_SUPERADMIN']} fallback={fallback}>
             {children}
         </RoleGuard>
     );

@@ -1,8 +1,9 @@
 'use client';
 
 import { Building2, MapPin, Package } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useTranslations } from 'next-intl';
+import { Badge } from 'shadcn/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'shadcn/tooltip';
 import type { LocationType } from '@/types';
 
 interface ProductLocationBadgeProps {
@@ -23,19 +24,21 @@ interface ProductLocationBadgeProps {
  * Supports click handlers for navigation
  */
 export function ProductLocationBadge({ warehouseName, warehouseCode, locationCode, zoneName, locationType, onWarehouseClick, onLocationClick, compact = false, className = '' }: ProductLocationBadgeProps) {
-    // If no location data, show unknown
+    const t = useTranslations('products.location');
+
     if (!warehouseName && !warehouseCode && !locationCode) {
         return (
             <Badge variant="outline" className={`gap-1 ${className}`}>
                 <Package className="h-3 w-3" />
-        Unknown Location
+                {t('unknown')}
             </Badge>
         );
     }
 
-    // Get location type badge variant
     const getLocationTypeBadgeVariant = (type?: LocationType) => {
-        if (!type) { return 'secondary'; }
+        if (!type) {
+            return 'secondary';
+        }
         switch (type) {
             case 'PICKING':
                 return 'default';
@@ -52,26 +55,13 @@ export function ProductLocationBadge({ warehouseName, warehouseCode, locationCod
         }
     };
 
-    // Get location type label
     const getLocationTypeLabel = (type?: LocationType) => {
-        if (!type) { return ''; }
-        switch (type) {
-            case 'PICKING':
-                return 'Picking';
-            case 'BULK':
-                return 'Bulk Storage';
-            case 'RECEIVING':
-                return 'Receiving';
-            case 'SHIPPING':
-                return 'Shipping';
-            case 'RETURNS':
-                return 'Returns';
-            default:
-                return type;
+        if (!type) {
+            return '';
         }
+        return t(`types.${type}`);
     };
 
-    // Compact view - single badge with tooltip
     if (compact) {
         const tooltipContent = (
             <div className="space-y-1 text-xs">
@@ -89,7 +79,11 @@ export function ProductLocationBadge({ warehouseName, warehouseCode, locationCod
                         {zoneName && <span className="text-muted-foreground">- {zoneName}</span>}
                     </div>
                 )}
-                {locationType && <div className="text-muted-foreground">Type: {getLocationTypeLabel(locationType)}</div>}
+                {locationType && (
+                    <div className="text-muted-foreground">
+                        {t('tooltip.type')}: {getLocationTypeLabel(locationType)}
+                    </div>
+                )}
             </div>
         );
 
@@ -117,10 +111,8 @@ export function ProductLocationBadge({ warehouseName, warehouseCode, locationCod
         );
     }
 
-    // Full view - separate badges for warehouse and location
     return (
         <div className={`flex flex-wrap items-center gap-1 ${className}`}>
-            {/* Warehouse badge */}
             {(warehouseName || warehouseCode) && (
                 <TooltipProvider>
                     <Tooltip>
@@ -133,15 +125,18 @@ export function ProductLocationBadge({ warehouseName, warehouseCode, locationCod
                         <TooltipContent side="top">
                             <div className="text-xs">
                                 <div className="font-medium">{warehouseName}</div>
-                                {warehouseCode && <code className="text-muted-foreground">Code: {warehouseCode}</code>}
-                                {onWarehouseClick && <div className="text-muted-foreground mt-1">Click to filter by warehouse</div>}
+                                {warehouseCode && (
+                                    <code className="text-muted-foreground">
+                                        {t('tooltip.code')}: {warehouseCode}
+                                    </code>
+                                )}
+                                {onWarehouseClick && <div className="text-muted-foreground mt-1">{t('tooltip.clickWarehouse')}</div>}
                             </div>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
             )}
 
-            {/* Location badge */}
             {locationCode && (
                 <TooltipProvider>
                     <Tooltip>
@@ -154,9 +149,17 @@ export function ProductLocationBadge({ warehouseName, warehouseCode, locationCod
                         <TooltipContent side="top">
                             <div className="text-xs">
                                 <div className="font-medium">{locationCode}</div>
-                                {zoneName && <div className="text-muted-foreground">Zone: {zoneName}</div>}
-                                {locationType && <div className="text-muted-foreground">Type: {getLocationTypeLabel(locationType)}</div>}
-                                {onLocationClick && <div className="text-muted-foreground mt-1">Click to filter by location</div>}
+                                {zoneName && (
+                                    <div className="text-muted-foreground">
+                                        {t('tooltip.zone')}: {zoneName}
+                                    </div>
+                                )}
+                                {locationType && (
+                                    <div className="text-muted-foreground">
+                                        {t('tooltip.type')}: {getLocationTypeLabel(locationType)}
+                                    </div>
+                                )}
+                                {onLocationClick && <div className="text-muted-foreground mt-1">{t('tooltip.clickLocation')}</div>}
                             </div>
                         </TooltipContent>
                     </Tooltip>

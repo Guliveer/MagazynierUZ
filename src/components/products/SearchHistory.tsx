@@ -1,10 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { Clock, X, Trash2 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
+import { useTranslations, useLocale } from 'next-intl';
+import { Card, CardContent, CardHeader, CardTitle } from 'shadcn/card';
+import { Button } from 'shadcn/button';
+import { ScrollArea } from 'shadcn/scroll-area';
+import { Badge } from 'shadcn/badge';
 import type { SearchHistoryItem } from '@/hooks/useSearchHistory';
 
 interface SearchHistoryProps {
@@ -20,27 +22,32 @@ interface SearchHistoryProps {
  * Shows recent searches with ability to reload, remove individual items, or clear all
  */
 export function SearchHistory({ history, isLoading, onSelectSearch, onRemoveSearch, onClearHistory }: SearchHistoryProps) {
-    // Format timestamp to relative time
+    const t = useTranslations('products.history');
+    const locale = useLocale();
+
+    // Capture current time once on mount using lazy initialization to avoid impure Date.now() calls during render
+    const [currentTime] = useState(() => Date.now());
+
     const formatTimestamp = (timestamp: number): string => {
-    // eslint-disable-next-line react-hooks/purity
-        const diff = Date.now() - timestamp;
+        const now = currentTime;
+        const diff = now - timestamp;
         const minutes = Math.floor(diff / 60000);
         const hours = Math.floor(diff / 3600000);
         const days = Math.floor(diff / 86400000);
 
         if (minutes < 1) {
-            return 'Just now';
+            return t('timeAgo.justNow');
         }
         if (minutes < 60) {
-            return `${minutes}m ago`;
+            return t('timeAgo.minutesAgo', { minutes });
         }
         if (hours < 24) {
-            return `${hours}h ago`;
+            return t('timeAgo.hoursAgo', { hours });
         }
         if (days < 7) {
-            return `${days}d ago`;
+            return t('timeAgo.daysAgo', { days });
         }
-        return new Date(timestamp).toLocaleDateString('pl-PL', {
+        return new Date(timestamp).toLocaleDateString(locale, {
             month: 'short',
             day: 'numeric'
         });
@@ -60,14 +67,14 @@ export function SearchHistory({ history, isLoading, onSelectSearch, onRemoveSear
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Clock className="h-4 w-4 text-muted-foreground" />
-                        <CardTitle className="text-sm font-medium">Recent Searches</CardTitle>
+                        <CardTitle className="text-sm font-medium">{t('title')}</CardTitle>
                         <Badge variant="secondary" className="text-xs">
                             {history.length}
                         </Badge>
                     </div>
                     <Button variant="ghost" size="sm" onClick={onClearHistory} className="h-8 text-xs text-muted-foreground hover:text-destructive">
                         <Trash2 className="h-3 w-3 mr-1" />
-            Clear All
+                        {t('clearAll')}
                     </Button>
                 </div>
             </CardHeader>
@@ -76,12 +83,11 @@ export function SearchHistory({ history, isLoading, onSelectSearch, onRemoveSear
                     <div className="space-y-2">
                         {history.map((item) => (
                             <div key={item.id} className="group flex items-start gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors">
-                                <button onClick={() => onSelectSearch(item.filters)} className="flex-1 text-left min-w-0" title="Load this search">
+                                <button onClick={() => onSelectSearch(item.filters)} className="flex-1 text-left min-w-0" title={t('loadSearch')}>
                                     <div className="flex items-start justify-between gap-2">
                                         <p className="text-sm font-medium truncate flex-1">{item.description}</p>
                                         <span className="text-xs text-muted-foreground whitespace-nowrap">{formatTimestamp(item.timestamp)}</span>
                                     </div>
-                                    {/* Show filter details */}
                                     <div className="flex flex-wrap gap-1 mt-1">
                                         {item.filters.searchQuery && (
                                             <Badge variant="outline" className="text-xs">
@@ -90,12 +96,14 @@ export function SearchHistory({ history, isLoading, onSelectSearch, onRemoveSear
                                         )}
                                         {item.filters.warehouseId && (
                                             <Badge variant="outline" className="text-xs">
-                        W#{item.filters.warehouseId}
+                                                {t('filters.warehouse')}
+                                                {item.filters.warehouseId}
                                             </Badge>
                                         )}
                                         {item.filters.locationId && (
                                             <Badge variant="outline" className="text-xs">
-                        L#{item.filters.locationId}
+                                                {t('filters.location')}
+                                                {item.filters.locationId}
                                             </Badge>
                                         )}
                                         {(item.filters.minPrice || item.filters.maxPrice) && (
@@ -105,12 +113,12 @@ export function SearchHistory({ history, isLoading, onSelectSearch, onRemoveSear
                                         )}
                                         {(item.filters.minQuantity || item.filters.maxQuantity) && (
                                             <Badge variant="outline" className="text-xs">
-                        Qty: {item.filters.minQuantity || '0'} - {item.filters.maxQuantity || '∞'}
+                                                {t('filters.qty')}: {item.filters.minQuantity || '0'} - {item.filters.maxQuantity || '∞'}
                                             </Badge>
                                         )}
                                         {item.filters.isAvailable && (
                                             <Badge variant="outline" className="text-xs">
-                        Available
+                                                {t('filters.available')}
                                             </Badge>
                                         )}
                                     </div>
@@ -123,7 +131,7 @@ export function SearchHistory({ history, isLoading, onSelectSearch, onRemoveSear
                                         e.stopPropagation();
                                         onRemoveSearch(item.id);
                                     }}
-                                    title="Remove from history">
+                                    title={t('removeFromHistory')}>
                                     <X className="h-3 w-3" />
                                 </Button>
                             </div>

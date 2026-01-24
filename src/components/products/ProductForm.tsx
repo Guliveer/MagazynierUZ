@@ -1,53 +1,97 @@
 'use client';
+'use no memo';
 
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
-import type { Product } from '@/types';
+import { useTranslations } from 'next-intl';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from 'shadcn/form';
+import { Input } from 'shadcn/input';
+import { Textarea } from 'shadcn/textarea';
+import { Button } from 'shadcn/button';
+import { Spinner } from 'shadcn/spinner';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'shadcn/select';
+import type { Product, Warehouse, Location } from '@/types';
 
-// Validation schema for product form
-const productFormSchema = z.object({
-    name: z.string().min(2, 'Name must be at least 2 characters'),
-    description: z.string().optional(),
-    price: z.number({ message: 'Price is required and must be a number' }).positive('Price must be greater than 0'),
-    quantity: z.number({ message: 'Quantity is required and must be a number' }).int('Quantity must be an integer').min(0, 'Quantity cannot be negative')
-});
-
-export type ProductFormData = z.infer<typeof productFormSchema>;
+export type ProductFormData = {
+  name: string;
+  description?: string;
+  price: number;
+  quantity: number;
+  warehouseId: number | null;
+  locationId: number | null;
+};
 
 interface ProductFormProps {
   product?: Product | null;
   onSubmit: (data: ProductFormData) => Promise<void>;
   onCancel: () => void;
   isLoading?: boolean;
+  warehouses?: Warehouse[];
+  locations?: Location[];
+  selectedWarehouseId?: number | null;
+  selectedLocationId?: number | null;
+  onWarehouseChange?: (warehouseId: number | null) => void;
+  isLoadingLocations?: boolean;
+  isEditing?: boolean;
 }
 
-export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: ProductFormProps) {
+export function ProductForm({ product, onSubmit, onCancel, isLoading = false, warehouses = [], locations = [], selectedWarehouseId, selectedLocationId, onWarehouseChange, isLoadingLocations = false, isEditing = false }: ProductFormProps) {
+    const t = useTranslations('products.form');
+
+    const productFormSchema = z.object({
+        name: z.string().min(2, t('validation.nameMin')),
+        description: z.string().optional(),
+        price: z.number({ message: t('validation.priceRequired') }).positive(t('validation.pricePositive')),
+        quantity: z
+            .number({ message: t('validation.quantityRequired') })
+            .int(t('validation.quantityInteger'))
+            .min(0, t('validation.quantityNonNegative')),
+        warehouseId: z
+            .number({ message: t('validation.warehouseRequired') })
+            .nullable()
+            .refine((val) => isEditing || val !== null, { message: t('validation.warehouseRequired') }),
+        locationId: z
+            .number({ message: t('validation.locationRequired') })
+            .nullable()
+            .refine((val) => isEditing || val !== null, { message: t('validation.locationRequired') })
+    });
+
     const form = useForm<ProductFormData>({
         resolver: zodResolver(productFormSchema),
         defaultValues: {
             name: product?.name ?? '',
             description: product?.description ?? '',
             price: product?.price ?? 0,
-            quantity: product?.quantity ?? 0
+            quantity: product?.quantity ?? 0,
+            warehouseId: selectedWarehouseId ?? product?.warehouseId ?? null,
+            locationId: selectedLocationId ?? product?.locationId ?? null
         }
     });
 
-    // Reset form when product prop changes
     useEffect(() => {
         form.reset({
             name: product?.name ?? '',
             description: product?.description ?? '',
             price: product?.price ?? 0,
-            quantity: product?.quantity ?? 0
+            quantity: product?.quantity ?? 0,
+            warehouseId: selectedWarehouseId ?? product?.warehouseId ?? null,
+            locationId: selectedLocationId ?? product?.locationId ?? null
         });
-    }, [product, form]);
+    }, [product, form, selectedWarehouseId, selectedLocationId]);
+
+    useEffect(() => {
+        if (selectedWarehouseId !== undefined) {
+            form.setValue('warehouseId', selectedWarehouseId);
+        }
+    }, [selectedWarehouseId, form]);
+
+    useEffect(() => {
+        if (selectedLocationId !== undefined) {
+            form.setValue('locationId', selectedLocationId);
+        }
+    }, [selectedLocationId, form]);
 
     const handleSubmit = form.handleSubmit(async (data) => {
         try {
@@ -57,17 +101,88 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: 
         }
     });
 
+    const handleWarehouseChange = (value: string) => {
+        const warehouseId = value ? parseInt(value, 10) : null;
+        form.setValue('warehouseId', warehouseId);
+        form.setValue('locationId', null);
+        if (onWarehouseChange) {
+            onWarehouseChange(warehouseId);
+        }
+    };
+
+    const handleLocationChange = (value: string) => {
+        const locationId = value ? parseInt(value, 10) : null;
+        form.setValue('locationId', locationId);
+    };
+
+    const currentWarehouseId = form.getValues('warehouseId');
+    const isLocationDisabled = !currentWarehouseId || isLoadingLocations;
+
     return (
         <Form {...form}>
             <form onSubmit={handleSubmit} className="space-y-4">
+                {!isEditing && (
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <FormField
+                            control={form.control}
+                            name="warehouseId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{t('fields.warehouse')} *</FormLabel>
+                                    <Select value={field.value?.toString() ?? ''} onValueChange={handleWarehouseChange} disabled={isLoading}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder={t('fields.warehousePlaceholder')} />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {warehouses.map((warehouse) => (
+                                                <SelectItem key={warehouse.id} value={warehouse.id.toString()}>
+                                                    {warehouse.name} ({warehouse.code})
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="locationId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{t('fields.location')} *</FormLabel>
+                                    <Select value={field.value?.toString() ?? ''} onValueChange={handleLocationChange} disabled={isLocationDisabled || isLoading}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder={isLoadingLocations ? '...' : !currentWarehouseId ? t('fields.selectWarehouseFirst') : t('fields.locationPlaceholder')} />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {locations.map((location) => (
+                                                <SelectItem key={location.id} value={location.id.toString()}>
+                                                    {location.locationCode} - {location.zoneName}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                )}
+
                 <FormField
                     control={form.control}
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Product Name *</FormLabel>
+                            <FormLabel>{t('fields.name')} *</FormLabel>
                             <FormControl>
-                                <Input placeholder="e.g. Dell XPS 15 Laptop" {...field} />
+                                <Input placeholder={t('fields.namePlaceholder')} {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -79,9 +194,9 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: 
                     name="description"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Description</FormLabel>
+                            <FormLabel>{t('fields.description')}</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="Optional product description..." className="resize-none" rows={3} {...field} />
+                                <Textarea placeholder={t('fields.descriptionPlaceholder')} className="resize-none" rows={3} {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -94,13 +209,13 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: 
                         name="price"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Price (PLN) *</FormLabel>
+                                <FormLabel>{t('fields.price')} *</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
                                         step="0.01"
                                         min="0.1"
-                                        placeholder="e.g. 4999.99"
+                                        placeholder={t('fields.pricePlaceholder')}
                                         {...field}
                                         onChange={(e) => {
                                             const value = e.target.value;
@@ -123,13 +238,13 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: 
                         name="quantity"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Quantity *</FormLabel>
+                                <FormLabel>{t('fields.quantity')} *</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
                                         step="1"
                                         min="0"
-                                        placeholder="e.g. 10"
+                                        placeholder={t('fields.quantityPlaceholder')}
                                         {...field}
                                         onChange={(e) => {
                                             const value = e.target.value;
@@ -148,14 +263,13 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false }: 
                     />
                 </div>
 
-                {/* Buttons */}
                 <div className="flex justify-end gap-2 pt-4">
                     <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-            Cancel
+                        {t('buttons.cancel')}
                     </Button>
                     <Button type="submit" disabled={isLoading}>
                         {isLoading && <Spinner className="mr-2" />}
-                        {product ? 'Save Changes' : 'Add Product'}
+                        {product ? t('buttons.save') : t('buttons.add')}
                     </Button>
                 </div>
             </form>

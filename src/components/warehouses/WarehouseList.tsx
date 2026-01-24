@@ -1,11 +1,11 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from 'shadcn/badge';
+import { Button } from 'shadcn/button';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from 'shadcn/empty';
+import { Skeleton } from 'shadcn/skeleton';
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'shadcn/table';
 
 import { ApiError, createWarehouse, deleteWarehouse, getWarehouses, updateWarehouse } from '@/lib/api';
 import type { CreateWarehouseRequest, Warehouse } from '@/types';
@@ -17,15 +17,16 @@ import { DeleteWarehouseDialog } from './DeleteWarehouseDialog';
 import { WarehouseMapDialog } from './WarehouseMapDialog';
 
 import { WarehouseDialog } from './WarehouseDialog';
+import { useTranslations } from 'next-intl';
 
 export function WarehouseList() {
+    const t = useTranslations('warehouses');
     const router = useRouter();
     const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isMapOpen, setIsMapOpen] = useState(false);
 
-    // Dialog states
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [selectedWarehouse, setSelectedWarehouse] = useState<Warehouse | null>(null);
@@ -37,16 +38,15 @@ export function WarehouseList() {
             setIsLoading(true);
             setError(null);
             const data = await getWarehouses();
-            // Protection against null/undefined - always set an array
             setWarehouses(Array.isArray(data) ? data : []);
         } catch (err) {
-            const message = err instanceof ApiError ? err.message : 'An error occurred while fetching warehouses';
+            const message = err instanceof ApiError ? err.message : t('messages.fetchError');
             setError(message);
             toast.error(message);
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [t]);
 
     useEffect(() => {
         fetchWarehouses();
@@ -106,7 +106,6 @@ export function WarehouseList() {
         }
     };
 
-    // Loading state
     if (isLoading) {
         return (
             <div className="space-y-4">
@@ -159,7 +158,6 @@ export function WarehouseList() {
         );
     }
 
-    // Error state
     if (error) {
         return (
             <div className="space-y-4">
@@ -180,7 +178,6 @@ export function WarehouseList() {
         );
     }
 
-    // Empty state
     if (warehouses.length === 0) {
         return (
             <div className="space-y-4">
@@ -210,19 +207,20 @@ export function WarehouseList() {
         );
     }
 
-    // Normal state with data
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold tracking-tight">Warehouses</h2>
-                <Button variant="outline" onClick={() => setIsMapOpen(true)}>
-                    <MapPin className="mr-2 h-4 w-4" />
-          View map
-                </Button>
-                <Button onClick={handleAddClick}>
-                    <Plus className="mr-2 h-4 w-4" />
-          Add Warehouse
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" onClick={() => setIsMapOpen(true)}>
+                        <MapPin className="mr-2 h-4 w-4" />
+            View map
+                    </Button>
+                    <Button onClick={handleAddClick}>
+                        <Plus className="mr-2 h-4 w-4" />
+            Add Warehouse
+                    </Button>
+                </div>
             </div>
 
             <div className="rounded-md border">

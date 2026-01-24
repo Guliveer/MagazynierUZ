@@ -1,0 +1,1057 @@
+{
+  "breadcrumbs": {
+    "dashboard": "Panel",
+    "warehouses": "Magazyny",
+    "warehouseDetail": "Szczegóły magazynu",
+    "products": "Produkty",
+    "statistics": "Statystyki",
+    "profile": "Profil",
+    "admin": "Panel Administratora",
+    "users": "Zarządzanie użytkownikami",
+    "organisations": "Organizacje",
+    "myOrganisation": "Moja organizacja"
+  },
+  "theme": {
+    "light": "Jasny",
+    "dark": "Ciemny",
+    "system": "Systemowy"
+  },
+  "common": {
+    "actions": {
+      "login": "Zaloguj się",
+      "register": "Zarejestruj się",
+      "goHome": "Strona główna",
+      "submit": "Wyślij",
+      "cancel": "Anuluj"
+    },
+    "labels": {
+      "username": "Nazwa użytkownika",
+      "password": "Hasło",
+      "confirmPassword": "Potwierdź hasło",
+      "rememberMe": "Zapamiętaj mnie do automatycznego przedłużenia sesji"
+    },
+    "status": {
+      "loading": "Ładowanie...",
+      "error": "Błąd",
+      "success": "Sukces"
+    }
+  },
+  "landing": {
+    "title": "Witamy w MagazynierUZ",
+    "subtitle": "Inteligentne magazynowanie zaczyna się od MagazynierUZ.",
+    "actions": {
+      "login": "Zaloguj się",
+      "register": "Rejestracja"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Logowanie",
+      "loggingIn": "Logowanie...",
+      "noAccount": "Nie masz konta?",
+      "registerNow": "Zarejestruj się teraz",
+      "sessionExpired": {
+        "title": "Sesja wygasła",
+        "message": "Twoja sesja wygasła. Zaloguj się ponownie."
+      },
+      "extendSession": {
+        "title": "Przedłuż sesję",
+        "message": "Zaloguj się ponownie, aby przedłużyć sesję i kontynuować pracę."
+      },
+      "errors": {
+        "captchaRequired": "Proszę ukończyć weryfikację captcha",
+        "captchaError": "Błąd captcha: {error}",
+        "invalidCredentials": "Nieprawidłowa nazwa użytkownika lub hasło",
+        "loginFailed": "Logowanie nie powiodło się. Spróbuj ponownie.",
+        "unexpectedError": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie."
+      }
+    },
+    "register": {
+      "title": "Rejestracja",
+      "subtitle": "Utwórz swoje konto",
+      "registering": "Rejestrowanie...",
+      "hasAccount": "Masz już konto?",
+      "loginLink": "Zaloguj się",
+      "success": {
+        "registered": "Rejestracja zakończona sukcesem! Logowanie...",
+        "registeredLogin": "Rejestracja zakończona sukcesem! Zaloguj się."
+      },
+      "errors": {
+        "passwordMismatch": "Hasła muszą być takie same!",
+        "passwordRequirements": "Hasło nie spełnia wymagań",
+        "captchaRequired": "Proszę ukończyć weryfikację captcha",
+        "captchaError": "Błąd captcha: {error}",
+        "userExists": "Konto z tą nazwą użytkownika już istnieje",
+        "registrationFailed": "Rejestracja nie powiodła się. Spróbuj ponownie.",
+        "unexpectedError": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie."
+      },
+      "validation": {
+        "passwordMinLength": "Hasło musi mieć co najmniej 6 znaków",
+        "passwordMaxLength": "Hasło może mieć maksymalnie 500 znaków"
+      }
+    }
+  },
+  "dashboard": {
+    "nav": {
+      "dashboard": "Panel",
+      "warehouses": "Magazyny",
+      "products": "Produkty",
+      "statistics": "Statystyki",
+      "adminPanel": "Panel Administratora",
+      "profile": "Profil",
+      "logout": "Wyloguj się",
+      "adminBadge": "ADMIN"
+    },
+    "home": {
+      "title": "Panel",
+      "subtitle": "Witamy w systemie zarządzania magazynem",
+      "refresh": "Odśwież",
+      "exportPdf": "Eksportuj PDF",
+      "stats": {
+        "totalWarehouses": "Wszystkie magazyny",
+        "totalProducts": "Wszystkie produkty",
+        "inventoryValue": "Wartość zapasów",
+        "lowStockAlerts": "Alerty niskiego stanu",
+        "activeLocations": "Aktywne lokalizacje",
+        "inInventory": "W magazynie",
+        "totalValue": "Całkowita wartość",
+        "belowUnits": "Poniżej 10 sztuk"
+      },
+      "quickActions": {
+        "title": "Szybkie akcje",
+        "description": "Typowe zadania i skróty",
+        "searchProducts": "Szukaj produktów",
+        "searchProductsDesc": "Znajdź i zarządzaj produktami",
+        "addWarehouse": "Dodaj magazyn",
+        "addWarehouseDesc": "Utwórz nowy magazyn",
+        "viewStatistics": "Zobacz statystyki",
+        "viewStatisticsDesc": "Analityka i wglądy",
+        "addProduct": "Dodaj produkt",
+        "addProductDesc": "Utwórz nowy produkt"
+      },
+      "topProducts": {
+        "title": "Top 3 produkty",
+        "description": "Produkty z największą ilością",
+        "viewAll": "Zobacz wszystkie",
+        "noProducts": "Nie znaleziono produktów",
+        "units": "sztuk"
+      },
+      "warehouses": {
+        "title": "Magazyny",
+        "description": "Twoje lokalizacje magazynowe",
+        "viewAll": "Zobacz wszystkie",
+        "noWarehouses": "Nie znaleziono magazynów",
+        "addWarehouse": "Dodaj magazyn",
+        "viewMore": "Zobacz {count} więcej",
+        "active": "Aktywny",
+        "inactive": "Nieaktywny"
+      },
+      "stockLevel": {
+        "title": "Przegląd poziomu zapasów",
+        "description": "Rozkład produktów według poziomu zapasów",
+        "highStock": "Wysoki stan",
+        "mediumStock": "Średni stan",
+        "lowStock": "Niski stan",
+        "highStockDesc": "≥ 50 sztuk",
+        "mediumStockDesc": "10-49 sztuk",
+        "lowStockDesc": "< 10 sztuk"
+      },
+      "errors": {
+        "loadFailed": "Nie udało się załadować danych panelu. Spróbuj ponownie."
+      }
+    },
+    "tokenExpiration": {
+      "title": "Sesja wkrótce wygaśnie",
+      "description": "Twoja sesja wkrótce wygaśnie. Zostaniesz automatycznie wylogowany, gdy licznik osiągnie zero.",
+      "remaining": "pozostało",
+      "whatHappens": "Co się stanie dalej?",
+      "steps": {
+        "stayLoggedIn": "Kliknij \"Pozostań zalogowany\", aby przedłużyć sesję",
+        "redirect": "Zostaniesz przekierowany do logowania i wrócisz na tę stronę",
+        "dismiss": "Lub odrzuć to ostrzeżenie i kontynuuj pracę",
+        "saveWork": "Zapisz swoją pracę, aby uniknąć utraty zmian"
+      },
+      "actions": {
+        "dismiss": "Odrzuć",
+        "stayLoggedIn": "Pozostań zalogowany"
+      }
+    },
+    "underConstruction": {
+      "title": "W budowie",
+      "description": "Ta strona jest obecnie w budowie. Sprawdź ponownie później!",
+      "message": "Ciężko pracujemy, aby przynieść Ci coś niesamowitego!"
+    }
+  },
+  "notFound": {
+    "title": "Nie znaleziono strony",
+    "description": "Strona, której szukasz, nie istnieje lub została przeniesiona. Pomożemy Ci wrócić na właściwą ścieżkę.",
+    "goHome": "Strona główna",
+    "dashboard": "Panel",
+    "signIn": "Zaloguj się"
+  },
+  "products": {
+    "title": "Wyszukiwanie produktów",
+    "subtitle": "Wyszukuj i filtruj produkty we wszystkich magazynach i lokalizacjach",
+    "addProduct": "Dodaj produkt",
+    "addProductTooltip": "Wybierz magazyn i lokalizację, aby dodać produkty",
+    "search": {
+      "label": "Szukaj produktów",
+      "placeholder": "Szukaj po nazwie lub opisie produktu...",
+      "button": "Szukaj",
+      "searching": "Wyszukiwanie...",
+      "noResults": "Nie znaleziono produktów pasujących do kryteriów wyszukiwania",
+      "noResultsDescription": "Żaden produkt nie pasuje do kryteriów wyszukiwania. Spróbuj dostosować filtry."
+    },
+    "filters": {
+      "warehouse": "Magazyn",
+      "location": "Lokalizacja",
+      "allWarehouses": "Wszystkie magazyny",
+      "allLocations": "Wszystkie lokalizacje",
+      "selectWarehouseFirst": "Najpierw wybierz magazyn",
+      "advancedFilters": "Filtry zaawansowane",
+      "active": "Aktywne",
+      "priceRange": "Zakres cen (PLN)",
+      "minPrice": "Cena min",
+      "maxPrice": "Cena max",
+      "priceRangeError": "Cena minimalna musi być mniejsza lub równa cenie maksymalnej",
+      "quantityRange": "Zakres ilości",
+      "minQuantity": "Ilość min",
+      "maxQuantity": "Ilość max",
+      "quantityRangeError": "Ilość minimalna musi być mniejsza lub równa ilości maksymalnej",
+      "availableOnly": "Pokaż tylko dostępne produkty (ilość > 0)",
+      "activeFilters": "Aktywne filtry:",
+      "search": "Szukaj",
+      "price": "Cena",
+      "quantity": "Ilość",
+      "availableOnlyBadge": "Tylko dostępne",
+      "clearAll": "Wyczyść wszystkie"
+    },
+    "form": {
+      "title": {
+        "add": "Dodaj nowy produkt",
+        "edit": "Edytuj produkt"
+      },
+      "description": {
+        "add": "Wypełnij formularz, aby dodać nowy produkt do tej lokalizacji.",
+        "edit": "Zaktualizuj szczegóły produktu i zapisz zmiany."
+      },
+      "currentLocation": "Aktualna lokalizacja:",
+      "addingTo": "Dodawanie do:",
+      "fields": {
+        "name": "Nazwa produktu",
+        "namePlaceholder": "np. Laptop Dell XPS 15",
+        "description": "Opis",
+        "descriptionPlaceholder": "Opcjonalny opis produktu...",
+        "price": "Cena (PLN)",
+        "pricePlaceholder": "np. 4999.99",
+        "quantity": "Ilość",
+        "quantityPlaceholder": "np. 10",
+        "warehouse": "Magazyn",
+        "warehousePlaceholder": "Wybierz magazyn",
+        "location": "Lokalizacja",
+        "locationPlaceholder": "Wybierz lokalizację",
+        "selectWarehouseFirst": "Najpierw wybierz magazyn"
+      },
+      "validation": {
+        "nameMin": "Nazwa musi mieć co najmniej 2 znaki",
+        "priceRequired": "Cena jest wymagana i musi być liczbą",
+        "pricePositive": "Cena musi być większa niż 0",
+        "quantityRequired": "Ilość jest wymagana i musi być liczbą",
+        "quantityInteger": "Ilość musi być liczbą całkowitą",
+        "quantityNonNegative": "Ilość nie może być ujemna",
+        "warehouseRequired": "Magazyn jest wymagany",
+        "locationRequired": "Lokalizacja jest wymagana"
+      },
+      "buttons": {
+        "cancel": "Anuluj",
+        "save": "Zapisz zmiany",
+        "add": "Dodaj produkt"
+      }
+    },
+    "list": {
+      "title": "Produkty",
+      "searchPlaceholder": "Szukaj produktów...",
+      "addProduct": "Dodaj produkt",
+      "table": {
+        "id": "ID",
+        "name": "Nazwa",
+        "description": "Opis",
+        "price": "Cena",
+        "quantity": "Ilość",
+        "actions": "Akcje"
+      },
+      "actions": {
+        "edit": "Edytuj",
+        "delete": "Usuń"
+      },
+      "empty": {
+        "title": "Brak produktów",
+        "description": "W tej lokalizacji nie ma jeszcze żadnych produktów. Dodaj swój pierwszy produkt, aby rozpocząć zarządzanie zapasami.",
+        "addFirst": "Dodaj pierwszy produkt"
+      },
+      "error": {
+        "tryAgain": "Spróbuj ponownie"
+      }
+    },
+    "results": {
+      "showing": "Wyświetlanie",
+      "of": "z",
+      "results": "wyników",
+      "perPage": {
+        "10": "10 na stronę",
+        "25": "25 na stronę",
+        "50": "50 na stronę",
+        "100": "100 na stronę"
+      },
+      "viewMode": {
+        "table": "Widok tabeli",
+        "grid": "Widok siatki"
+      },
+      "sort": {
+        "id": "ID",
+        "name": "Nazwa",
+        "price": "Cena",
+        "quantity": "Ilość"
+      },
+      "pagination": {
+        "previous": "Poprzednia",
+        "next": "Następna"
+      },
+      "noDescription": "Brak opisu",
+      "missingContext": "Brak informacji o magazynie/lokalizacji",
+      "editUnavailable": "Edycja niedostępna",
+      "deleteUnavailable": "Usuwanie niedostępne"
+    },
+    "location": {
+      "unknown": "Nieznana lokalizacja",
+      "types": {
+        "PICKING": "Kompletacja",
+        "BULK": "Magazyn masowy",
+        "RECEIVING": "Przyjęcie",
+        "SHIPPING": "Wysyłka",
+        "RETURNS": "Zwroty"
+      },
+      "tooltip": {
+        "code": "Kod",
+        "zone": "Strefa",
+        "type": "Typ",
+        "clickWarehouse": "Kliknij, aby filtrować według magazynu",
+        "clickLocation": "Kliknij, aby filtrować według lokalizacji"
+      }
+    },
+    "history": {
+      "title": "Ostatnie wyszukiwania",
+      "clearAll": "Wyczyść wszystkie",
+      "loadSearch": "Załaduj to wyszukiwanie",
+      "removeFromHistory": "Usuń z historii",
+      "timeAgo": {
+        "justNow": "Przed chwilą",
+        "minutesAgo": "{minutes} min temu",
+        "hoursAgo": "{hours} godz. temu",
+        "daysAgo": "{days} dni temu"
+      },
+      "filters": {
+        "warehouse": "M#",
+        "location": "L#",
+        "qty": "Ilość",
+        "available": "Dostępne"
+      }
+    },
+    "export": {
+      "button": "Eksportuj",
+      "exporting": "Eksportowanie...",
+      "noProducts": "Brak produktów do eksportu",
+      "tooltip": "Eksportuj {count}",
+      "success": "Pomyślnie wyeksportowano {count} do CSV",
+      "error": "Nie udało się wyeksportować produktów"
+    },
+    "delete": {
+      "title": "Czy na pewno chcesz usunąć ten produkt?",
+      "description": "Zamierzasz usunąć {name}. Ta akcja nie może zostać cofnięta i trwale usunie produkt z tej lokalizacji.",
+      "cancel": "Anuluj",
+      "confirm": "Usuń"
+    },
+    "messages": {
+      "selectWarehouseLocation": "Najpierw wybierz magazyn i lokalizację",
+      "missingContext": "Nie można edytować produktu: brak informacji o magazynie/lokalizacji",
+      "missingContextDelete": "Nie można usunąć produktu: brak informacji o magazynie/lokalizacji",
+      "created": "Produkt został dodany",
+      "updated": "Produkt został zaktualizowany",
+      "deleted": "Produkt został usunięty",
+      "createError": "Wystąpił błąd podczas zapisywania produktu",
+      "updateError": "Wystąpił błąd podczas zapisywania produktu",
+      "deleteError": "Wystąpił błąd podczas usuwania produktu",
+      "fetchError": "Wystąpił błąd podczas pobierania produktów",
+      "searchError": "Wystąpił błąd podczas wyszukiwania produktów",
+      "warehousesError": "Wystąpił błąd podczas pobierania magazynów",
+      "locationsError": "Wystąpił błąd podczas pobierania lokalizacji"
+    }
+  },
+  "warehouses": {
+    "title": "Magazyny",
+    "subtitle": "Zarządzaj lokalizacjami i adresami magazynów",
+    "addWarehouse": "Dodaj magazyn",
+    "viewMap": "Zobacz mapę",
+    "list": {
+      "title": "Magazyny",
+      "table": {
+        "id": "ID",
+        "name": "Nazwa",
+        "code": "Kod",
+        "status": "Status",
+        "city": "Miasto",
+        "actions": "Akcje"
+      },
+      "actions": {
+        "view": "Zobacz szczegóły",
+        "edit": "Edytuj",
+        "delete": "Usuń"
+      },
+      "empty": {
+        "title": "Brak magazynów",
+        "description": "Nie masz jeszcze żadnych magazynów. Dodaj swój pierwszy magazyn, aby rozpocząć zarządzanie lokalizacjami i produktami.",
+        "addFirst": "Dodaj pierwszy magazyn"
+      },
+      "error": {
+        "tryAgain": "Spróbuj ponownie"
+      },
+      "status": {
+        "active": "Aktywny",
+        "inactive": "Nieaktywny"
+      }
+    },
+    "form": {
+      "title": {
+        "add": "Dodaj nowy magazyn",
+        "edit": "Edytuj magazyn"
+      },
+      "description": {
+        "add": "Wypełnij formularz, aby dodać nowy magazyn do systemu.",
+        "edit": "Zaktualizuj szczegóły magazynu i zapisz zmiany."
+      },
+      "fields": {
+        "name": "Nazwa magazynu",
+        "namePlaceholder": "np. Magazyn główny",
+        "code": "Kod magazynu",
+        "codePlaceholder": "np. WH01",
+        "description": "Opis",
+        "descriptionPlaceholder": "Opcjonalny opis magazynu...",
+        "street": "Ulica",
+        "streetPlaceholder": "np. Magazynowa",
+        "houseNumber": "Nr domu",
+        "houseNumberPlaceholder": "np. 15",
+        "apartmentNumber": "Nr lokalu",
+        "apartmentNumberPlaceholder": "np. 2A",
+        "city": "Miasto",
+        "cityPlaceholder": "np. Warszawa",
+        "postcode": "Kod pocztowy",
+        "postcodePlaceholder": "np. 00-001",
+        "coordinates": "Współrzędne (szerokość, długość)",
+        "coordinatesPlaceholder": "np. 52.2297, 21.0122"
+      },
+      "validation": {
+        "nameMin": "Nazwa musi mieć co najmniej 2 znaki",
+        "codeMin": "Kod musi mieć co najmniej 2 znaki",
+        "codeMax": "Kod może mieć maksymalnie 10 znaków",
+        "streetRequired": "Ulica jest wymagana",
+        "houseNumberRequired": "Numer domu jest wymagany",
+        "cityRequired": "Miasto jest wymagane",
+        "postcodeRequired": "Kod pocztowy jest wymagany"
+      },
+      "sections": {
+        "address": "Adres"
+      },
+      "buttons": {
+        "cancel": "Anuluj",
+        "save": "Zapisz zmiany",
+        "add": "Dodaj magazyn"
+      }
+    },
+    "dialog": {
+      "title": {
+        "add": "Dodaj nowy magazyn",
+        "edit": "Edytuj magazyn"
+      },
+      "description": {
+        "add": "Wypełnij formularz, aby dodać nowy magazyn do systemu.",
+        "edit": "Zaktualizuj szczegóły magazynu i zapisz zmiany."
+      }
+    },
+    "delete": {
+      "title": "Czy na pewno chcesz usunąć ten magazyn?",
+      "description": "Zamierzasz usunąć {name}. Ta akcja nie może zostać cofnięta i usunie wszystkie powiązane dane.",
+      "cancel": "Anuluj",
+      "confirm": "Usuń"
+    },
+    "map": {
+      "title": "Mapa magazynów",
+      "noWarehouses": "Brak magazynów z prawidłowymi współrzędnymi do wyświetlenia"
+    },
+    "detail": {
+      "title": "Szczegóły magazynu",
+      "backToWarehouses": "Powrót do magazynów",
+      "breadcrumb": "Magazyny",
+      "information": {
+        "title": "Informacje o magazynie",
+        "description": "Szczegóły i status tego magazynu"
+      },
+      "fields": {
+        "code": "Kod magazynu",
+        "id": "ID magazynu",
+        "address": "Adres",
+        "apartment": "Lok."
+      },
+      "exportPdf": "Eksportuj PDF",
+      "notFound": "Nie znaleziono magazynu",
+      "invalidId": "Nieprawidłowe ID magazynu"
+    },
+    "messages": {
+      "created": "Magazyn został dodany",
+      "updated": "Magazyn został zaktualizowany",
+      "deleted": "Magazyn został usunięty",
+      "createError": "Wystąpił błąd podczas zapisywania magazynu",
+      "updateError": "Wystąpił błąd podczas zapisywania magazynu",
+      "deleteError": "Wystąpił błąd podczas usuwania magazynu",
+      "fetchError": "Wystąpił błąd podczas pobierania magazynów",
+      "fetchDetailError": "Wystąpił błąd podczas pobierania szczegółów magazynu"
+    }
+  },
+  "statistics": {
+    "title": "Statystyki produktów",
+    "subtitle": "Kompleksowa analityka i wglądy",
+    "lastUpdated": "Zaktualizowano: {time}",
+    "summary": {
+      "totalProducts": "Wszystkie produkty",
+      "totalProductsDesc": "We wszystkich lokalizacjach",
+      "totalValue": "Całkowita wartość",
+      "totalValueDesc": "Wartość zapasów",
+      "averagePrice": "Średnia cena",
+      "averagePriceDesc": "Na produkt",
+      "warehouses": "Magazyny",
+      "warehousesDesc": "Aktywne lokalizacje",
+      "lowStock": "Niski stan",
+      "lowStockDesc": "Poniżej 10 sztuk"
+    },
+    "filters": {
+      "title": "Filtry i ustawienia",
+      "description": "Dostosuj widok statystyk",
+      "autoRefresh": "Automatyczne odświeżanie",
+      "quickFilters": "Szybkie filtry",
+      "highValue": "Wysoka wartość",
+      "lowStock": "Niski stan",
+      "mostPopular": "Najpopularniejsze",
+      "sortBy": "Sortuj według",
+      "sortDirection": "Kierunek sortowania",
+      "warehouse": "Magazyn",
+      "location": "Lokalizacja",
+      "showAvailableOnly": "Pokaż tylko dostępne",
+      "yes": "Tak",
+      "no": "Nie",
+      "sortOptions": {
+        "quantity": "Ilość",
+        "price": "Cena",
+        "name": "Nazwa"
+      },
+      "sortDirectionOptions": {
+        "desc": "Malejąco",
+        "asc": "Rosnąco"
+      },
+      "allWarehouses": "Wszystkie magazyny",
+      "allLocations": "Wszystkie lokalizacje"
+    },
+    "charts": {
+      "tabs": {
+        "byQuantity": "Według ilości",
+        "byPrice": "Według ceny",
+        "totalValue": "Całkowita wartość",
+        "distribution": "Rozkład"
+      },
+      "titles": {
+        "byQuantity": "Top 10 produktów według ilości",
+        "byPrice": "Top 10 produktów według ceny",
+        "totalValue": "Top 10 produktów według całkowitej wartości",
+        "distribution": "Rozkład magazynów"
+      },
+      "descriptions": {
+        "byQuantity": "Produkty z największą ilością w magazynie",
+        "byPrice": "Najdroższe produkty w magazynie",
+        "totalValue": "Produkty o najwyższej całkowitej wartości zapasów (ilość × cena)",
+        "distribution": "Rozkład wartości produktów w magazynach"
+      },
+      "labels": {
+        "quantity": "Ilość",
+        "price": "Cena (PLN)",
+        "value": "Wartość",
+        "totalValue": "Całkowita wartość"
+      },
+      "tooltip": {
+        "quantity": "Ilość:",
+        "price": "Cena:",
+        "totalValue": "Całkowita wartość:"
+      }
+    },
+    "table": {
+      "title": "Szczegóły produktów",
+      "description": "Szczegółowe informacje o top 10 produktach",
+      "headers": {
+        "rank": "Pozycja",
+        "name": "Nazwa",
+        "description": "Opis",
+        "quantity": "Ilość",
+        "price": "Cena",
+        "totalValue": "Całkowita wartość",
+        "status": "Status"
+      }
+    },
+    "status": {
+      "lowStock": "Niski stan",
+      "medium": "Średni",
+      "inStock": "W magazynie"
+    },
+    "actions": {
+      "refresh": "Odśwież",
+      "exportCsv": "Eksportuj CSV"
+    },
+    "messages": {
+      "loading": "Ładowanie statystyk...",
+      "error": "Nie udało się załadować statystyk. Spróbuj ponownie.",
+      "noProducts": "Nie znaleziono produktów",
+      "noProductsDescription": "Spróbuj dostosować filtry",
+      "noData": "Brak danych"
+    }
+  },
+  "admin": {
+    "title": "Panel Administratora",
+    "subtitle": "Administracja i zarządzanie systemem",
+    "badge": "Administrator",
+    "session": {
+      "title": "Bieżąca sesja",
+      "description": "Informacje o Twojej sesji administratora",
+      "username": "Nazwa użytkownika",
+      "roles": "Role",
+      "noRoles": "Brak ról",
+      "active": "Aktywna",
+      "authenticated": "Uwierzytelniona sesja"
+    },
+    "systemHealth": {
+      "systemStatus": "Status systemu",
+      "database": "Baza danych",
+      "apiStatus": "Status API",
+      "session": "Sesja",
+      "online": "Online",
+      "offline": "Offline",
+      "connected": "Połączona",
+      "disconnected": "Rozłączona",
+      "active": "Aktywny",
+      "inactive": "Nieaktywny",
+      "allSystemsOperational": "Wszystkie systemy działają",
+      "systemUnavailable": "System niedostępny",
+      "databaseResponsive": "Baza danych odpowiada",
+      "databaseUnavailable": "Baza danych niedostępna",
+      "apiEndpointsReady": "Punkty końcowe API gotowe",
+      "apiUnavailable": "API niedostępne",
+      "authenticatedSession": "Uwierzytelniona sesja"
+    },
+    "statistics": {
+      "totalUsers": "Wszyscy użytkownicy",
+      "registeredUsers": "Zarejestrowani użytkownicy",
+      "totalWarehouses": "Wszystkie magazyny",
+      "active": "aktywne",
+      "totalLocations": "Wszystkie lokalizacje",
+      "acrossAllWarehouses": "We wszystkich magazynach",
+      "totalProducts": "Wszystkie produkty",
+      "inInventory": "W magazynie",
+      "inventoryValue": "Wartość zapasów",
+      "totalValue": "Całkowita wartość"
+    },
+    "features": {
+      "organisations": "Organizacje",
+      "organisationsDesc": "Zarządzaj wszystkimi organizacjami w systemie",
+      "manageOrganisations": "Zarządzaj organizacjami",
+      "myOrganisation": "Moja organizacja",
+      "myOrganisationDesc": "Zobacz szczegóły swojej organizacji",
+      "viewDetails": "Zobacz szczegóły",
+      "userManagement": "Zarządzanie użytkownikami",
+      "userManagementDesc": "Zarządzaj użytkownikami, rolami i uprawnieniami",
+      "manageUsers": "Zarządzaj użytkownikami",
+      "systemSettings": "Ustawienia systemu",
+      "systemSettingsDesc": "Konfiguruj ustawienia systemowe (Wkrótce)",
+      "comingSoon": "Wkrótce",
+      "auditLogs": "Dzienniki audytu",
+      "auditLogsDesc": "Przeglądaj aktywność systemu i ścieżki audytu (Wkrótce)"
+    },
+    "layout": {
+      "verifyingAccess": "Weryfikacja dostępu...",
+      "accessDenied": "Dostęp zabroniony",
+      "accessDeniedMessage": "Nie masz uprawnień do dostępu do panelu administratora. Ten obszar jest ograniczony tylko dla administratorów.",
+      "backToDashboard": "Powrót do panelu",
+      "viewProfile": "Zobacz profil"
+    },
+    "users": {
+      "title": "Zarządzanie użytkownikami",
+      "subtitle": "Zarządzaj użytkownikami systemu, rolami i przypisaniami do organizacji",
+      "totalUsers": "Wszyscy użytkownicy",
+      "registeredInSystem": "Zarejestrowani w systemie",
+      "administrators": "Administratorzy",
+      "withAdminPrivileges": "Z uprawnieniami administratora",
+      "assignedUsers": "Przypisani użytkownicy",
+      "withOrganisationAssignment": "Z przypisaniem do organizacji",
+      "allUsers": "Wszyscy użytkownicy",
+      "allUsersDesc": "Przeglądaj i zarządzaj wszystkimi użytkownikami w systemie",
+      "searchByUsername": "Szukaj po nazwie użytkownika...",
+      "filterByRole": "Filtruj według roli",
+      "filterByOrg": "Filtruj według org.",
+      "allRoles": "Wszystkie role",
+      "allOrganisations": "Wszystkie organizacje",
+      "noOrganisation": "Bez organizacji",
+      "createUser": "Utwórz użytkownika",
+      "showing": "Wyświetlanie",
+      "of": "z",
+      "usersCount": "użytkowników",
+      "noUsersFound": "Nie znaleziono użytkowników",
+      "adjustFilters": "Spróbuj dostosować wyszukiwanie lub filtry",
+      "getStarted": "Zacznij od utworzenia pierwszego użytkownika",
+      "username": "Nazwa użytkownika",
+      "roles": "Role",
+      "organisation": "Organizacja",
+      "actions": "Akcje",
+      "you": "Ty",
+      "noOrganisationItalic": "Bez organizacji"
+    },
+    "userForm": {
+      "username": "Nazwa użytkownika",
+      "usernameRequired": "Nazwa użytkownika jest wymagana",
+      "usernameMinLength": "Nazwa użytkownika musi mieć co najmniej 3 znaki",
+      "usernameMaxLength": "Nazwa użytkownika nie może przekraczać 50 znaków",
+      "usernamePlaceholder": "Wprowadź nazwę użytkownika (3-50 znaków)",
+      "password": "Hasło",
+      "passwordRequired": "Hasło jest wymagane",
+      "passwordMinLength": "Hasło musi mieć co najmniej 4 znaki",
+      "passwordPlaceholderNew": "Wprowadź nowe hasło (opcjonalnie)",
+      "passwordPlaceholderCreate": "Wprowadź hasło (min 4 znaki)",
+      "leaveBlankToKeep": "(pozostaw puste, aby zachować obecne)",
+      "passwordStrength": {
+        "weak": "Słabe",
+        "medium": "Średnie",
+        "strong": "Silne"
+      },
+      "roles": "Role",
+      "rolesRequired": "Należy wybrać co najmniej jedną rolę",
+      "roleUser": "Użytkownik",
+      "roleUserDesc": "Standardowy dostęp użytkownika",
+      "roleAdmin": "Administrator",
+      "roleAdminDesc": "Pełny dostęp do systemu",
+      "roleManager": "Menedżer",
+      "roleManagerDesc": "Zarządzanie magazynem",
+      "organisation": "Organizacja (Opcjonalnie)",
+      "organisationPlaceholder": "Wybierz organizację (opcjonalnie)",
+      "noOrganisation": "Bez organizacji",
+      "organisationHelp": "Przypisz użytkownika do konkretnej organizacji/magazynu",
+      "updating": "Aktualizowanie...",
+      "creating": "Tworzenie...",
+      "updateUser": "Zaktualizuj użytkownika",
+      "createUser": "Utwórz użytkownika"
+    },
+    "userDialog": {
+      "editTitle": "Edytuj użytkownika",
+      "createTitle": "Utwórz nowego użytkownika",
+      "editDescription": "Zaktualizuj informacje o użytkowniku, role i przypisanie do organizacji.",
+      "createDescription": "Utwórz nowe konto użytkownika z rolami i przypisaniem do organizacji.",
+      "userUpdated": "Użytkownik \"{username}\" został zaktualizowany",
+      "userCreated": "Użytkownik \"{username}\" został utworzony",
+      "updateFailed": "Nie udało się zaktualizować użytkownika: {error}",
+      "createFailed": "Nie udało się utworzyć użytkownika: {error}"
+    },
+    "deleteUser": {
+      "title": "Usuń użytkownika",
+      "cannotDeleteSelf": "Nie możesz usunąć własnego konta.",
+      "confirmMessage": "Czy na pewno chcesz usunąć użytkownika",
+      "warningMessage": "Ta akcja nie może zostać cofnięta. Wszystkie dane powiązane z tym użytkownikiem zostaną trwale usunięte z systemu.",
+      "cancel": "Anuluj",
+      "deleting": "Usuwanie...",
+      "deleteUser": "Usuń użytkownika",
+      "cannotDeleteOwnAccount": "Nie można usunąć własnego konta",
+      "userDeleted": "Użytkownik \"{username}\" został usunięty",
+      "deleteFailed": "Nie udało się usunąć użytkownika. Spróbuj ponownie."
+    },
+    "organisations": {
+      "title": "Zarządzanie organizacjami",
+      "subtitle": "Zarządzaj organizacjami, przeglądaj ich magazyny i użytkowników oraz utrzymuj dane organizacji.",
+      "totalOrganisations": "Wszystkie organizacje",
+      "activeInSystem": "Aktywne organizacje w systemie",
+      "totalWarehouses": "Wszystkie magazyny",
+      "acrossAllOrganisations": "We wszystkich organizacjach",
+      "totalUsers": "Wszyscy użytkownicy",
+      "assignedToOrganisations": "Przypisani do organizacji",
+      "organisationsTitle": "Organizacje",
+      "organisationsDesc": "Przeglądaj i zarządzaj wszystkimi organizacjami w systemie. Twórz, edytuj lub usuwaj organizacje według potrzeb.",
+      "searchByNameOrTin": "Szukaj po nazwie lub NIP...",
+      "createOrganisation": "Utwórz organizację",
+      "showing": "Wyświetlanie",
+      "of": "z",
+      "organisationsCount": "organizacji",
+      "noOrganisationsFound": "Nie znaleziono organizacji",
+      "adjustSearch": "Spróbuj dostosować zapytanie wyszukiwania",
+      "getStarted": "Zacznij od utworzenia pierwszej organizacji",
+      "name": "Nazwa",
+      "tin": "NIP",
+      "warehouses": "Magazyny",
+      "users": "Użytkownicy",
+      "actions": "Akcje"
+    },
+    "organisationForm": {
+      "name": "Nazwa organizacji",
+      "nameRequired": "Nazwa organizacji jest wymagana",
+      "nameMaxLength": "Nazwa organizacji nie może przekraczać 20 znaków",
+      "nameMinLength": "Nazwa organizacji musi mieć co najmniej 1 znak",
+      "namePlaceholder": "Wprowadź nazwę organizacji (max 20 znaków)",
+      "characters": "znaków",
+      "tin": "NIP (Numer Identyfikacji Podatkowej)",
+      "tinRequired": "NIP jest wymagany",
+      "tinMaxLength": "NIP nie może przekraczać 20 znaków",
+      "tinMinLength": "NIP musi mieć co najmniej 1 znak",
+      "tinInvalidFormat": "NIP może zawierać tylko litery, cyfry i myślniki",
+      "tinPlaceholder": "Wprowadź NIP (np. 123-456-789)",
+      "tinHelp": "Numer Identyfikacji Podatkowej musi być unikalny we wszystkich organizacjach",
+      "updating": "Aktualizowanie...",
+      "creating": "Tworzenie...",
+      "updateOrganisation": "Zaktualizuj organizację",
+      "createOrganisation": "Utwórz organizację"
+    },
+    "organisationDialog": {
+      "editTitle": "Edytuj organizację",
+      "createTitle": "Utwórz nową organizację",
+      "editDescription": "Zaktualizuj informacje o organizacji. Nazwa i NIP muszą być unikalne.",
+      "createDescription": "Utwórz nową organizację z unikalną nazwą i NIP.",
+      "organisationUpdated": "Organizacja \"{name}\" została zaktualizowana",
+      "organisationCreated": "Organizacja \"{name}\" została utworzona",
+      "updateFailedDuplicate": "Nie udało się zaktualizować: Nazwa organizacji lub NIP już istnieje",
+      "createFailedDuplicate": "Nie udało się utworzyć: Nazwa organizacji lub NIP już istnieje",
+      "updateFailed": "Nie udało się zaktualizować organizacji: {error}",
+      "createFailed": "Nie udało się utworzyć organizacji: {error}"
+    },
+    "deleteOrganisation": {
+      "title": "Usuń organizację",
+      "checkingDependencies": "Sprawdzanie zależności...",
+      "cannotDelete": "Ta organizacja nie może zostać usunięta, ponieważ ma:",
+      "warehouse": "magazyn",
+      "warehouses": "magazyny",
+      "user": "użytkownika",
+      "users": "użytkowników",
+      "removeWarehousesAndUsers": "Usuń wszystkie magazyny i przypisz ponownie wszystkich użytkowników przed usunięciem tej organizacji.",
+      "confirmMessage": "Czy na pewno chcesz usunąć organizację",
+      "tin": "NIP",
+      "warningMessage": "Ta akcja nie może zostać cofnięta. Wszystkie dane powiązane z tą organizacją zostaną trwale usunięte z systemu.",
+      "cancel": "Anuluj",
+      "deleting": "Usuwanie...",
+      "deleteOrganisation": "Usuń organizację",
+      "cannotDeleteWithDependencies": "Nie można usunąć organizacji z istniejącymi magazynami lub użytkownikami",
+      "organisationDeleted": "Organizacja \"{name}\" została usunięta",
+      "deleteFailedDependencies": "Nie można usunąć: Organizacja ma powiązane magazyny lub użytkowników",
+      "deleteFailed": "Nie udało się usunąć organizacji: {error}"
+    },
+    "organisation": {
+      "title": "Zarządzanie organizacją",
+      "subtitle": "Przeglądaj i zarządzaj szczegółami organizacji",
+      "editOrganisation": "Edytuj organizację",
+      "organisationOverview": "Organizacja",
+      "organisationId": "ID organizacji",
+      "organisationInfo": "Informacje o organizacji z tokenu JWT",
+      "active": "Aktywna",
+      "organisationInformation": "Informacje o organizacji",
+      "organisation": "Organizacja",
+      "dataSource": "Źródło danych",
+      "statisticsFromApi": "Statystyki z punktów końcowych API",
+      "contactInformation": "Informacje kontaktowe",
+      "email": "E-mail",
+      "phone": "Telefon",
+      "address": "Adres",
+      "notAvailableViaApi": "Niedostępne przez API",
+      "administratorDetails": "Szczegóły administratora",
+      "currentAdministrator": "Obecny administrator",
+      "session": "Sesja",
+      "activeAndAuthenticated": "Aktywna i uwierzytelniona",
+      "additionalInformation": "Dodatkowe informacje",
+      "jwtNote": "Szczegóły organizacji są wyodrębniane z Twojego tokenu uwierzytelniania JWT. Dodatkowe funkcje zarządzania organizacją wymagają wsparcia API backendu.",
+      "warehouses": "Magazyny",
+      "managedWarehouses": "Zarządzane magazyny",
+      "locations": "Lokalizacje",
+      "totalLocations": "Wszystkie lokalizacje",
+      "products": "Produkty",
+      "totalProductsInInventory": "Wszystkie produkty w magazynie",
+      "totalValue": "Całkowita wartość",
+      "inventoryValue": "Wartość zapasów",
+      "organisationMembers": "Członkowie organizacji",
+      "membersDescription": "Użytkownicy należący do tej organizacji",
+      "userManagementComingSoon": "Zarządzanie użytkownikami wkrótce",
+      "userManagementNote": "Ta funkcja wymaga wsparcia API backendu do listowania i zarządzania użytkownikami",
+      "quickLinks": "Szybkie linki",
+      "quickLinksDescription": "Przejdź do powiązanych sekcji",
+      "viewWarehouses": "Zobacz magazyny",
+      "viewProducts": "Zobacz produkty",
+      "viewStatistics": "Zobacz statystyki"
+    },
+    "roles": {
+      "ROLE_USER": "Użytkownik",
+      "ROLE_ADMIN": "Administrator",
+      "ROLE_MANAGER": "Menedżer",
+      "USER": "Użytkownik",
+      "ADMIN": "Administrator",
+      "MANAGER": "Menedżer"
+    },
+    "messages": {
+      "loadUsersFailed": "Nie udało się załadować użytkowników",
+      "loadOrganisationsFailed": "Nie udało się załadować organizacji. Spróbuj ponownie.",
+      "loadStatisticsFailed": "Nie udało się załadować statystyk"
+    }
+  },
+  "profile": {
+    "title": "Profil użytkownika",
+    "subtitle": "Informacje o Twoim koncie i ustawienia",
+    "logout": "Wyloguj się",
+    "accountInfo": {
+      "title": "Informacje o koncie",
+      "username": "Nazwa użytkownika",
+      "userId": "ID użytkownika",
+      "accountCreated": "Konto utworzone",
+      "lastLogin": "Ostatnie logowanie"
+    },
+    "organisation": {
+      "title": "Organizacja",
+      "name": "Nazwa organizacji",
+      "id": "ID organizacji",
+      "tin": "NIP"
+    },
+    "roles": {
+      "title": "Role i uprawnienia",
+      "description": "Twoje przypisane role w systemie",
+      "noRoles": "Brak przypisanych ról"
+    },
+    "accountStatus": {
+      "title": "Status konta",
+      "description": "Aktualny status Twojego konta",
+      "enabled": "Konto włączone",
+      "active": "Aktywne",
+      "disabled": "Wyłączone",
+      "notExpired": "Konto nie wygasło",
+      "valid": "Ważne",
+      "expired": "Wygasłe",
+      "notLocked": "Konto nie zablokowane",
+      "unlocked": "Odblokowane",
+      "locked": "Zablokowane",
+      "credentialsNotExpired": "Dane uwierzytelniające nie wygasły"
+    },
+    "session": {
+      "title": "Informacje o sesji",
+      "description": "Szczegóły bieżącej sesji uwierzytelniania",
+      "tokenIssuedAt": "Token wystawiony",
+      "tokenExpiresAt": "Token wygasa",
+      "unknown": "Nieznane"
+    }
+  },
+  "locations": {
+    "title": "Lokalizacje w {warehouseName}",
+    "addLocation": "Dodaj lokalizację",
+    "addFirstLocation": "Dodaj pierwszą lokalizację",
+    "exportWarehousePdf": "Eksportuj PDF magazynu",
+    "showing": "{filtered} z {total} lokalizacji",
+    "search": {
+      "placeholder": "Szukaj po kodzie..."
+    },
+    "filters": {
+      "type": "Typ",
+      "allTypes": "Wszystkie typy",
+      "zone": "Strefa",
+      "allZones": "Wszystkie strefy",
+      "status": "Status",
+      "allStatus": "Wszystkie statusy",
+      "active": "Aktywne",
+      "inactive": "Nieaktywne",
+      "locked": "Zablokowane",
+      "sortBy": "Sortuj według",
+      "sortByCode": "Sortuj według kodu",
+      "sortByType": "Sortuj według typu",
+      "sortByZone": "Sortuj według strefy"
+    },
+    "table": {
+      "locationCode": "Kod lokalizacji",
+      "type": "Typ",
+      "zone": "Strefa",
+      "status": "Status",
+      "actions": "Akcje"
+    },
+    "types": {
+      "PICKING": "Kompletacja",
+      "BULK": "Magazyn masowy",
+      "RECEIVING": "Przyjęcie",
+      "SHIPPING": "Wysyłka",
+      "RETURNS": "Zwroty",
+      "descriptions": {
+        "PICKING": "Obszar do operacji kompletacji zamówień",
+        "BULK": "Obszar magazynowania o dużej pojemności",
+        "RECEIVING": "Przetwarzanie towarów przychodzących",
+        "SHIPPING": "Przygotowanie towarów wychodzących",
+        "RETURNS": "Przetwarzanie zwróconych przedmiotów"
+      }
+    },
+    "form": {
+      "title": {
+        "add": "Dodaj nową lokalizację",
+        "edit": "Edytuj lokalizację"
+      },
+      "description": {
+        "add": "Wypełnij formularz, aby dodać nową lokalizację do tego magazynu.",
+        "edit": "Zaktualizuj szczegóły lokalizacji i zapisz zmiany."
+      },
+      "fields": {
+        "locationCode": "Kod lokalizacji",
+        "locationCodePlaceholder": "np. A-01-01",
+        "locationCodeDescription": "Unikalny identyfikator dla tej lokalizacji",
+        "locationCodeCannotChange": "Kod lokalizacji nie może zostać zmieniony",
+        "locationType": "Typ lokalizacji",
+        "locationTypePlaceholder": "Wybierz typ lokalizacji",
+        "zoneName": "Nazwa strefy",
+        "zoneNamePlaceholder": "np. Strefa A",
+        "zoneNameDescription": "Logiczne grupowanie do organizacji lokalizacji"
+      },
+      "status": {
+        "title": "Status lokalizacji",
+        "active": "Aktywna",
+        "activeDescription": "Lokalizacja jest dostępna do użycia",
+        "locked": "Zablokowana",
+        "lockedDescription": "Zapobiegaj modyfikacjom tej lokalizacji"
+      },
+      "validation": {
+        "locationCodeRequired": "Kod lokalizacji jest wymagany",
+        "locationCodeMax": "Kod lokalizacji może mieć maksymalnie 20 znaków",
+        "zoneNameRequired": "Nazwa strefy jest wymagana",
+        "zoneNameMax": "Nazwa strefy może mieć maksymalnie 50 znaków"
+      },
+      "buttons": {
+        "cancel": "Anuluj",
+        "save": "Zapisz zmiany",
+        "add": "Dodaj lokalizację"
+      }
+    },
+    "delete": {
+      "title": "Czy na pewno chcesz usunąć tę lokalizację?",
+      "description": "Zamierzasz usunąć lokalizację {code} w strefie {zone}. Ta akcja nie może zostać cofnięta i usunie wszystkie powiązane dane.",
+      "cancel": "Anuluj",
+      "confirm": "Usuń"
+    },
+    "empty": {
+      "title": "Brak lokalizacji",
+      "description": "Ten magazyn nie ma jeszcze żadnych lokalizacji. Dodaj swoją pierwszą lokalizację, aby rozpocząć organizację produktów."
+    },
+    "messages": {
+      "created": "Lokalizacja została dodana",
+      "updated": "Lokalizacja została zaktualizowana",
+      "deleted": "Lokalizacja została usunięta",
+      "createError": "Wystąpił błąd podczas zapisywania lokalizacji",
+      "updateError": "Wystąpił błąd podczas zapisywania lokalizacji",
+      "deleteError": "Wystąpił błąd podczas usuwania lokalizacji",
+      "fetchError": "Wystąpił błąd podczas pobierania lokalizacji",
+      "tryAgain": "Spróbuj ponownie"
+    }
+  }
+}

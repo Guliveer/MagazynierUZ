@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from 'shadcn/alert-dialog';
 import { toast } from 'sonner';
 import { deleteOrganisation, getWarehousesByOrganisation, getAllUsers } from '@/lib/api';
 import type { OrganisationResponse } from '@/types';
 import { Loader2, AlertTriangle } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription } from 'shadcn/alert';
 
 interface DeleteOrganisationDialogProps {
   organisation: OrganisationResponse | null;
@@ -29,11 +29,9 @@ export function DeleteOrganisationDialog({ organisation, open, onOpenChange, onS
 
         setIsCheckingDependencies(true);
         try {
-            // Check warehouses
             const warehouses = await getWarehousesByOrganisation(organisation.id);
             const warehouseCount = warehouses.length;
 
-            // Check users
             const users = await getAllUsers();
             const usersInOrg = users.filter((u) => u.organisationId === organisation.id);
             const userCount = usersInOrg.length;
@@ -41,16 +39,13 @@ export function DeleteOrganisationDialog({ organisation, open, onOpenChange, onS
             setWarehouseCount(warehouseCount);
             setUserCount(userCount);
             setHasDependencies(warehouseCount > 0 || userCount > 0);
-        } catch (error) {
-            console.error('Failed to check dependencies:', error);
-            // If we can't check, assume there might be dependencies
+        } catch {
             setHasDependencies(true);
         } finally {
             setIsCheckingDependencies(false);
         }
     }, [organisation]);
 
-    // Check for dependencies when dialog opens
     useEffect(() => {
         if (open && organisation) {
             checkDependencies();
@@ -62,7 +57,6 @@ export function DeleteOrganisationDialog({ organisation, open, onOpenChange, onS
             return;
         }
 
-        // Prevent deletion if there are dependencies
         if (hasDependencies) {
             toast.error('Cannot delete organisation with existing warehouses or users');
             return;
@@ -75,10 +69,8 @@ export function DeleteOrganisationDialog({ organisation, open, onOpenChange, onS
             onOpenChange(false);
             onSuccess();
         } catch (error) {
-            console.error('Failed to delete organisation:', error);
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
-            // Check for specific error messages
             if (errorMessage.includes('has warehouses') || errorMessage.includes('has users')) {
                 toast.error('Cannot delete: Organisation has associated warehouses or users');
             } else {

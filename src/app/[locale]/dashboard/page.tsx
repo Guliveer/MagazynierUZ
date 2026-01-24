@@ -1,0 +1,379 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
+import { Package, Warehouse as WarehouseIcon, TrendingUp, AlertTriangle, Plus, Search, BarChart3, ArrowRight, RefreshCw } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { getWarehouses, searchProductsUnpaginated, getTop10Products } from '@/lib/api';
+import { getToken } from '@/lib/auth';
+import type { Warehouse, Product, Top10Product } from '@/types';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'shadcn/card';
+import { Button } from 'shadcn/button';
+import { Skeleton } from 'shadcn/skeleton';
+import { Badge } from 'shadcn/badge';
+import { Alert, AlertDescription } from 'shadcn/alert';
+import { PdfExportButton } from '@/components/exports/PdfExportButton';
+
+export default function DashboardPage() {
+    const t = useTranslations('dashboard.home');
+    const router = useRouter();
+    const pathname = usePathname();
+    const locale = pathname?.split('/')[1] || 'en';
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [topProducts, setTopProducts] = useState<Top10Product[]>([]);
+
+    const [stats, setStats] = useState({
+        totalWarehouses: 0,
+        totalProducts: 0,
+        totalInventoryValue: 0,
+        lowStockCount: 0
+    });
+
+    const fetchDashboardData = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const [warehousesData, productsData, topProductsData] = await Promise.all([getWarehouses().catch(() => []), searchProductsUnpaginated().catch(() => []), getTop10Products({ sortBy: 'quantity', sortDirection: 'desc' }).catch(() => [])]);
+
+            setWarehouses(warehousesData);
+            setProducts(productsData);
+            setTopProducts(topProductsData.slice(0, 3));
+
+            const totalValue = productsData.reduce((sum: number, p) => sum + p.price * p.quantity, 0);
+            const lowStock = productsData.filter((p: Product) => p.quantity < 10).length;
+
+            setStats({
+                totalWarehouses: warehousesData.length,
+                totalProducts: productsData.length,
+                totalInventoryValue: totalValue,
+                lowStockCount: lowStock
+            });
+        } catch {
+            setError(t('errors.loadFailed'));
+        } finally {
+            setLoading(false);
+        }
+    }, [t]);
+
+    useEffect(() => {
+        const token = getToken();
+        if (!token) {
+            router.push(`/${locale}/login`);
+            return;
+        }
+        fetchDashboardData();
+    }, [router, locale, fetchDashboardData]);
+
+    const formatPrice = (price: number) =>
+        new Intl.NumberFormat('pl-PL', {
+            style: 'currency',
+            currency: 'PLN'
+        }).format(price);
+
+    return (
+        <div className="container mx-auto p-6 space-y-6">
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
+                    <p className="text-muted-foreground mt-1">{t('subtitle')}</p>
+                </div>
+                <div className="flex gap-2">
+                    <PdfExportButton scope="ORGANISATION" variant="outline" size="sm" label={t('exportPdf')} />
+                    <Button onClick={fetchDashboardData} variant="outline" size="sm" disabled={loading}>
+                        <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                        {t('refresh')}
+                    </Button>
+                </div>
+            </div>
+
+            {error && (
+                <Alert variant="destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">{t('stats.totalWarehouses')}</CardTitle>
+                        <WarehouseIcon className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        {loading ? (
+                            <Skeleton className="h-8 w-16" />
+                        ) : (
+                            <>
+                                <div className="text-2xl font-bold">{stats.totalWarehouses}</div>
+                                <p className="text-xs text-muted-foreground mt-1">{t('stats.activeLocations')}</p>
+                            </>
+                        )}
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">{t('stats.totalProducts')}</CardTitle>
+                        <Package className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        {loading ? (
+                            <Skeleton className="h-8 w-16" />
+                        ) : (
+                            <>
+                                <div className="text-2xl font-bold">{stats.totalProducts}</div>
+                                <p className="text-xs text-muted-foreground mt-1">{t('stats.inInventory')}</p>
+                            </>
+                        )}
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">{t('stats.inventoryValue')}</CardTitle>
+                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        {loading ? (
+                            <Skeleton className="h-8 w-24" />
+                        ) : (
+                            <>
+                                <div className="text-2xl font-bold">{formatPrice(stats.totalInventoryValue)}</div>
+                                <p className="text-xs text-muted-foreground mt-1">{t('stats.totalValue')}</p>
+                            </>
+                        )}
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">{t('stats.lowStockAlerts')}</CardTitle>
+                        <AlertTriangle className="h-4 w-4 text-destructive" />
+                    </CardHeader>
+                    <CardContent>
+                        {loading ? (
+                            <Skeleton className="h-8 w-16" />
+                        ) : (
+                            <>
+                                <div className="text-2xl font-bold text-destructive">{stats.lowStockCount}</div>
+                                <p className="text-xs text-muted-foreground mt-1">{t('stats.belowUnits')}</p>
+                            </>
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>{t('quickActions.title')}</CardTitle>
+                    <CardDescription>{t('quickActions.description')}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <Link href={`/${locale}/dashboard/products`}>
+                            <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2">
+                                <Search className="h-6 w-6" />
+                                <span className="font-medium">{t('quickActions.searchProducts')}</span>
+                                <span className="text-xs text-muted-foreground">{t('quickActions.searchProductsDesc')}</span>
+                            </Button>
+                        </Link>
+
+                        <Link href={`/${locale}/dashboard/warehouses`}>
+                            <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2">
+                                <Plus className="h-6 w-6" />
+                                <span className="font-medium">{t('quickActions.addWarehouse')}</span>
+                                <span className="text-xs text-muted-foreground">{t('quickActions.addWarehouseDesc')}</span>
+                            </Button>
+                        </Link>
+
+                        <Link href={`/${locale}/dashboard/statistics`}>
+                            <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2">
+                                <BarChart3 className="h-6 w-6" />
+                                <span className="font-medium">{t('quickActions.viewStatistics')}</span>
+                                <span className="text-xs text-muted-foreground">{t('quickActions.viewStatisticsDesc')}</span>
+                            </Button>
+                        </Link>
+
+                        <Link href={`/${locale}/dashboard/products`}>
+                            <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2">
+                                <Package className="h-6 w-6" />
+                                <span className="font-medium">{t('quickActions.addProduct')}</span>
+                                <span className="text-xs text-muted-foreground">{t('quickActions.addProductDesc')}</span>
+                            </Button>
+                        </Link>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle>{t('topProducts.title')}</CardTitle>
+                                <CardDescription>{t('topProducts.description')}</CardDescription>
+                            </div>
+                            <Link href={`/${locale}/dashboard/statistics`}>
+                                <Button variant="ghost" size="sm">
+                                    {t('topProducts.viewAll')}
+                                    <ArrowRight className="h-4 w-4 ml-2" />
+                                </Button>
+                            </Link>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        {loading ? (
+                            <div className="space-y-4">
+                                {[...Array(3)].map((_, i) => (
+                                    <div key={i} className="flex items-center justify-between p-3 border rounded-lg">
+                                        <div className="space-y-2 flex-1">
+                                            <Skeleton className="h-4 w-32" />
+                                            <Skeleton className="h-3 w-48" />
+                                        </div>
+                                        <Skeleton className="h-6 w-16" />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : topProducts.length === 0 ? (
+                            <div className="text-center py-8 text-muted-foreground">
+                                <Package className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                                <p>{t('topProducts.noProducts')}</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {topProducts.map((product, index) => (
+                                    <div key={product.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                                        <div className="flex items-center gap-3 flex-1">
+                                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold">{index + 1}</div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-medium truncate">{product.name}</p>
+                                                <p className="text-sm text-muted-foreground truncate">{product.description}</p>
+                                            </div>
+                                        </div>
+                                        <Badge variant={product.quantity > 50 ? 'default' : product.quantity > 10 ? 'secondary' : 'destructive'}>
+                                            {product.quantity} {t('topProducts.units')}
+                                        </Badge>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle>{t('warehouses.title')}</CardTitle>
+                                <CardDescription>{t('warehouses.description')}</CardDescription>
+                            </div>
+                            <Link href={`/${locale}/dashboard/warehouses`}>
+                                <Button variant="ghost" size="sm">
+                                    {t('warehouses.viewAll')}
+                                    <ArrowRight className="h-4 w-4 ml-2" />
+                                </Button>
+                            </Link>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        {loading ? (
+                            <div className="space-y-4">
+                                {[...Array(3)].map((_, i) => (
+                                    <div key={i} className="flex items-center justify-between p-3 border rounded-lg">
+                                        <div className="space-y-2 flex-1">
+                                            <Skeleton className="h-4 w-32" />
+                                            <Skeleton className="h-3 w-48" />
+                                        </div>
+                                        <Skeleton className="h-6 w-16" />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : warehouses.length === 0 ? (
+                            <div className="text-center py-8 text-muted-foreground">
+                                <WarehouseIcon className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                                <p className="mb-4">{t('warehouses.noWarehouses')}</p>
+                                <Link href={`/${locale}/dashboard/warehouses`}>
+                                    <Button size="sm">
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        {t('warehouses.addWarehouse')}
+                                    </Button>
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {warehouses.slice(0, 3).map((warehouse) => (
+                                    <div key={warehouse.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                                            <WarehouseIcon className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-medium truncate">{warehouse.name}</p>
+                                                <p className="text-sm text-muted-foreground truncate">
+                                                    {warehouse.address.city}, {warehouse.address.street}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <Badge variant={warehouse.isActive ? 'default' : 'secondary'}>{warehouse.isActive ? t('warehouses.active') : t('warehouses.inactive')}</Badge>
+                                    </div>
+                                ))}
+                                {warehouses.length > 3 && (
+                                    <div className="text-center pt-2">
+                                        <Link href={`/${locale}/dashboard/warehouses`}>
+                                            <Button variant="link" size="sm">
+                                                {t('warehouses.viewMore', { count: warehouses.length - 3 })}
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
+
+            {!loading && products.length > 0 && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>{t('stockLevel.title')}</CardTitle>
+                        <CardDescription>{t('stockLevel.description')}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="flex items-center justify-between p-4 border rounded-lg bg-green-50 dark:bg-green-950/20">
+                                <div>
+                                    <p className="text-sm font-medium text-muted-foreground">{t('stockLevel.highStock')}</p>
+                                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">{products.filter((p: Product) => p.quantity >= 50).length}</p>
+                                    <p className="text-xs text-muted-foreground">{t('stockLevel.highStockDesc')}</p>
+                                </div>
+                                <Package className="h-8 w-8 text-green-600 dark:text-green-400" />
+                            </div>
+
+                            <div className="flex items-center justify-between p-4 border rounded-lg bg-yellow-50 dark:bg-yellow-950/20">
+                                <div>
+                                    <p className="text-sm font-medium text-muted-foreground">{t('stockLevel.mediumStock')}</p>
+                                    <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{products.filter((p: Product) => p.quantity >= 10 && p.quantity < 50).length}</p>
+                                    <p className="text-xs text-muted-foreground">{t('stockLevel.mediumStockDesc')}</p>
+                                </div>
+                                <Package className="h-8 w-8 text-yellow-600 dark:text-yellow-400" />
+                            </div>
+
+                            <div className="flex items-center justify-between p-4 border rounded-lg bg-red-50 dark:bg-red-950/20">
+                                <div>
+                                    <p className="text-sm font-medium text-muted-foreground">{t('stockLevel.lowStock')}</p>
+                                    <p className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.lowStockCount}</p>
+                                    <p className="text-xs text-muted-foreground">{t('stockLevel.lowStockDesc')}</p>
+                                </div>
+                                <AlertTriangle className="h-8 w-8 text-red-600 dark:text-red-400" />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+        </div>
+    );
+}

@@ -1,7 +1,8 @@
 'use client';
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip as RechartsTooltip } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { useTranslations } from 'next-intl';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from 'shadcn/chart';
 import type { Top10Product } from '@/types';
 
 interface Top10ChartProps {
@@ -9,10 +10,25 @@ interface Top10ChartProps {
   sortBy: 'quantity' | 'price' | 'name';
   viewType?: 'bar' | 'pie';
   onBarClick?: (product: Top10Product) => void;
+  locale: string;
 }
 
-export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick }: Top10ChartProps) {
-    // Transform data for the chart
+export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick, locale }: Top10ChartProps) {
+    const t = useTranslations('statistics.charts');
+
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat(locale, {
+            style: 'currency',
+            currency: 'PLN',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(value);
+    };
+
+    const formatNumber = (value: number) => {
+        return new Intl.NumberFormat(locale).format(value);
+    };
+
     const chartData = data.map((product) => ({
         name: product.name,
         value: sortBy === 'quantity' ? product.quantity : product.price,
@@ -24,27 +40,14 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick }: Top10
         product: product
     }));
 
-    // Chart configuration
     const chartConfig = {
         value: {
-            label: sortBy === 'quantity' ? 'Quantity' : 'Price',
+            label: sortBy === 'quantity' ? t('labels.quantity') : t('labels.price'),
             color: 'hsl(var(--primary))'
         }
     };
 
-    // Colors for charts - 10 distinct, accessible colors
-    const CHART_COLORS = [
-        'hsl(0, 84%, 60%)', // Red
-        'hsl(30, 100%, 55%)', // Orange
-        'hsl(60, 100%, 50%)', // Yellowś
-        'hsl(120, 76%, 44%)', // Lime
-        'hsl(180, 100%, 35%)', // Cyan
-        'hsl(210, 100%, 40%)', // Sky Blue
-        'hsl(240, 100%, 50%)', // Blue
-        'hsl(280, 65%, 47%)', // Purple
-        'hsl(328, 85%, 70%)', // Magenta
-        'hsl(0, 0%, 100%)' // White
-    ];
+    const CHART_COLORS = ['hsl(0, 84%, 60%)', 'hsl(30, 100%, 55%)', 'hsl(60, 100%, 50%)', 'hsl(120, 76%, 44%)', 'hsl(180, 100%, 35%)', 'hsl(210, 100%, 40%)', 'hsl(240, 100%, 50%)', 'hsl(280, 65%, 47%)', 'hsl(328, 85%, 70%)', 'hsl(0, 0%, 50%)'];
 
     const handleBarClick = (data: { product?: Top10Product }) => {
         if (onBarClick && data.product) {
@@ -75,7 +78,9 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick }: Top10
                                     return (
                                         <div className="rounded-lg border bg-background p-2 shadow-sm">
                                             <div className="font-semibold">{data.name}</div>
-                                            <div className="text-sm text-muted-foreground">Value: {Number(data.value).toFixed(2)} PLN</div>
+                                            <div className="text-sm text-muted-foreground">
+                                                {t('labels.value')}: {formatCurrency(Number(data.value))}
+                                            </div>
                                         </div>
                                     );
                                 }
@@ -99,7 +104,7 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick }: Top10
                         tick={{ fontSize: 12 }}
                         className="text-muted-foreground"
                         label={{
-                            value: sortBy === 'quantity' ? 'Quantity' : 'Price (PLN)',
+                            value: sortBy === 'quantity' ? t('labels.quantity') : t('labels.price'),
                             angle: -90,
                             position: 'insideLeft',
                             style: { textAnchor: 'middle' }
@@ -115,16 +120,16 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick }: Top10
                                             <div className="font-semibold">{payload.name}</div>
                                             <div className="text-xs text-muted-foreground">{payload.description}</div>
                                             <div className="flex justify-between gap-4 pt-1">
-                                                <span>Quantity:</span>
-                                                <span className="font-mono">{payload.quantity}</span>
+                                                <span>{t('tooltip.quantity')}</span>
+                                                <span className="font-mono">{formatNumber(payload.quantity)}</span>
                                             </div>
                                             <div className="flex justify-between gap-4">
-                                                <span>Price:</span>
-                                                <span className="font-mono">{payload.price.toFixed(2)} PLN</span>
+                                                <span>{t('tooltip.price')}</span>
+                                                <span className="font-mono">{formatCurrency(payload.price)}</span>
                                             </div>
                                             <div className="flex justify-between gap-4 border-t pt-1">
-                                                <span>Total Value:</span>
-                                                <span className="font-mono font-semibold">{payload.totalValue.toFixed(2)} PLN</span>
+                                                <span>{t('tooltip.totalValue')}</span>
+                                                <span className="font-mono font-semibold">{formatCurrency(payload.totalValue)}</span>
                                             </div>
                                         </div>
                                     );

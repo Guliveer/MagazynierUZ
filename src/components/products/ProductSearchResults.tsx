@@ -1,35 +1,26 @@
 'use client';
 
 import { Pencil, Trash2, Package, Grid3x3, List, ArrowUpDown, ArrowUp, ArrowDown, AlertCircle } from 'lucide-react';
+import { useTranslations, useLocale } from 'next-intl';
 
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/components/ui/empty';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from 'shadcn/table';
+import { Button } from 'shadcn/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from 'shadcn/card';
+import { Badge } from 'shadcn/badge';
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from 'shadcn/empty';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'shadcn/select';
+import { Skeleton } from 'shadcn/skeleton';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'shadcn/tooltip';
 import type { Product } from '@/types';
+import { escapeRegex } from '@/lib/utils';
 
-// Format price as PLN currency
-const formatPrice = (price: number) => new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' }).format(price);
-
-// Truncate description
-const truncateDescription = (description?: string, maxLength: number = 50) => {
-    if (!description) {
-        return '-';
-    }
-    return description.length > maxLength ? `${description.substring(0, maxLength)}...` : description;
-};
-
-// Highlight search terms in text
 const highlightText = (text: string, searchTerm?: string) => {
     if (!searchTerm || !text) {
         return text;
     }
 
-    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    const escapedSearchTerm = escapeRegex(searchTerm);
+    const regex = new RegExp(`(${escapedSearchTerm})`, 'gi');
     const parts = text.split(regex);
 
     return parts.map((part, index) =>
@@ -66,18 +57,27 @@ interface ProductSearchResultsProps {
 }
 
 export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, sortDirection, viewMode, page, pageSize, totalResults, onSort, onViewModeChange, onPageChange, onPageSizeChange, onEdit, onDelete }: ProductSearchResultsProps) {
+    const t = useTranslations('products');
+    const locale = useLocale();
     const totalPages = Math.ceil(totalResults / pageSize);
     const startIndex = (page - 1) * pageSize + 1;
     const endIndex = Math.min(page * pageSize, totalResults);
 
-    // Helper function to check if product has context
+    const formatPrice = (price: number) => new Intl.NumberFormat(locale, { style: 'currency', currency: 'PLN' }).format(price);
+
+    const truncateDescription = (description?: string, maxLength: number = 50) => {
+        if (!description) {
+            return t('results.noDescription');
+        }
+        return description.length > maxLength ? `${description.substring(0, maxLength)}...` : description;
+    };
+
     const hasContext = (product: Product): boolean => {
         const warehouseId = product.warehouseId || product.warehouse?.id;
         const locationId = product.locationId || product.location?.id;
         return !!(warehouseId && locationId);
     };
 
-    // Helper function to render sort icon
     const renderSortIcon = (field: SortField) => {
         if (sortBy !== field) {
             return <ArrowUpDown className="h-4 w-4 ml-1 opacity-50" />;
@@ -85,11 +85,9 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
         return sortDirection === 'asc' ? <ArrowUp className="h-4 w-4 ml-1" /> : <ArrowDown className="h-4 w-4 ml-1" />;
     };
 
-    // Loading skeleton
     if (isLoading) {
         return (
             <div className="space-y-4">
-                {/* Header skeleton */}
                 <div className="flex items-center justify-between">
                     <Skeleton className="h-6 w-48" />
                     <div className="flex gap-2">
@@ -98,18 +96,17 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                     </div>
                 </div>
 
-                {/* Content skeleton */}
                 {viewMode === 'table' ? (
                     <div className="rounded-md border">
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="w-16">ID</TableHead>
-                                    <TableHead>Name</TableHead>
-                                    <TableHead>Description</TableHead>
-                                    <TableHead>Price</TableHead>
-                                    <TableHead>Quantity</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
+                                    <TableHead className="w-16">{t('results.sort.id')}</TableHead>
+                                    <TableHead>{t('results.sort.name')}</TableHead>
+                                    <TableHead>{t('list.table.description')}</TableHead>
+                                    <TableHead>{t('results.sort.price')}</TableHead>
+                                    <TableHead>{t('results.sort.quantity')}</TableHead>
+                                    <TableHead className="text-right">{t('list.table.actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -160,7 +157,6 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
         );
     }
 
-    // Empty state
     if (products.length === 0) {
         return (
             <Empty className="border rounded-lg py-12">
@@ -168,8 +164,8 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                     <EmptyMedia variant="icon">
                         <Package />
                     </EmptyMedia>
-                    <EmptyTitle>No products found</EmptyTitle>
-                    <EmptyDescription>{searchTerm ? 'No products match your search criteria. Try adjusting your filters.' : 'There are no products to display. Try changing your search filters.'}</EmptyDescription>
+                    <EmptyTitle>{t('search.noResults')}</EmptyTitle>
+                    <EmptyDescription>{searchTerm ? t('search.noResultsDescription') : t('search.noResultsDescription')}</EmptyDescription>
                 </EmptyHeader>
             </Empty>
         );
@@ -177,43 +173,39 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
 
     return (
         <div className="space-y-4">
-            {/* Results header */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="text-sm text-muted-foreground">
-          Showing{' '}
+                    {t('results.showing')}{' '}
                     <span className="font-medium text-foreground">
                         {startIndex}-{endIndex}
                     </span>{' '}
-          of <span className="font-medium text-foreground">{totalResults}</span> results
+                    {t('results.of')} <span className="font-medium text-foreground">{totalResults}</span> {t('results.results')}
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {/* Page size selector */}
                     <Select value={pageSize.toString()} onValueChange={(value) => onPageSizeChange(parseInt(value, 10))}>
                         <SelectTrigger className="w-[120px]">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="10">10 per page</SelectItem>
-                            <SelectItem value="25">25 per page</SelectItem>
-                            <SelectItem value="50">50 per page</SelectItem>
-                            <SelectItem value="100">100 per page</SelectItem>
+                            <SelectItem value="10">{t('results.perPage.10')}</SelectItem>
+                            <SelectItem value="25">{t('results.perPage.25')}</SelectItem>
+                            <SelectItem value="50">{t('results.perPage.50')}</SelectItem>
+                            <SelectItem value="100">{t('results.perPage.100')}</SelectItem>
                         </SelectContent>
                     </Select>
 
-                    {/* View mode toggle */}
                     <div className="flex border rounded-md">
-                        <Button variant={viewMode === 'table' ? 'secondary' : 'ghost'} size="icon-sm" onClick={() => onViewModeChange('table')} title="Table view">
+                        <Button variant={viewMode === 'table' ? 'secondary' : 'ghost'} size="icon-sm" onClick={() => onViewModeChange('table')} title={t('results.viewMode.table')}>
                             <List className="h-4 w-4" />
                         </Button>
-                        <Button variant={viewMode === 'grid' ? 'secondary' : 'ghost'} size="icon-sm" onClick={() => onViewModeChange('grid')} title="Grid view">
+                        <Button variant={viewMode === 'grid' ? 'secondary' : 'ghost'} size="icon-sm" onClick={() => onViewModeChange('grid')} title={t('results.viewMode.grid')}>
                             <Grid3x3 className="h-4 w-4" />
                         </Button>
                     </div>
                 </div>
             </div>
 
-            {/* Results content */}
             {viewMode === 'table' ? (
                 <div className="rounded-md border">
                     <Table>
@@ -221,30 +213,30 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                             <TableRow>
                                 <TableHead className="w-16">
                                     <Button variant="ghost" size="sm" className="h-8 px-2 font-medium" onClick={() => onSort('id')}>
-                    ID
+                                        {t('results.sort.id')}
                                         {renderSortIcon('id')}
                                     </Button>
                                 </TableHead>
                                 <TableHead>
                                     <Button variant="ghost" size="sm" className="h-8 px-2 font-medium" onClick={() => onSort('name')}>
-                    Name
+                                        {t('results.sort.name')}
                                         {renderSortIcon('name')}
                                     </Button>
                                 </TableHead>
-                                <TableHead>Description</TableHead>
+                                <TableHead>{t('list.table.description')}</TableHead>
                                 <TableHead>
                                     <Button variant="ghost" size="sm" className="h-8 px-2 font-medium" onClick={() => onSort('price')}>
-                    Price
+                                        {t('results.sort.price')}
                                         {renderSortIcon('price')}
                                     </Button>
                                 </TableHead>
                                 <TableHead>
                                     <Button variant="ghost" size="sm" className="h-8 px-2 font-medium" onClick={() => onSort('quantity')}>
-                    Quantity
+                                        {t('results.sort.quantity')}
                                         {renderSortIcon('quantity')}
                                     </Button>
                                 </TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                                <TableHead className="text-right">{t('list.table.actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -252,7 +244,7 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                                 <TableRow key={product.id}>
                                     <TableCell className="font-mono text-muted-foreground">{product.id}</TableCell>
                                     <TableCell className="font-medium">{highlightText(product.name, searchTerm)}</TableCell>
-                                    <TableCell className="text-muted-foreground">{product.description ? highlightText(truncateDescription(product.description), searchTerm) : '-'}</TableCell>
+                                    <TableCell className="text-muted-foreground">{product.description ? highlightText(truncateDescription(product.description), searchTerm) : t('results.noDescription')}</TableCell>
                                     <TableCell className="font-medium">{formatPrice(product.price)}</TableCell>
                                     <TableCell>
                                         <Badge variant={product.quantity > 0 ? 'default' : 'destructive'}>{product.quantity}</Badge>
@@ -262,10 +254,10 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                                             <div className="flex justify-end gap-2">
                                                 {hasContext(product) ? (
                                                     <>
-                                                        <Button variant="ghost" size="icon-sm" onClick={() => onEdit(product)} title="Edit">
+                                                        <Button variant="ghost" size="icon-sm" onClick={() => onEdit(product)} title={t('list.actions.edit')}>
                                                             <Pencil className="h-4 w-4" />
                                                         </Button>
-                                                        <Button variant="ghost" size="icon-sm" onClick={() => onDelete(product)} title="Delete">
+                                                        <Button variant="ghost" size="icon-sm" onClick={() => onDelete(product)} title={t('list.actions.delete')}>
                                                             <Trash2 className="h-4 w-4 text-destructive" />
                                                         </Button>
                                                     </>
@@ -274,7 +266,7 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
                                                                 <span className="inline-block">
-                                                                    <Button variant="ghost" size="icon-sm" disabled title="Edit unavailable">
+                                                                    <Button variant="ghost" size="icon-sm" disabled title={t('results.editUnavailable')}>
                                                                         <Pencil className="h-4 w-4" />
                                                                     </Button>
                                                                 </span>
@@ -282,14 +274,14 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                                                             <TooltipContent>
                                                                 <p className="flex items-center gap-1">
                                                                     <AlertCircle className="h-3 w-3" />
-                                  Missing warehouse/location info
+                                                                    {t('results.missingContext')}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
                                                                 <span className="inline-block">
-                                                                    <Button variant="ghost" size="icon-sm" disabled title="Delete unavailable">
+                                                                    <Button variant="ghost" size="icon-sm" disabled title={t('results.deleteUnavailable')}>
                                                                         <Trash2 className="h-4 w-4 text-destructive" />
                                                                     </Button>
                                                                 </span>
@@ -297,7 +289,7 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                                                             <TooltipContent>
                                                                 <p className="flex items-center gap-1">
                                                                     <AlertCircle className="h-3 w-3" />
-                                  Missing warehouse/location info
+                                                                    {t('results.missingContext')}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -326,17 +318,17 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-3">
-                                    <p className="text-sm text-muted-foreground line-clamp-2">{product.description ? highlightText(product.description, searchTerm) : 'No description'}</p>
+                                    <p className="text-sm text-muted-foreground line-clamp-2">{product.description ? highlightText(product.description, searchTerm) : t('results.noDescription')}</p>
                                     <div className="flex items-center justify-between pt-2 border-t">
                                         <span className="text-lg font-bold">{formatPrice(product.price)}</span>
                                         <TooltipProvider>
                                             <div className="flex gap-2">
                                                 {hasContext(product) ? (
                                                     <>
-                                                        <Button variant="outline" size="icon-sm" onClick={() => onEdit(product)} title="Edit">
+                                                        <Button variant="outline" size="icon-sm" onClick={() => onEdit(product)} title={t('list.actions.edit')}>
                                                             <Pencil className="h-4 w-4" />
                                                         </Button>
-                                                        <Button variant="outline" size="icon-sm" onClick={() => onDelete(product)} title="Delete">
+                                                        <Button variant="outline" size="icon-sm" onClick={() => onDelete(product)} title={t('list.actions.delete')}>
                                                             <Trash2 className="h-4 w-4 text-destructive" />
                                                         </Button>
                                                     </>
@@ -345,7 +337,7 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
                                                                 <span className="inline-block">
-                                                                    <Button variant="outline" size="icon-sm" disabled title="Edit unavailable">
+                                                                    <Button variant="outline" size="icon-sm" disabled title={t('results.editUnavailable')}>
                                                                         <Pencil className="h-4 w-4" />
                                                                     </Button>
                                                                 </span>
@@ -353,14 +345,14 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                                                             <TooltipContent>
                                                                 <p className="flex items-center gap-1">
                                                                     <AlertCircle className="h-3 w-3" />
-                                  Missing warehouse/location info
+                                                                    {t('results.missingContext')}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
                                                                 <span className="inline-block">
-                                                                    <Button variant="outline" size="icon-sm" disabled title="Delete unavailable">
+                                                                    <Button variant="outline" size="icon-sm" disabled title={t('results.deleteUnavailable')}>
                                                                         <Trash2 className="h-4 w-4 text-destructive" />
                                                                     </Button>
                                                                 </span>
@@ -368,7 +360,7 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                                                             <TooltipContent>
                                                                 <p className="flex items-center gap-1">
                                                                     <AlertCircle className="h-3 w-3" />
-                                  Missing warehouse/location info
+                                                                    {t('results.missingContext')}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -384,15 +376,13 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                 </div>
             )}
 
-            {/* Pagination */}
             {totalPages > 1 && (
                 <div className="flex items-center justify-center gap-2">
                     <Button variant="outline" size="sm" onClick={() => onPageChange(page - 1)} disabled={page === 1}>
-            Previous
+                        {t('results.pagination.previous')}
                     </Button>
 
                     <div className="flex items-center gap-1">
-                        {/* Show first page */}
                         {page > 3 && (
                             <>
                                 <Button variant={1 === page ? 'default' : 'outline'} size="sm" onClick={() => onPageChange(1)}>
@@ -402,7 +392,6 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                             </>
                         )}
 
-                        {/* Show pages around current page */}
                         {Array.from({ length: totalPages }, (_, i) => i + 1)
                             .filter((p) => p >= page - 2 && p <= page + 2)
                             .map((p) => (
@@ -411,7 +400,6 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                                 </Button>
                             ))}
 
-                        {/* Show last page */}
                         {page < totalPages - 2 && (
                             <>
                                 {page < totalPages - 3 && <span className="px-2">...</span>}
@@ -423,7 +411,7 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                     </div>
 
                     <Button variant="outline" size="sm" onClick={() => onPageChange(page + 1)} disabled={page === totalPages}>
-            Next
+                        {t('results.pagination.next')}
                     </Button>
                 </div>
             )}

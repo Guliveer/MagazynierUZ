@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
 
-const backendHost =
-  process.env.NEXT_PUBLIC_BACKEND_HOST || "http://localhost:8080";
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+
+const backendHost = process.env.NEXT_PUBLIC_BACKEND_HOST || "http://localhost:8080";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
@@ -57,4 +59,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

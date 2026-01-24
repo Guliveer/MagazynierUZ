@@ -1,16 +1,16 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'shadcn/table';
+import { Button } from 'shadcn/button';
+import { Input } from 'shadcn/input';
+import { Badge } from 'shadcn/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'shadcn/select';
+import { Card, CardContent } from 'shadcn/card';
 import { Pencil, Trash2, Search, Filter, UserPlus, Building2 } from 'lucide-react';
 import type { UserResponse } from '@/types';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty';
+import { Skeleton } from 'shadcn/skeleton';
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyContent } from 'shadcn/empty';
 
 interface UserListProps {
   users: UserResponse[];
@@ -31,7 +31,6 @@ export function UserList({ users, isLoading, onEdit, onDelete, onCreate, current
     const [sortField, setSortField] = useState<SortField>('username');
     const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
-    // Get unique roles and organisations for filters
     const availableRoles = useMemo(() => {
         const roles = new Set<string>();
         users.forEach((user) => user.roles.forEach((role) => roles.add(role)));
@@ -48,22 +47,18 @@ export function UserList({ users, isLoading, onEdit, onDelete, onCreate, current
         return Array.from(orgs.entries()).sort((a, b) => a[1].localeCompare(b[1]));
     }, [users]);
 
-    // Filter and sort users
     const filteredAndSortedUsers = useMemo(() => {
         let filtered = users;
 
-        // Search filter
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
             filtered = filtered.filter((user) => user.username.toLowerCase().includes(query));
         }
 
-        // Role filter
         if (roleFilter !== 'all') {
             filtered = filtered.filter((user) => user.roles.includes(roleFilter));
         }
 
-        // Organisation filter
         if (organisationFilter !== 'all') {
             if (organisationFilter === 'none') {
                 filtered = filtered.filter((user) => !user.organisationId);
@@ -72,7 +67,6 @@ export function UserList({ users, isLoading, onEdit, onDelete, onCreate, current
             }
         }
 
-        // Sort
         filtered.sort((a, b) => {
             let comparison = 0;
 
@@ -106,8 +100,12 @@ export function UserList({ users, isLoading, onEdit, onDelete, onCreate, current
     };
 
     const getRoleBadgeVariant = (role: string) => {
-        if (role === 'ROLE_ADMIN') { return 'destructive'; }
-        if (role === 'ROLE_MANAGER') { return 'default'; }
+        if (role === 'ROLE_ADMIN') {
+            return 'destructive';
+        }
+        if (role === 'ROLE_MANAGER') {
+            return 'default';
+        }
         return 'secondary';
     };
 
@@ -135,7 +133,6 @@ export function UserList({ users, isLoading, onEdit, onDelete, onCreate, current
 
     return (
         <div className="space-y-4">
-            {/* Filters and Search */}
             <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -179,12 +176,10 @@ export function UserList({ users, isLoading, onEdit, onDelete, onCreate, current
                 </Button>
             </div>
 
-            {/* Results count */}
             <div className="text-sm text-muted-foreground">
         Showing {filteredAndSortedUsers.length} of {users.length} users
             </div>
 
-            {/* Users Table */}
             {filteredAndSortedUsers.length === 0 ? (
                 <Card>
                     <CardContent className="p-12">

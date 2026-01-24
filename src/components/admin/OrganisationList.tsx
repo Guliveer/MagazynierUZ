@@ -1,15 +1,15 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'shadcn/table';
+import { Button } from 'shadcn/button';
+import { Input } from 'shadcn/input';
+import { Card, CardContent } from 'shadcn/card';
 import { Pencil, Trash2, Search, Building2, Warehouse, Users } from 'lucide-react';
 import type { OrganisationResponse } from '@/types';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty';
-import { Badge } from '@/components/ui/badge';
+import { Skeleton } from 'shadcn/skeleton';
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyContent } from 'shadcn/empty';
+import { Badge } from 'shadcn/badge';
 
 interface OrganisationListProps {
   organisations: OrganisationResponse[];
@@ -29,17 +29,14 @@ export function OrganisationList({ organisations, isLoading, onEdit, onDelete, o
     const [sortField, setSortField] = useState<SortField>('name');
     const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
-    // Filter and sort organisations
     const filteredAndSortedOrganisations = useMemo(() => {
         let filtered = organisations;
 
-        // Search filter
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
             filtered = filtered.filter((org) => org.name.toLowerCase().includes(query) || org.tin.toLowerCase().includes(query));
         }
 
-        // Sort
         filtered.sort((a, b) => {
             let comparison = 0;
 
@@ -95,7 +92,6 @@ export function OrganisationList({ organisations, isLoading, onEdit, onDelete, o
 
     return (
         <div className="space-y-4">
-            {/* Search and Create */}
             <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -108,12 +104,10 @@ export function OrganisationList({ organisations, isLoading, onEdit, onDelete, o
                 </Button>
             </div>
 
-            {/* Results count */}
             <div className="text-sm text-muted-foreground">
         Showing {filteredAndSortedOrganisations.length} of {organisations.length} organisations
             </div>
 
-            {/* Organisations Table */}
             {filteredAndSortedOrganisations.length === 0 ? (
                 <Card>
                     <CardContent className="p-12">

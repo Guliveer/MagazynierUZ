@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { useTranslations } from 'next-intl';
+import { Label } from 'shadcn/label';
+import { Input } from 'shadcn/input';
+import { Button } from 'shadcn/button';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import type { OrganisationResponse, CreateOrganisationRequest, UpdateOrganisationRequest } from '@/types';
 
@@ -14,6 +15,7 @@ interface OrganisationFormProps {
 }
 
 export function OrganisationForm({ organisation, onSubmit, isLoading }: OrganisationFormProps) {
+    const t = useTranslations('admin.organisationForm');
     const [name, setName] = useState(organisation?.name || '');
     const [tin, setTin] = useState(organisation?.tin || '');
 
@@ -23,19 +25,30 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
   }>({});
 
     const validateName = (value: string): string | undefined => {
-        if (!value) { return 'Organisation name is required'; }
-        if (value.length > 20) { return 'Organisation name must not exceed 20 characters'; }
-        if (value.length < 1) { return 'Organisation name must be at least 1 character'; }
+        if (!value) {
+            return t('nameRequired');
+        }
+        if (value.length > 20) {
+            return t('nameMaxLength');
+        }
+        if (value.length < 1) {
+            return t('nameMinLength');
+        }
         return undefined;
     };
 
     const validateTin = (value: string): string | undefined => {
-        if (!value) { return 'TIN is required'; }
-        if (value.length > 20) { return 'TIN must not exceed 20 characters'; }
-        if (value.length < 1) { return 'TIN must be at least 1 character'; }
-        // Basic TIN format validation (alphanumeric and hyphens)
+        if (!value) {
+            return t('tinRequired');
+        }
+        if (value.length > 20) {
+            return t('tinMaxLength');
+        }
+        if (value.length < 1) {
+            return t('tinMinLength');
+        }
         if (!/^[A-Za-z0-9-]+$/.test(value)) {
-            return 'TIN can only contain letters, numbers, and hyphens';
+            return t('tinInvalidFormat');
         }
         return undefined;
     };
@@ -58,13 +71,15 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
         setErrors({});
 
         if (isEdit) {
-            // Update organisation - only include changed fields
             const updateData: UpdateOrganisationRequest = {};
-            if (name !== organisation.name) { updateData.name = name; }
-            if (tin !== organisation.tin) { updateData.tin = tin; }
+            if (name !== organisation.name) {
+                updateData.name = name;
+            }
+            if (tin !== organisation.tin) {
+                updateData.tin = tin;
+            }
             onSubmit(updateData);
         } else {
-            // Create organisation
             const createData: CreateOrganisationRequest = {
                 name,
                 tin
@@ -77,7 +92,6 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Organisation Name */}
             <div className="space-y-2">
                 <Label htmlFor="name">
           Organisation Name <span className="text-destructive">*</span>
@@ -91,7 +105,9 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
                     }}
                     onBlur={() => {
                         const error = validateName(name);
-                        if (error) { setErrors((prev) => ({ ...prev, name: error })); }
+                        if (error) {
+                            setErrors((prev) => ({ ...prev, name: error }));
+                        }
                     }}
                     placeholder="Enter organisation name (max 20 characters)"
                     disabled={isLoading}
@@ -109,7 +125,6 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
                 </div>
             </div>
 
-            {/* TIN (Tax Identification Number) */}
             <div className="space-y-2">
                 <Label htmlFor="tin">
           TIN (Tax Identification Number) <span className="text-destructive">*</span>
@@ -118,14 +133,15 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
                     id="tin"
                     value={tin}
                     onChange={(e) => {
-                        // Auto-format: uppercase and remove invalid characters
                         const formatted = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
                         setTin(formatted);
                         setErrors((prev) => ({ ...prev, tin: undefined }));
                     }}
                     onBlur={() => {
                         const error = validateTin(tin);
-                        if (error) { setErrors((prev) => ({ ...prev, tin: error })); }
+                        if (error) {
+                            setErrors((prev) => ({ ...prev, tin: error }));
+                        }
                     }}
                     placeholder="Enter TIN (e.g., 123-456-789)"
                     disabled={isLoading}
@@ -144,7 +160,6 @@ export function OrganisationForm({ organisation, onSubmit, isLoading }: Organisa
                 <p className="text-xs text-muted-foreground">Tax Identification Number must be unique across all organisations</p>
             </div>
 
-            {/* Submit Button */}
             <div className="flex justify-end gap-3 pt-4">
                 <Button type="submit" disabled={isLoading || !isFormValid} className="min-w-[140px]">
                     {isLoading ? (

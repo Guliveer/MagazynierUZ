@@ -1,23 +1,32 @@
+import createMiddleware from 'next-intl/middleware';
+import { routing } from './i18n/routing';
 import { NextRequest, NextResponse } from 'next/server';
 
+const intlMiddleware = createMiddleware(routing);
+
 export function proxy(request: NextRequest) {
+    const response = intlMiddleware(request);
+
+    const pathname = request.nextUrl.pathname;
+    const pathnameHasLocale = routing.locales.some((locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`);
+
+    const locale = pathnameHasLocale ? pathname.split('/')[1] : routing.defaultLocale;
+
     const token = request.cookies.get('auth_token')?.value;
-    const isAuthPage = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/register');
-    const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard');
+    const isAuthPage = pathname.includes('/login') || pathname.includes('/register');
+    const isProtectedRoute = pathname.includes('/dashboard');
 
-    // Jeśli użytkownik nie jest zalogowany i próbuje wejść na chronioną stronę
     if (!token && isProtectedRoute) {
-        return NextResponse.redirect(new URL('/login', request.url));
+        return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
     }
 
-    // Jeśli użytkownik jest zalogowany i próbuje wejść na stronę logowania/rejestracji
     if (token && isAuthPage) {
-        return NextResponse.redirect(new URL('/dashboard', request.url));
+        return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
     }
 
-    return NextResponse.next();
+    return response;
 }
 
 export const config = {
-    matcher: ['/dashboard/:path*', '/login', '/register']
+    matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
 };

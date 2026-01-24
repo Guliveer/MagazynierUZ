@@ -1,6 +1,6 @@
 'use client';
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from 'shadcn/dialog';
 import { WarehouseForm, type WarehouseFormData } from './WarehouseForm';
 import type { Warehouse, CreateWarehouseRequest } from '@/types';
 

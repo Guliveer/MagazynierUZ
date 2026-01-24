@@ -1,7 +1,8 @@
 'use client';
 
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
-import { Spinner } from '@/components/ui/spinner';
+import { useTranslations } from 'next-intl';
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from 'shadcn/alert-dialog';
+import { Spinner } from 'shadcn/spinner';
 import type { Product } from '@/types';
 
 interface DeleteProductDialogProps {
@@ -13,6 +14,8 @@ interface DeleteProductDialogProps {
 }
 
 export function DeleteProductDialog({ open, onOpenChange, product, onConfirm, isLoading = false }: DeleteProductDialogProps) {
+    const t = useTranslations('products.delete');
+
     const handleConfirm = async () => {
         await onConfirm();
     };
@@ -21,16 +24,14 @@ export function DeleteProductDialog({ open, onOpenChange, product, onConfirm, is
         <AlertDialog open={open} onOpenChange={onOpenChange}>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure you want to delete this product?</AlertDialogTitle>
-                    <AlertDialogDescription>
-            You are about to delete <span className="font-semibold text-foreground">{product?.name}</span>. This action cannot be undone and will permanently remove the product from this location.
-                    </AlertDialogDescription>
+                    <AlertDialogTitle>{t('title')}</AlertDialogTitle>
+                    <AlertDialogDescription>{t('description', { name: product?.name || '' })}</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel disabled={isLoading}>{t('cancel')}</AlertDialogCancel>
                     <AlertDialogAction onClick={handleConfirm} disabled={isLoading} className="bg-destructive text-white hover:bg-destructive/90">
                         {isLoading && <Spinner className="mr-2" />}
-            Delete
+                        {t('confirm')}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

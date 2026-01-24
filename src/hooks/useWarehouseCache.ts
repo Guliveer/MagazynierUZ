@@ -14,7 +14,6 @@ interface WarehouseCache {
   [warehouseId: number]: WarehouseCacheEntry;
 }
 
-// Cache TTL: 5 minutes
 const CACHE_TTL = 5 * 60 * 1000;
 
 /**
@@ -27,7 +26,6 @@ export function useWarehouseCache() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Load all warehouses on mount
     useEffect(() => {
         const loadWarehouses = async () => {
             try {
@@ -46,25 +44,16 @@ export function useWarehouseCache() {
         loadWarehouses();
     }, []);
 
-    /**
-   * Get warehouse by ID from cache or all warehouses list
-   */
     const getWarehouseById = useCallback(
         (warehouseId: number): Warehouse | undefined => {
-            // Check cache first
             if (cache[warehouseId]) {
                 return cache[warehouseId].warehouse;
             }
-            // Fallback to all warehouses list
             return allWarehouses.find((w) => w.id === warehouseId);
         },
         [cache, allWarehouses]
     );
 
-    /**
-   * Get location by ID from cache
-   * Requires warehouse ID to know where to look
-   */
     const getLocationById = useCallback(
         (warehouseId: number, locationId: number): Location | undefined => {
             const entry = cache[warehouseId];
@@ -76,26 +65,19 @@ export function useWarehouseCache() {
         [cache]
     );
 
-    /**
-   * Load warehouse and its locations into cache
-   * Returns the cached entry or fetches from API if needed
-   */
     const loadWarehouseWithLocations = useCallback(
         async (warehouseId: number): Promise<WarehouseCacheEntry | null> => {
-            // Check if cache is still valid
             const existing = cache[warehouseId];
             if (existing && Date.now() - existing.lastFetched < CACHE_TTL) {
                 return existing;
             }
 
             try {
-                // Find warehouse in all warehouses list
                 const warehouse = allWarehouses.find((w) => w.id === warehouseId);
                 if (!warehouse) {
                     throw new Error(`Warehouse ${warehouseId} not found`);
                 }
 
-                // Fetch locations
                 const locations = await getLocations(warehouseId);
 
                 const entry: WarehouseCacheEntry = {
@@ -104,7 +86,6 @@ export function useWarehouseCache() {
                     lastFetched: Date.now()
                 };
 
-                // Update cache
                 setCache((prev) => ({
                     ...prev,
                     [warehouseId]: entry
@@ -120,9 +101,6 @@ export function useWarehouseCache() {
         [cache, allWarehouses]
     );
 
-    /**
-   * Get warehouse name by ID
-   */
     const getWarehouseName = useCallback(
         (warehouseId: number): string | undefined => {
             const warehouse = getWarehouseById(warehouseId);
@@ -131,9 +109,6 @@ export function useWarehouseCache() {
         [getWarehouseById]
     );
 
-    /**
-   * Get warehouse code by ID
-   */
     const getWarehouseCode = useCallback(
         (warehouseId: number): string | undefined => {
             const warehouse = getWarehouseById(warehouseId);
@@ -142,9 +117,6 @@ export function useWarehouseCache() {
         [getWarehouseById]
     );
 
-    /**
-   * Get location code by ID
-   */
     const getLocationCode = useCallback(
         (warehouseId: number, locationId: number): string | undefined => {
             const location = getLocationById(warehouseId, locationId);
@@ -153,9 +125,6 @@ export function useWarehouseCache() {
         [getLocationById]
     );
 
-    /**
-   * Get location zone name by ID
-   */
     const getLocationZoneName = useCallback(
         (warehouseId: number, locationId: number): string | undefined => {
             const location = getLocationById(warehouseId, locationId);
@@ -164,12 +133,8 @@ export function useWarehouseCache() {
         [getLocationById]
     );
 
-    /**
-   * Get full context for a product location
-   */
     const getLocationContext = useCallback(
         async (warehouseId: number, locationId: number) => {
-            // Ensure warehouse and locations are loaded
             await loadWarehouseWithLocations(warehouseId);
 
             const warehouse = getWarehouseById(warehouseId);
@@ -186,9 +151,6 @@ export function useWarehouseCache() {
         [loadWarehouseWithLocations, getWarehouseById, getLocationById]
     );
 
-    /**
-   * Clear cache for a specific warehouse or all warehouses
-   */
     const clearCache = useCallback((warehouseId?: number) => {
         if (warehouseId !== undefined) {
             setCache((prev) => {
@@ -201,10 +163,6 @@ export function useWarehouseCache() {
         }
     }, []);
 
-    /**
-   * Preload multiple warehouses into cache
-   * Useful when displaying products from multiple warehouses
-   */
     const preloadWarehouses = useCallback(
         async (warehouseIds: number[]) => {
             const promises = warehouseIds.map((id) => loadWarehouseWithLocations(id));
@@ -214,13 +172,11 @@ export function useWarehouseCache() {
     );
 
     return {
-    // State
         allWarehouses,
         isLoading,
         error,
         cache,
 
-        // Getters
         getWarehouseById,
         getLocationById,
         getWarehouseName,
@@ -229,7 +185,6 @@ export function useWarehouseCache() {
         getLocationZoneName,
         getLocationContext,
 
-        // Actions
         loadWarehouseWithLocations,
         preloadWarehouses,
         clearCache

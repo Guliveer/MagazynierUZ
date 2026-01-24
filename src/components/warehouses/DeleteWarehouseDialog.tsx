@@ -1,8 +1,9 @@
 'use client';
 
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
-import { Spinner } from '@/components/ui/spinner';
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from 'shadcn/alert-dialog';
+import { Spinner } from 'shadcn/spinner';
 import type { Warehouse } from '@/types';
+import { useTranslations } from 'next-intl';
 
 interface DeleteWarehouseDialogProps {
   open: boolean;
@@ -13,6 +14,8 @@ interface DeleteWarehouseDialogProps {
 }
 
 export function DeleteWarehouseDialog({ open, onOpenChange, warehouse, onConfirm, isLoading = false }: DeleteWarehouseDialogProps) {
+    const t = useTranslations('warehouses.delete');
+
     const handleConfirm = async () => {
         await onConfirm();
     };
@@ -21,16 +24,14 @@ export function DeleteWarehouseDialog({ open, onOpenChange, warehouse, onConfirm
         <AlertDialog open={open} onOpenChange={onOpenChange}>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure you want to delete this warehouse?</AlertDialogTitle>
-                    <AlertDialogDescription>
-            You are about to delete <span className="font-semibold text-foreground">{warehouse?.name}</span>. This action cannot be undone and will remove all associated data.
-                    </AlertDialogDescription>
+                    <AlertDialogTitle>{t('title')}</AlertDialogTitle>
+                    <AlertDialogDescription>{t('description', { name: warehouse?.name ?? '' })}</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel disabled={isLoading}>{t('cancel')}</AlertDialogCancel>
                     <AlertDialogAction onClick={handleConfirm} disabled={isLoading} className="bg-destructive text-white hover:bg-destructive/90">
                         {isLoading && <Spinner className="mr-2" />}
-            Delete
+                        {t('confirm')}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

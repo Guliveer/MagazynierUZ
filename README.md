@@ -5,6 +5,8 @@ A modern, full-featured warehouse management system built with Next.js 16, React
 ## 🚀 Features
 
 - **User Authentication & Authorization** - Secure JWT-based authentication with role-based access control
+- **Internationalization (i18n)** - Multi-language support (English, Polish) with easy extensibility
+- **Light/Dark Theme** - System-aware theme switching with persistent preferences
 - **hCaptcha Integration** - Bot protection on login and registration
 - **Remember Me** - Encrypted credential storage for persistent login
 - **Admin Panel** - Comprehensive admin interface for managing users and organisations
@@ -30,6 +32,8 @@ A modern, full-featured warehouse management system built with Next.js 16, React
 - **Styling**: Tailwind CSS 4
 - **Components**: shadcn/ui
 - **Icons**: Lucide React
+- **Internationalization**: next-intl
+- **Theme System**: next-themes
 - **Forms**: React Hook Form + Zod
 - **Charts**: Recharts
 - **Maps**: Leaflet
@@ -117,7 +121,25 @@ npm run build
 
 All tests should pass with no TypeScript errors.
 
-## 🎨 UI Components
+## 🌍 Internationalization & Theming
+
+MagazynierUZ supports multiple languages and theme modes:
+
+- **Languages**: English (default), Polish
+- **Themes**: Light, Dark, System (auto-detect)
+- **Locale Switcher**: Available on all pages
+- **Theme Switcher**: Accessible in the dashboard navigation
+
+For detailed information on how to use, customize, and extend the i18n and theme systems, see the [**Internationalization and Theme System Guide**](docs/I18N_AND_THEME_GUIDE.md).
+
+### Quick Links
+
+- [How to add new translations](docs/I18N_AND_THEME_GUIDE.md#adding-new-translations)
+- [How to add a new language](docs/I18N_AND_THEME_GUIDE.md#adding-a-new-language)
+- [How to customize theme colors](docs/I18N_AND_THEME_GUIDE.md#customizing-theme-colors)
+- [Troubleshooting guide](docs/I18N_AND_THEME_GUIDE.md#troubleshooting)
+
+## � UI Components
 
 Built with [shadcn/ui](https://ui.shadcn.com/) components:
 

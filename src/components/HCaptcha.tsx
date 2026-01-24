@@ -1,7 +1,7 @@
 'use client';
 
 import HCaptcha from '@hcaptcha/react-hcaptcha';
-import { forwardRef, useImperativeHandle, useRef, useCallback } from 'react';
+import { forwardRef, useImperativeHandle, useRef, useCallback, useEffect } from 'react';
 
 export interface HCaptchaRef {
   execute: () => void;
@@ -16,6 +16,7 @@ interface HCaptchaWrapperProps {
 
 const HCaptchaWrapper = forwardRef<HCaptchaRef, HCaptchaWrapperProps>(({ onVerify, onExpire, onError }, ref) => {
     const captchaRef = useRef<HCaptcha>(null);
+    const isDevelopment = process.env.NODE_ENV === 'development';
 
     const siteKey = process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || '';
 
@@ -27,6 +28,12 @@ const HCaptchaWrapper = forwardRef<HCaptchaRef, HCaptchaWrapperProps>(({ onVerif
             captchaRef.current?.resetCaptcha();
         }
     }));
+
+    useEffect(() => {
+        if (isDevelopment) {
+            onVerify('dev-bypass-token');
+        }
+    }, [isDevelopment, onVerify]);
 
     const handleVerify = useCallback(
         (token: string) => {
@@ -47,7 +54,6 @@ const HCaptchaWrapper = forwardRef<HCaptchaRef, HCaptchaWrapperProps>(({ onVerif
     );
 
     if (!siteKey) {
-        console.warn('hCaptcha site key is not configured');
         return null;
     }
 

@@ -1,8 +1,6 @@
-import type { LoginResponse, Warehouse, CreateWarehouseRequest, Location, CreateLocationRequest, Product, CreateProductRequest, Top10Product, PaginatedResponse, ProductWithContext, UserResponse, AdminCreateUserRequest, AdminUpdateUserRequest, OrganisationResponse, CreateOrganisationRequest, UpdateOrganisationRequest } from '@/types';
+import type { LoginResponse, Warehouse, CreateWarehouseRequest, Location, CreateLocationRequest, Product, CreateProductRequest, Top10Product, PaginatedResponse, ProductWithContext, UserResponse, AdminCreateUserRequest, AdminUpdateUserRequest, OrganisationResponse, CreateOrganisationRequest, UpdateOrganisationRequest, UserRoleResponse } from '@/types';
 import { getToken, isAuthenticated, logout } from '@/lib/auth';
 
-// Używamy lokalnego proxy API, aby obejść problem CORS
-// Backend URL jest konfigurowany po stronie serwera w src/app/api/proxy/[...path]/route.ts
 const API_BASE_URL = '/api/proxy';
 
 export interface AuthRequest {
@@ -57,10 +55,6 @@ export async function register(username: string, password: string): Promise<void
     });
 }
 
-// ============================================
-// Authenticated API Helper
-// ============================================
-
 /**
  * Wykonuje zapytanie do API z automatycznym dodaniem nagłówka Authorization
  * Obsługuje wygaśnięcie sesji i automatyczne przekierowanie do logowania
@@ -70,7 +64,6 @@ export async function register(username: string, password: string): Promise<void
  * @throws ApiError gdy brak tokenu lub błąd API
  */
 async function fetchApiAuth<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    // Check if user is authenticated before making request
     if (!isAuthenticated()) {
         handleSessionExpiration();
         throw new ApiError(401, 'Session expired. Please log in again.');
@@ -89,10 +82,9 @@ async function fetchApiAuth<T>(endpoint: string, options: RequestInit = {}): Pro
                 ...options.headers,
                 Authorization: `Bearer ${token}`
             },
-            signal: options.signal // Pass through AbortSignal for request cancellation
+            signal: options.signal
         });
     } catch (error) {
-    // Handle 401 Unauthorized errors (token expired on server side)
         if (error instanceof ApiError && error.statusCode === 401) {
             handleSessionExpiration();
             throw new ApiError(401, 'Session expired. Please log in again.');
@@ -110,30 +102,22 @@ function handleSessionExpiration(): void {
         return;
     }
 
-    // Clear authentication data
     logout();
 
-    // Store current URL for redirect after login
     const currentPath = window.location.pathname + window.location.search;
     const shouldRedirect = !currentPath.includes('/login') && !currentPath.includes('/register');
 
-    // Show notification about session expiration
     if (typeof window !== 'undefined' && 'sessionStorage' in window) {
         sessionStorage.setItem('session_expired', 'true');
         sessionStorage.setItem('session_expired_message', 'Your session has expired. Please log in again.');
     }
 
-    // Redirect to login page with context
     if (shouldRedirect) {
         window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}&expired=true`;
     } else {
         window.location.href = '/login?expired=true';
     }
 }
-
-// ============================================
-// Warehouse API
-// ============================================
 
 /**
  * Pobiera listę magazynów użytkownika
@@ -182,10 +166,6 @@ export async function deleteWarehouse(id: number): Promise<void> {
         method: 'DELETE'
     });
 }
-
-// ============================================
-// Location API
-// ============================================
 
 /**
  * Pobiera listę lokalizacji w magazynie
@@ -240,10 +220,6 @@ export async function deleteLocation(warehouseId: number, locationId: number): P
         method: 'DELETE'
     });
 }
-
-// ============================================
-// Product API
-// ============================================
 
 /**
  * Pobiera listę produktów w lokalizacji
@@ -304,10 +280,6 @@ export async function deleteProduct(warehouseId: number, locationId: number, pro
         method: 'DELETE'
     });
 }
-
-// ============================================
-// Statistics API
-// ============================================
 
 export interface Top10ProductsParams {
   sortBy?: 'quantity' | 'price' | 'name';
@@ -448,7 +420,6 @@ export async function searchProductsUnpaginated(params?: Omit<ProductSearchParam
     const queryString = queryParams.toString();
     const endpoint = `/api/v1/products/search${queryString ? `?${queryString}` : ''}`;
 
-    // Backend returns paginated response, extract content array
     const response = await fetchApiAuth<PaginatedResponse<Product>>(endpoint);
     return response.content;
 }
@@ -463,11 +434,9 @@ export async function searchProductsUnpaginated(params?: Omit<ProductSearchParam
  */
 export async function getProductWithContext(productId: number, warehouseId?: number, locationId?: number): Promise<ProductWithContext | null> {
     try {
-    // If we have both warehouse and location, use direct endpoint
         if (warehouseId && locationId) {
             const product = await getProduct(warehouseId, locationId, productId);
 
-            // Fetch warehouse and location details
             const [warehouse, location] = await Promise.all([getWarehouse(warehouseId), getLocation(warehouseId, locationId)]);
 
             return {
@@ -482,20 +451,16 @@ export async function getProductWithContext(productId: number, warehouseId?: num
             };
         }
 
-        // Otherwise, search across all warehouses/locations
-        // This is a fallback - search with product ID filter
         const searchResult = await searchProducts({
             page: 0,
-            size: 100 // Limit search results
+            size: 100
         });
 
-        // Find the product in search results
         const product = searchResult.content.find((p) => p.id === productId);
         if (!product) {
             return null;
         }
 
-        // If product has context, fetch additional details
         if (product.warehouseId && product.locationId) {
             const [warehouse, location] = await Promise.all([getWarehouse(product.warehouseId), getLocation(product.warehouseId, product.locationId)]);
 
@@ -511,7 +476,6 @@ export async function getProductWithContext(productId: number, warehouseId?: num
             };
         }
 
-        // Return product without full context if we can't determine location
         return product as ProductWithContext;
     } catch (err) {
         throw err;
@@ -527,7 +491,6 @@ export async function getProductWithContext(productId: number, warehouseId?: num
  * @returns Products with full context
  */
 export async function enrichProductsWithContext(products: Product[], warehouseId?: number, locationId?: number): Promise<ProductWithContext[]> {
-    // If no context provided, return products as-is
     if (!warehouseId || !locationId) {
         return products.map((p) => ({
             ...p,
@@ -537,10 +500,8 @@ export async function enrichProductsWithContext(products: Product[], warehouseId
     }
 
     try {
-    // Fetch warehouse and location details once
         const [warehouse, location] = await Promise.all([getWarehouse(warehouseId), getLocation(warehouseId, locationId)]);
 
-        // Enrich all products with context
         return products.map((product) => ({
             ...product,
             warehouseId,
@@ -552,7 +513,6 @@ export async function enrichProductsWithContext(products: Product[], warehouseId
             locationType: location.locationType
         }));
     } catch {
-    // If enrichment fails, return products with basic context
         return products.map((p) => ({
             ...p,
             warehouseId: warehouseId || p.warehouseId || 0,
@@ -560,10 +520,6 @@ export async function enrichProductsWithContext(products: Product[], warehouseId
         }));
     }
 }
-
-// ============================================
-// Export API
-// ============================================
 
 export interface ExportInventoryParams {
   scope: 'ORGANISATION' | 'WAREHOUSE' | 'LOCATION';
@@ -590,7 +546,6 @@ export async function exportInventoryToPdf(params: ExportInventoryParams): Promi
     const queryString = queryParams.toString();
     const endpoint = `/api/v1/exports/inventory/pdf${queryString ? `?${queryString}` : ''}`;
 
-    // Check authentication
     if (!isAuthenticated()) {
         handleSessionExpiration();
         throw new ApiError(401, 'Session expired. Please log in again.');
@@ -602,7 +557,6 @@ export async function exportInventoryToPdf(params: ExportInventoryParams): Promi
         throw new ApiError(401, 'Missing authorization token');
     }
 
-    // Fetch PDF as blob
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'GET',
         headers: {
@@ -617,10 +571,6 @@ export async function exportInventoryToPdf(params: ExportInventoryParams): Promi
 
     return await response.blob();
 }
-
-// ============================================
-// Admin Statistics API
-// ============================================
 
 export interface SystemStatistics {
   totalWarehouses: number;
@@ -645,12 +595,10 @@ export interface OrganisationStatistics {
  */
 export async function getSystemStatistics(): Promise<SystemStatistics> {
     try {
-    // Fetch all warehouses
         const warehouses = await getWarehouses();
         const totalWarehouses = warehouses.length;
         const activeWarehouses = warehouses.filter((w) => w.name && w.code).length;
 
-        // Fetch all locations from all warehouses
         let totalLocations = 0;
         const locationPromises = warehouses.map((w) => getLocations(w.id).catch(() => []));
         const locationsArrays = await Promise.all(locationPromises);
@@ -658,11 +606,9 @@ export async function getSystemStatistics(): Promise<SystemStatistics> {
             totalLocations += locations.length;
         });
 
-        // Search for all products (unpaginated)
         const products = await searchProductsUnpaginated({});
         const totalProducts = products.length;
 
-        // Calculate total inventory value
         const totalInventoryValue = products.reduce((sum, product) => {
             return sum + (product.price || 0) * (product.quantity || 0);
         }, 0);
@@ -677,7 +623,6 @@ export async function getSystemStatistics(): Promise<SystemStatistics> {
             databaseStatus: 'connected'
         };
     } catch {
-    // If API fails, return offline status
         return {
             totalWarehouses: 0,
             totalLocations: 0,
@@ -696,11 +641,9 @@ export async function getSystemStatistics(): Promise<SystemStatistics> {
  */
 export async function getOrganisationStatistics(): Promise<OrganisationStatistics> {
     try {
-    // Fetch all warehouses
         const warehouses = await getWarehouses();
         const warehouseCount = warehouses.length;
 
-        // Fetch all locations from all warehouses
         let locationCount = 0;
         const locationPromises = warehouses.map((w) => getLocations(w.id).catch(() => []));
         const locationsArrays = await Promise.all(locationPromises);
@@ -708,11 +651,9 @@ export async function getOrganisationStatistics(): Promise<OrganisationStatistic
             locationCount += locations.length;
         });
 
-        // Search for all products
         const products = await searchProductsUnpaginated({});
         const productCount = products.length;
 
-        // Calculate total value
         const totalValue = products.reduce((sum, product) => {
             return sum + (product.price || 0) * (product.quantity || 0);
         }, 0);
@@ -732,10 +673,6 @@ export async function getOrganisationStatistics(): Promise<OrganisationStatistic
         };
     }
 }
-
-// ============================================
-// Admin User Management API
-// ============================================
 
 /**
  * Get all users (admin only)
@@ -801,9 +738,14 @@ export async function assignUserToOrganisation(userId: number, organisationId: n
     });
 }
 
-// ============================================
-// Admin Organisation Management API
-// ============================================
+/**
+ * Get current user's role information from server
+ * This provides server-side verification of user roles
+ * @returns User role information including userId, username, and roles array
+ */
+export async function getCurrentUserRole(): Promise<UserRoleResponse> {
+    return await fetchApiAuth<UserRoleResponse>('/api/v1/users/role');
+}
 
 /**
  * Get all organisations (admin only)
