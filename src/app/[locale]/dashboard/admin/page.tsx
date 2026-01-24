@@ -1,15 +1,15 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'shadcn/card';
+import { Badge } from 'shadcn/badge';
+import { Button } from 'shadcn/button';
+import { Skeleton } from 'shadcn/skeleton';
 import { Users, Building2, Settings, FileText, Shield, Activity, Database, Package, Warehouse, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { getUserRoles, getUsername } from '@/lib/auth';
 import { useEffect, useState } from 'react';
 import { getSystemStatistics, getAllUsers, type SystemStatistics } from '@/lib/api';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription } from 'shadcn/alert';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 

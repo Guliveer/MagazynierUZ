@@ -3,12 +3,12 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from 'shadcn/form';
+import { Input } from 'shadcn/input';
+import { Button } from 'shadcn/button';
+import { Spinner } from 'shadcn/spinner';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'shadcn/select';
+import { Switch } from 'shadcn/switch';
 import type { Location, LocationType } from '@/types';
 import { useTranslations } from 'next-intl';
 

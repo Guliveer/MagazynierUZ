@@ -1,10 +1,10 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from 'shadcn/dialog';
 import { ProductForm, type ProductFormData } from './ProductForm';
 import { ProductLocationBadge } from './ProductLocationBadge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription } from 'shadcn/alert';
 import { Info } from 'lucide-react';
 import type { Product, CreateProductRequest, ProductWithContext } from '@/types';
 

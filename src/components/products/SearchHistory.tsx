@@ -2,10 +2,10 @@
 
 import { Clock, X, Trash2 } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from 'shadcn/card';
+import { Button } from 'shadcn/button';
+import { ScrollArea } from 'shadcn/scroll-area';
+import { Badge } from 'shadcn/badge';
 import type { SearchHistoryItem } from '@/hooks/useSearchHistory';
 
 interface SearchHistoryProps {

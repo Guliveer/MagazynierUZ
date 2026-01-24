@@ -8,11 +8,11 @@ import { useTranslations } from 'next-intl';
 import { getWarehouses, searchProductsUnpaginated, getTop10Products } from '@/lib/api';
 import { getToken } from '@/lib/auth';
 import type { Warehouse, Product, Top10Product } from '@/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'shadcn/card';
+import { Button } from 'shadcn/button';
+import { Skeleton } from 'shadcn/skeleton';
+import { Badge } from 'shadcn/badge';
+import { Alert, AlertDescription } from 'shadcn/alert';
 import { PdfExportButton } from '@/components/exports/PdfExportButton';
 
 export default function DashboardPage() {

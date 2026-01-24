@@ -5,11 +5,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslations } from 'next-intl';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from 'shadcn/form';
+import { Input } from 'shadcn/input';
+import { Textarea } from 'shadcn/textarea';
+import { Button } from 'shadcn/button';
+import { Spinner } from 'shadcn/spinner';
 import type { Product } from '@/types';
 
 // Base schema for type inference

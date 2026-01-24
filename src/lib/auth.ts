@@ -222,8 +222,9 @@ export function logout(): void {
         }
         keysToRemove.forEach((key) => localStorage.removeItem(key));
 
-        // Clear encrypted credentials from sessionStorage
+        // Clear encrypted credentials and encryption key from sessionStorage
         sessionStorage.removeItem('auth_encrypted_creds');
+        sessionStorage.removeItem('auth_encryption_key');
     }
 }
 

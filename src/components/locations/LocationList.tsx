@@ -1,12 +1,12 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
+import { Badge } from 'shadcn/badge';
+import { Button } from 'shadcn/button';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from 'shadcn/empty';
+import { Skeleton } from 'shadcn/skeleton';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'shadcn/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'shadcn/select';
+import { Input } from 'shadcn/input';
 import { ApiError, createLocation, deleteLocation, getLocations, updateLocation } from '@/lib/api';
 import type { CreateLocationRequest, Location, LocationType } from '@/types';
 import { MapPin, Pencil, Plus, Trash2, Lock, Package } from 'lucide-react';

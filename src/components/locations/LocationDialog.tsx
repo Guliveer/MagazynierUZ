@@ -1,6 +1,6 @@
 'use client';
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from 'shadcn/dialog';
 import { LocationForm, type LocationFormData } from './LocationForm';
 import type { Location, CreateLocationRequest } from '@/types';
 import { useTranslations } from 'next-intl';

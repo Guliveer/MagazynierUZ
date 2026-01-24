@@ -12,7 +12,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from 'shadcn/car
 import { Input } from 'shadcn/input';
 import { Checkbox } from 'shadcn/checkbox';
 import { Label } from 'shadcn/label';
-import { Spinner } from '@/components/ui/spinner';
+import { Spinner } from 'shadcn/spinner';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import LocaleSwitcher from '@/components/LocaleSwitcher';

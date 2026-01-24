@@ -6,7 +6,7 @@ import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@/components/ui/button';
+import { Button } from 'shadcn/button';
 
 import { ProductFilters, type ProductFilterValues } from '@/components/products/ProductFilters';
 import { ProductSearchResults, type SortField, type SortDirection, type ViewMode } from '@/components/products/ProductSearchResults';

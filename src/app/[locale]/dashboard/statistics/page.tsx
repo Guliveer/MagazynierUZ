@@ -7,16 +7,16 @@ import { getTop10Products, getWarehouses, getLocations, searchProductsUnpaginate
 import { getToken } from '@/lib/auth';
 import type { Top10Product, Warehouse, Location, Product, ChartViewType } from '@/types';
 import { Top10Chart } from '@/components/statistics/Top10Chart';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'shadcn/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'shadcn/select';
+import { Label } from 'shadcn/label';
+import { Spinner } from 'shadcn/spinner';
+import { Alert, AlertDescription } from 'shadcn/alert';
+import { Button } from 'shadcn/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from 'shadcn/tabs';
+import { Switch } from 'shadcn/switch';
+import { Badge } from 'shadcn/badge';
+import { Skeleton } from 'shadcn/skeleton';
 import { AlertCircle, BarChart3, TrendingUp, Package, DollarSign, Warehouse as WarehouseIcon, AlertTriangle, RefreshCw, Download, Clock, Filter, PieChart as PieChartIcon } from 'lucide-react';
 
 export default function StatisticsPage() {

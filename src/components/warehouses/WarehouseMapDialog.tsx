@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from 'shadcn/dialog';
 import type { Warehouse } from '@/types';
 import { useTranslations } from 'next-intl';
 

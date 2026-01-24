@@ -1,8 +1,8 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'shadcn/card';
+import { Badge } from 'shadcn/badge';
+import { Button } from 'shadcn/button';
 import { User, Building2, Shield, Calendar, Clock, CheckCircle2, XCircle, Key, LogOut } from 'lucide-react';
 import { getUserRoles, getUsername, getTokenPayload, logout } from '@/lib/auth';
 import { useRouter } from 'next/navigation';

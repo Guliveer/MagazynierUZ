@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from 'shadcn/dialog';
 import { toast } from 'sonner';
 import { createUser, updateUser } from '@/lib/api';
 import type { UserResponse, AdminCreateUserRequest, AdminUpdateUserRequest } from '@/types';

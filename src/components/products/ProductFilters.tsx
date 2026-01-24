@@ -5,15 +5,15 @@ import { Building2, MapPin, Search, X, ChevronDown, ChevronUp, DollarSign, Packa
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 
-import { Card, CardContent } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Card, CardContent } from 'shadcn/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'shadcn/select';
+import { Label } from 'shadcn/label';
+import { Badge } from 'shadcn/badge';
+import { Skeleton } from 'shadcn/skeleton';
+import { Input } from 'shadcn/input';
+import { Button } from 'shadcn/button';
+import { Switch } from 'shadcn/switch';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from 'shadcn/collapsible';
 
 import { getWarehouses, getLocations, ApiError } from '@/lib/api';
 import type { Warehouse, Location } from '@/types';

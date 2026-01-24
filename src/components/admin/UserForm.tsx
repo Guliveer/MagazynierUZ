@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from 'shadcn/label';
+import { Input } from 'shadcn/input';
+import { Button } from 'shadcn/button';
+import { Checkbox } from 'shadcn/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'shadcn/select';
 import { Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react';
 import type { UserResponse, AdminCreateUserRequest, AdminUpdateUserRequest, Warehouse } from '@/types';
 import { getWarehouses } from '@/lib/api';

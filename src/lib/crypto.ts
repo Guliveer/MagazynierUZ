@@ -1,47 +1,60 @@
 /**
  * Encryption utilities for secure credential storage
  * Uses browser's built-in Web Crypto API for encryption/decryption
+ *
+ * SECURITY NOTE: This implementation uses client-side encryption with a key derived
+ * from an environment variable. While this provides obfuscation, it's important to
+ * understand that client-side encryption cannot provide true security against
+ * determined attackers who have access to the client code. The encryption secret
+ * is exposed in the browser bundle.
+ *
+ * This approach is suitable for:
+ * - Preventing casual inspection of stored credentials
+ * - Adding a layer of obfuscation to sessionStorage
+ * - Ensuring credentials aren't stored in plain text
+ *
+ * For truly sensitive data, consider server-side encryption or secure token storage.
  */
 
-// Storage key for encrypted credentials
+// Storage keys
 const ENCRYPTED_CREDENTIALS_KEY = 'auth_encrypted_creds';
+const ENCRYPTION_KEY_CACHE = 'auth_encryption_key_cache';
 
 // Encryption algorithm configuration
 const ALGORITHM = 'AES-GCM';
 const KEY_LENGTH = 256;
 const IV_LENGTH = 12; // 96 bits for GCM
 
+// PBKDF2 configuration for key derivation
+const PBKDF2_ITERATIONS = 100000; // OWASP recommended minimum
+const SALT_LENGTH = 16; // 128 bits
+
 /**
- * Generate a cryptographic key from a password
- * Uses PBKDF2 with a salt derived from browser fingerprint
+ * Get the encryption secret from environment variables
+ * Falls back to a default value if not configured (with warning)
  */
-async function deriveKey(password: string, salt: BufferSource): Promise<CryptoKey> {
-    const encoder = new TextEncoder();
-    const passwordBuffer = encoder.encode(password);
+function getEncryptionSecret(): string {
+    const secret = process.env.NEXT_PUBLIC_ENCRYPTION_SECRET;
 
-    // Import password as key material
-    const keyMaterial = await crypto.subtle.importKey('raw', passwordBuffer, 'PBKDF2', false, ['deriveBits', 'deriveKey']);
+    if (!secret) {
+        console.warn('NEXT_PUBLIC_ENCRYPTION_SECRET is not configured. Using fallback secret. ' + 'Please set this environment variable for production use.');
+        // Fallback secret - should only be used in development
+        return 'default-encryption-secret-please-change-in-production';
+    }
 
-    // Derive AES key using PBKDF2
-    return crypto.subtle.deriveKey(
-        {
-            name: 'PBKDF2',
-            salt: salt,
-            iterations: 100000,
-            hash: 'SHA-256'
-        },
-        keyMaterial,
-        { name: ALGORITHM, length: KEY_LENGTH },
-        false,
-        ['encrypt', 'decrypt']
-    );
+    if (secret.length < 32) {
+        console.warn('NEXT_PUBLIC_ENCRYPTION_SECRET is too short. ' + 'Please use a secret of at least 32 characters for better security.');
+    }
+
+    return secret;
 }
 
 /**
- * Get a consistent salt based on browser fingerprint
- * This allows us to derive the same key without storing it
+ * Get a consistent salt for key derivation
+ * Uses a static salt combined with browser fingerprint for consistency
+ * This ensures the same key is derived across sessions
  */
-function getBrowserSalt(): BufferSource {
+function getDerivationSalt(): Uint8Array {
     // Create a fingerprint from browser characteristics
     const fingerprint = [navigator.userAgent, navigator.language, new Date().getTimezoneOffset().toString(), screen.colorDepth.toString(), screen.width.toString(), screen.height.toString()].join('|');
 
@@ -49,7 +62,7 @@ function getBrowserSalt(): BufferSource {
     const encoder = new TextEncoder();
     const data = encoder.encode(fingerprint);
 
-    // Use a simple hash for salt (not cryptographically secure, but sufficient for this use case)
+    // Use a simple hash for salt
     let hash = 0;
     for (let i = 0; i < data.length; i++) {
         hash = (hash << 5) - hash + data[i];
@@ -57,24 +70,85 @@ function getBrowserSalt(): BufferSource {
     }
 
     // Create a 16-byte salt from the hash
-    const salt = new Uint8Array(16);
-    for (let i = 0; i < 16; i++) {
+    const salt = new Uint8Array(SALT_LENGTH);
+    for (let i = 0; i < SALT_LENGTH; i++) {
         salt[i] = (hash >> ((i % 4) * 8)) & 0xff;
     }
 
-    return salt.buffer;
+    return salt;
 }
 
 /**
- * Get encryption key based on session
- * Uses a combination of session ID and browser fingerprint
+ * Derive a cryptographic key from the environment secret using PBKDF2
+ * The derived key is cached in sessionStorage for performance
+ */
+async function deriveEncryptionKey(secret: string, salt: Uint8Array): Promise<CryptoKey> {
+    const encoder = new TextEncoder();
+    const secretBuffer = encoder.encode(secret);
+
+    // Import secret as key material
+    const keyMaterial = await crypto.subtle.importKey('raw', secretBuffer, 'PBKDF2', false, ['deriveBits', 'deriveKey']);
+
+    // Derive AES key using PBKDF2
+    return crypto.subtle.deriveKey(
+        {
+            name: 'PBKDF2',
+            salt: salt.buffer as ArrayBuffer,
+            iterations: PBKDF2_ITERATIONS,
+            hash: 'SHA-256'
+        },
+        keyMaterial,
+        { name: ALGORITHM, length: KEY_LENGTH },
+        true, // Allow export for caching
+        ['encrypt', 'decrypt']
+    );
+}
+
+/**
+ * Get or derive the encryption key
+ * Uses environment variable secret with PBKDF2 key derivation
+ * Caches the derived key in sessionStorage for performance
  */
 async function getEncryptionKey(): Promise<CryptoKey> {
-    // Use a session-specific password
-    const sessionPassword = `magazynier_uz_${Date.now().toString(36)}`;
-    const salt = getBrowserSalt();
+    if (typeof window === 'undefined') {
+        throw new Error('Encryption key can only be generated in browser context');
+    }
 
-    return await deriveKey(sessionPassword, salt);
+    // Check if we have a cached derived key
+    const cachedKeyData = sessionStorage.getItem(ENCRYPTION_KEY_CACHE);
+
+    if (cachedKeyData) {
+        try {
+            const keyData = JSON.parse(cachedKeyData);
+            const keyBuffer = Uint8Array.from(atob(keyData.key), (c) => c.charCodeAt(0));
+
+            return await crypto.subtle.importKey('raw', keyBuffer, { name: ALGORITHM, length: KEY_LENGTH }, true, ['encrypt', 'decrypt']);
+        } catch (error) {
+            console.error('Failed to import cached key, deriving new one:', error);
+            sessionStorage.removeItem(ENCRYPTION_KEY_CACHE);
+        }
+    }
+
+    // Derive a new key from the environment secret
+    const secret = getEncryptionSecret();
+    const salt = getDerivationSalt();
+    const key = await deriveEncryptionKey(secret, salt);
+
+    // Cache the derived key for performance
+    try {
+        const exportedKey = await crypto.subtle.exportKey('raw', key);
+        const keyArray = new Uint8Array(exportedKey);
+        const keyData = {
+            key: btoa(String.fromCharCode(...keyArray)),
+            timestamp: Date.now()
+        };
+        sessionStorage.setItem(ENCRYPTION_KEY_CACHE, JSON.stringify(keyData));
+    } catch (error) {
+        console.error('Failed to cache encryption key:', error);
+    // Continue even if caching fails - the key will still work
+    }
+
+    return key;
 }
 
 /**
@@ -201,7 +275,7 @@ export async function getStoredCredentials(): Promise<{ username: string; passwo
 }
 
 /**
- * Clear stored credentials from sessionStorage
+ * Clear stored credentials and encryption key cache from sessionStorage
  */
 export function clearStoredCredentials(): void {
     if (typeof window === 'undefined') {
@@ -209,6 +283,7 @@ export function clearStoredCredentials(): void {
     }
 
     sessionStorage.removeItem(ENCRYPTED_CREDENTIALS_KEY);
+    sessionStorage.removeItem(ENCRYPTION_KEY_CACHE);
 }
 
 /**

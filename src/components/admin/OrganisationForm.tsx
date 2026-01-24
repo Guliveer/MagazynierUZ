@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Label } from 'shadcn/label';
+import { Input } from 'shadcn/input';
+import { Button } from 'shadcn/button';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import type { OrganisationResponse, CreateOrganisationRequest, UpdateOrganisationRequest } from '@/types';
 

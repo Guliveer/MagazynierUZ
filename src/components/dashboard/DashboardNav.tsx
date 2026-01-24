@@ -6,8 +6,8 @@ import { LayoutDashboard, Building2, Package, BarChart3, Shield } from 'lucide-r
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { logout, getUsername, getUserRoles, isAdmin } from '@/lib/auth';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
+import { Separator } from 'shadcn/separator';
+import { Badge } from 'shadcn/badge';
 import UserProfileMenu from './UserProfileMenu';
 
 export function DashboardNav() {

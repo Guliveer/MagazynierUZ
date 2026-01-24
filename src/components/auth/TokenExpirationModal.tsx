@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import { AlertTriangle, Clock, LogIn, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from 'shadcn/dialog';
+import { Button } from 'shadcn/button';
+import { Alert, AlertDescription } from 'shadcn/alert';
 import { formatTimeRemaining } from '@/hooks/useTokenRefresh';
 
 export interface TokenExpirationModalProps {

@@ -5,7 +5,7 @@ import { Download, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@/components/ui/button';
+import { Button } from 'shadcn/button';
 import { exportProductsToCSV, formatExportCount } from '@/lib/export';
 import type { Product } from '@/types';
 

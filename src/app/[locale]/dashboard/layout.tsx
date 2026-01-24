@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { LayoutDashboard, Building2, Package } from 'lucide-react';
 import { isAuthenticated } from '@/lib/auth';
 import { DashboardNav } from '@/components/dashboard/DashboardNav';
-import { Spinner } from '@/components/ui/spinner';
+import { Spinner } from 'shadcn/spinner';
 import { cn } from '@/lib/utils';
 import { useTokenRefresh } from '@/hooks/useTokenRefresh';
 import { TokenExpirationModal } from '@/components/auth/TokenExpirationModal';

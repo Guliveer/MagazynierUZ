@@ -1,11 +1,11 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from 'shadcn/badge';
+import { Button } from 'shadcn/button';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from 'shadcn/empty';
+import { Skeleton } from 'shadcn/skeleton';
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'shadcn/table';
 
 import { ApiError, createWarehouse, deleteWarehouse, getWarehouses, updateWarehouse } from '@/lib/api';
 import type { CreateWarehouseRequest, Warehouse } from '@/types';

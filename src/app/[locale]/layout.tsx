@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import '../css/globals.css';
 import React from 'react';
 import ThemeProviderWrapper from '../themeProvider';
-import { Toaster } from '@/components/ui/sonner';
+import { Toaster } from 'shadcn/sonner';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';

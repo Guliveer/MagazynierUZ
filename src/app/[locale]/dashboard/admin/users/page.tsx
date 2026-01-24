@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'shadcn/card';
 import { toast } from 'sonner';
 import { getAllUsers } from '@/lib/api';
 import { getUsername } from '@/lib/auth';
@@ -10,7 +10,7 @@ import { UserList } from '@/components/admin/UserList';
 import { UserDialog } from '@/components/admin/UserDialog';
 import { DeleteUserDialog } from '@/components/admin/DeleteUserDialog';
 import { Users, AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from 'shadcn/alert';
 import { useTranslations } from 'next-intl';
 
 export default function UsersPage() {

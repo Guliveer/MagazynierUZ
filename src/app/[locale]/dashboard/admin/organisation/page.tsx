@@ -1,11 +1,11 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'shadcn/card';
+import { Badge } from 'shadcn/badge';
+import { Button } from 'shadcn/button';
+import { Separator } from 'shadcn/separator';
+import { Skeleton } from 'shadcn/skeleton';
+import { Alert, AlertDescription } from 'shadcn/alert';
 import { Building2, Users, Package, Warehouse, ArrowLeft, Edit, Mail, Phone, MapPin, Calendar, Hash, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { getUsername, getOrganisationId, getOrganisationName } from '@/lib/auth';

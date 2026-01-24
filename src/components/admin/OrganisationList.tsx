@@ -1,15 +1,15 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'shadcn/table';
+import { Button } from 'shadcn/button';
+import { Input } from 'shadcn/input';
+import { Card, CardContent } from 'shadcn/card';
 import { Pencil, Trash2, Search, Building2, Warehouse, Users } from 'lucide-react';
 import type { OrganisationResponse } from '@/types';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty';
-import { Badge } from '@/components/ui/badge';
+import { Skeleton } from 'shadcn/skeleton';
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyContent } from 'shadcn/empty';
+import { Badge } from 'shadcn/badge';
 
 interface OrganisationListProps {
   organisations: OrganisationResponse[];

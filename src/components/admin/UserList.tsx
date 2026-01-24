@@ -1,16 +1,16 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'shadcn/table';
+import { Button } from 'shadcn/button';
+import { Input } from 'shadcn/input';
+import { Badge } from 'shadcn/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'shadcn/select';
+import { Card, CardContent } from 'shadcn/card';
 import { Pencil, Trash2, Search, Filter, UserPlus, Building2 } from 'lucide-react';
 import type { UserResponse } from '@/types';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty';
+import { Skeleton } from 'shadcn/skeleton';
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyContent } from 'shadcn/empty';
 
 interface UserListProps {
   users: UserResponse[];

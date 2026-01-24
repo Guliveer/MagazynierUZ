@@ -3,14 +3,14 @@
 import { Pencil, Trash2, Package, Grid3x3, List, ArrowUpDown, ArrowUp, ArrowDown, AlertCircle } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@/components/ui/empty';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from 'shadcn/table';
+import { Button } from 'shadcn/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from 'shadcn/card';
+import { Badge } from 'shadcn/badge';
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from 'shadcn/empty';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'shadcn/select';
+import { Skeleton } from 'shadcn/skeleton';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'shadcn/tooltip';
 import type { Product } from '@/types';
 
 // Highlight search terms in text

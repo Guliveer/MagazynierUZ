@@ -73,6 +73,7 @@ export function useTokenRefresh(): TokenRefreshState {
 
         // Check if we have stored credentials
         if (!hasStoredCredentials()) {
+            console.log('Auto-refresh skipped: No stored credentials');
             return false;
         }
 
@@ -82,6 +83,8 @@ export function useTokenRefresh(): TokenRefreshState {
             // Get stored credentials
             const credentials = await getStoredCredentials();
             if (!credentials) {
+                console.warn('Auto-refresh failed: Could not decrypt stored credentials');
+                // Clear invalid credentials to prevent future attempts
                 return false;
             }
 
@@ -105,6 +108,7 @@ export function useTokenRefresh(): TokenRefreshState {
             return true;
         } catch (error) {
             console.error('Auto-refresh failed:', error);
+            // If decryption or login fails, the user will see the warning modal
             return false;
         } finally {
             isRefreshing.current = false;

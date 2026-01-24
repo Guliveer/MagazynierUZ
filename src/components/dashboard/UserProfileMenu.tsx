@@ -3,10 +3,10 @@
 import { useTheme } from 'next-themes';
 import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/routing';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { User, ChevronDown, Sun, Moon, Monitor, Languages, UserCircle, Shield, LogOut } from 'lucide-react';
+import { Button } from 'shadcn/button';
+import { Badge } from 'shadcn/badge';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from 'shadcn/dropdown-menu';
+import { User, ChevronDown, Sun, Moon, Monitor, UserCircle, Shield, LogOut } from 'lucide-react';
 
 interface UserProfileMenuProps {
   username: string | null;

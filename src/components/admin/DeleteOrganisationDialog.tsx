@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from 'shadcn/alert-dialog';
 import { toast } from 'sonner';
 import { deleteOrganisation, getWarehousesByOrganisation, getAllUsers } from '@/lib/api';
 import type { OrganisationResponse } from '@/types';
 import { Loader2, AlertTriangle } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription } from 'shadcn/alert';
 
 interface DeleteOrganisationDialogProps {
   organisation: OrganisationResponse | null;

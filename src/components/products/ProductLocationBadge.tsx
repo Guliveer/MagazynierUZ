@@ -2,8 +2,8 @@
 
 import { Building2, MapPin, Package } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Badge } from 'shadcn/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'shadcn/tooltip';
 import type { LocationType } from '@/types';
 
 interface ProductLocationBadgeProps {

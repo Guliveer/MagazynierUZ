@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'shadcn/card';
 import { Building2, Users, Warehouse } from 'lucide-react';
 import { OrganisationList } from '@/components/admin/OrganisationList';
 import { OrganisationDialog } from '@/components/admin/OrganisationDialog';
