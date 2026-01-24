@@ -38,7 +38,7 @@ export default function ProductsPage() {
     const [filters, setFilters] = useState<ProductFilterValues>(getInitialFilters);
     const [paginatedData, setPaginatedData] = useState<PaginatedResponse<ProductWithContext> | null>(null);
     const [isSearching, setIsSearching] = useState(false);
-    const [hasSearched, setHasSearched] = useState(true); // Changed to true to load all products on mount
+    const [hasSearched, setHasSearched] = useState(true);
 
     const [warehouseCache, setWarehouseCache] = useState<Map<number, Warehouse>>(new Map());
     const [locationCache, setLocationCache] = useState<Map<string, Location>>(new Map());
@@ -153,7 +153,6 @@ export default function ProductsPage() {
             }));
 
             if (!filters.warehouseId || !filters.locationId) {
-                // No filter context - use product's own context if available
                 return productsWithIds.map((p) => ({
                     ...p,
                     warehouseId: p.warehouseId || 0,
@@ -213,7 +212,7 @@ export default function ProductsPage() {
             setHasSearched(true);
 
             const params: Record<string, string | number | boolean> = {
-                page: page - 1, // Backend uses 0-indexed pages
+                page: page - 1,
                 size: pageSize,
                 sortBy,
                 sortDirection
@@ -426,9 +425,6 @@ export default function ProductsPage() {
         }
     };
 
-    // Client-side filtering for immediate feedback while typing
-    // This filters the already-loaded products based on the current search query
-    // without waiting for the debounced API call
     const filteredProducts = useMemo(() => {
         if (!paginatedData?.content) {
             return [];
@@ -436,42 +432,32 @@ export default function ProductsPage() {
 
         const searchQuery = filters.searchQuery.trim();
 
-        // If no search query, return all products
         if (!searchQuery) {
             return paginatedData.content;
         }
 
-        // Create a case-insensitive regex pattern using escapeRegex for safety
         const escapedQuery = escapeRegex(searchQuery);
         const regex = new RegExp(escapedQuery, 'i');
 
-        // Filter products by checking multiple fields
         return paginatedData.content.filter((product) => {
-            // Check name
             if (product.name && regex.test(product.name)) {
                 return true;
             }
-            // Check description
             if (product.description && regex.test(product.description)) {
                 return true;
             }
-            // Check ID (convert to string for matching)
             if (product.id && regex.test(product.id.toString())) {
                 return true;
             }
-            // Check warehouse name if available
             if (product.warehouseName && regex.test(product.warehouseName)) {
                 return true;
             }
-            // Check warehouse code if available
             if (product.warehouseCode && regex.test(product.warehouseCode)) {
                 return true;
             }
-            // Check location code if available
             if (product.locationCode && regex.test(product.locationCode)) {
                 return true;
             }
-            // Check zone name if available
             if (product.zoneName && regex.test(product.zoneName)) {
                 return true;
             }
@@ -479,10 +465,7 @@ export default function ProductsPage() {
         });
     }, [paginatedData?.content, filters.searchQuery]);
 
-    // Calculate the filtered total for display purposes
     const filteredTotalResults = useMemo(() => {
-    // If the current search query matches the debounced query, use the API total
-    // Otherwise, use the filtered count for immediate feedback
         if (filters.searchQuery === debouncedSearchQuery) {
             return paginatedData?.totalElements ?? 0;
         }

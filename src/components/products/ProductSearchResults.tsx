@@ -14,13 +14,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'shadcn
 import type { Product } from '@/types';
 import { escapeRegex } from '@/lib/utils';
 
-// Highlight search terms in text
 const highlightText = (text: string, searchTerm?: string) => {
     if (!searchTerm || !text) {
         return text;
     }
 
-    // Escape special regex characters to prevent errors with characters like \, [, ], etc.
     const escapedSearchTerm = escapeRegex(searchTerm);
     const regex = new RegExp(`(${escapedSearchTerm})`, 'gi');
     const parts = text.split(regex);
@@ -65,10 +63,8 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
     const startIndex = (page - 1) * pageSize + 1;
     const endIndex = Math.min(page * pageSize, totalResults);
 
-    // Format price with locale
     const formatPrice = (price: number) => new Intl.NumberFormat(locale, { style: 'currency', currency: 'PLN' }).format(price);
 
-    // Truncate description
     const truncateDescription = (description?: string, maxLength: number = 50) => {
         if (!description) {
             return t('results.noDescription');
@@ -76,14 +72,12 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
         return description.length > maxLength ? `${description.substring(0, maxLength)}...` : description;
     };
 
-    // Helper function to check if product has context
     const hasContext = (product: Product): boolean => {
         const warehouseId = product.warehouseId || product.warehouse?.id;
         const locationId = product.locationId || product.location?.id;
         return !!(warehouseId && locationId);
     };
 
-    // Helper function to render sort icon
     const renderSortIcon = (field: SortField) => {
         if (sortBy !== field) {
             return <ArrowUpDown className="h-4 w-4 ml-1 opacity-50" />;
@@ -91,11 +85,9 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
         return sortDirection === 'asc' ? <ArrowUp className="h-4 w-4 ml-1" /> : <ArrowDown className="h-4 w-4 ml-1" />;
     };
 
-    // Loading skeleton
     if (isLoading) {
         return (
             <div className="space-y-4">
-                {/* Header skeleton */}
                 <div className="flex items-center justify-between">
                     <Skeleton className="h-6 w-48" />
                     <div className="flex gap-2">
@@ -104,7 +96,6 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                     </div>
                 </div>
 
-                {/* Content skeleton */}
                 {viewMode === 'table' ? (
                     <div className="rounded-md border">
                         <Table>
@@ -166,7 +157,6 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
         );
     }
 
-    // Empty state
     if (products.length === 0) {
         return (
             <Empty className="border rounded-lg py-12">
@@ -183,7 +173,6 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
 
     return (
         <div className="space-y-4">
-            {/* Results header */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="text-sm text-muted-foreground">
                     {t('results.showing')}{' '}
@@ -194,7 +183,6 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {/* Page size selector */}
                     <Select value={pageSize.toString()} onValueChange={(value) => onPageSizeChange(parseInt(value, 10))}>
                         <SelectTrigger className="w-[120px]">
                             <SelectValue />
@@ -207,7 +195,6 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                         </SelectContent>
                     </Select>
 
-                    {/* View mode toggle */}
                     <div className="flex border rounded-md">
                         <Button variant={viewMode === 'table' ? 'secondary' : 'ghost'} size="icon-sm" onClick={() => onViewModeChange('table')} title={t('results.viewMode.table')}>
                             <List className="h-4 w-4" />
@@ -219,7 +206,6 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                 </div>
             </div>
 
-            {/* Results content */}
             {viewMode === 'table' ? (
                 <div className="rounded-md border">
                     <Table>
@@ -390,7 +376,6 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                 </div>
             )}
 
-            {/* Pagination */}
             {totalPages > 1 && (
                 <div className="flex items-center justify-center gap-2">
                     <Button variant="outline" size="sm" onClick={() => onPageChange(page - 1)} disabled={page === 1}>
@@ -398,7 +383,6 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                     </Button>
 
                     <div className="flex items-center gap-1">
-                        {/* Show first page */}
                         {page > 3 && (
                             <>
                                 <Button variant={1 === page ? 'default' : 'outline'} size="sm" onClick={() => onPageChange(1)}>
@@ -408,7 +392,6 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                             </>
                         )}
 
-                        {/* Show pages around current page */}
                         {Array.from({ length: totalPages }, (_, i) => i + 1)
                             .filter((p) => p >= page - 2 && p <= page + 2)
                             .map((p) => (
@@ -417,7 +400,6 @@ export function ProductSearchResults({ products, isLoading, searchTerm, sortBy, 
                                 </Button>
                             ))}
 
-                        {/* Show last page */}
                         {page < totalPages - 2 && (
                             <>
                                 {page < totalPages - 3 && <span className="px-2">...</span>}

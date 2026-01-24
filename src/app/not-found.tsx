@@ -1,48 +1,42 @@
-import { cookies, headers } from "next/headers";
-import Link from "next/link";
-import "@/app/css/globals.css";
+import { cookies, headers } from 'next/headers';
+import Link from 'next/link';
+import '@/app/css/globals.css';
 
-// Import translations statically for root not-found (outside locale context)
-import en from "../../messages/en.json";
-import pl from "../../messages/pl.json";
+import en from '../../messages/en.json';
+import pl from '../../messages/pl.json';
 
-type Locale = "en" | "pl";
+type Locale = 'en' | 'pl';
 
 const messages: Record<Locale, typeof en> = { en, pl };
-const locales: Locale[] = ["en", "pl"];
-const defaultLocale: Locale = "en";
+const locales: Locale[] = ['en', 'pl'];
+const defaultLocale: Locale = 'en';
 
 /**
  * Detect user's preferred locale from cookies or Accept-Language header
  */
 async function detectLocale(): Promise<Locale> {
-  // 1. Check NEXT_LOCALE cookie (set by next-intl)
-  const cookieStore = await cookies();
-  const localeCookie = cookieStore.get("NEXT_LOCALE")?.value;
-  if (localeCookie && locales.includes(localeCookie as Locale)) {
-    return localeCookie as Locale;
-  }
-
-  // 2. Check Accept-Language header
-  const headersList = await headers();
-  const acceptLanguage = headersList.get("accept-language") || "";
-
-  // Parse Accept-Language header and find matching locale
-  const preferredLanguages = acceptLanguage.split(",").map((lang) => lang.split(";")[0].trim().toLowerCase());
-
-  for (const lang of preferredLanguages) {
-    // Check exact match (e.g., "pl" or "en")
-    if (locales.includes(lang as Locale)) {
-      return lang as Locale;
+    const cookieStore = await cookies();
+    const localeCookie = cookieStore.get('NEXT_LOCALE')?.value;
+    if (localeCookie && locales.includes(localeCookie as Locale)) {
+        return localeCookie as Locale;
     }
-    // Check language prefix (e.g., "pl-PL" -> "pl")
-    const langPrefix = lang.split("-")[0];
-    if (locales.includes(langPrefix as Locale)) {
-      return langPrefix as Locale;
-    }
-  }
 
-  return defaultLocale;
+    const headersList = await headers();
+    const acceptLanguage = headersList.get('accept-language') || '';
+
+    const preferredLanguages = acceptLanguage.split(',').map((lang) => lang.split(';')[0].trim().toLowerCase());
+
+    for (const lang of preferredLanguages) {
+        if (locales.includes(lang as Locale)) {
+            return lang as Locale;
+        }
+        const langPrefix = lang.split('-')[0];
+        if (locales.includes(langPrefix as Locale)) {
+            return langPrefix as Locale;
+        }
+    }
+
+    return defaultLocale;
 }
 
 /**
@@ -58,18 +52,18 @@ async function detectLocale(): Promise<Locale> {
  * - Animated background effects
  */
 export default async function GlobalNotFound() {
-  const locale = await detectLocale();
-  const t = messages[locale].notFound;
+    const locale = await detectLocale();
+    const t = messages[locale].notFound;
 
-  return (
-    <html lang={locale} className="dark" suppressHydrationWarning>
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>404 - {t.title} | MagazynierUZ</title>
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
+    return (
+        <html lang={locale} className="dark" suppressHydrationWarning>
+            <head>
+                <meta charSet="utf-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <title>404 - {t.title} | MagazynierUZ</title>
+                <style
+                    dangerouslySetInnerHTML={{
+                        __html: `
               /* Force dark theme colors */
               :root {
                 --bg-primary: #0a0a0b;
@@ -301,51 +295,47 @@ export default async function GlobalNotFound() {
               .secondary-link:hover {
                 color: var(--accent-primary);
               }
-            `,
-          }}
-        />
-      </head>
-      <body>
-        {/* Background effects */}
-        <div className="bg-gradient" />
-        <div className="bg-grid" />
+            `
+                    }}
+                />
+            </head>
+            <body>
+                <div className="bg-gradient" />
+                <div className="bg-grid" />
 
-        {/* Floating orbs */}
-        <div className="orb orb-1" />
-        <div className="orb orb-2" />
+                <div className="orb orb-1" />
+                <div className="orb orb-2" />
 
-        {/* Scanning lines */}
-        <div className="lines">
-          <div className="line" />
-          <div className="line" />
-          <div className="line" />
-          <div className="line" />
-        </div>
+                <div className="lines">
+                    <div className="line" />
+                    <div className="line" />
+                    <div className="line" />
+                    <div className="line" />
+                </div>
 
-        {/* Main content */}
-        <div className="container">
-          <div className="card">
-            <div className="error-code">404</div>
-            <h1 className="title">{t.title}</h1>
-            <p className="description">{t.description}</p>
-            <Link href={`/${locale}`} className="button">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                <polyline points="9 22 9 12 15 12 15 22" />
-              </svg>
-              {t.goHome}
-            </Link>
-            <div className="secondary-links">
-              <Link href={`/${locale}/dashboard`} className="secondary-link">
-                {t.dashboard}
-              </Link>
-              <Link href={`/${locale}/login`} className="secondary-link">
-                {t.signIn}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </body>
-    </html>
-  );
+                <div className="container">
+                    <div className="card">
+                        <div className="error-code">404</div>
+                        <h1 className="title">{t.title}</h1>
+                        <p className="description">{t.description}</p>
+                        <Link href={`/${locale}`} className="button">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                <polyline points="9 22 9 12 15 12 15 22" />
+                            </svg>
+                            {t.goHome}
+                        </Link>
+                        <div className="secondary-links">
+                            <Link href={`/${locale}/dashboard`} className="secondary-link">
+                                {t.dashboard}
+                            </Link>
+                            <Link href={`/${locale}/login`} className="secondary-link">
+                                {t.signIn}
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </body>
+        </html>
+    );
 }

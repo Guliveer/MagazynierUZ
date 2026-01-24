@@ -82,7 +82,7 @@ async function fetchApiAuth<T>(endpoint: string, options: RequestInit = {}): Pro
                 ...options.headers,
                 Authorization: `Bearer ${token}`
             },
-            signal: options.signal // Pass through AbortSignal for request cancellation
+            signal: options.signal
         });
     } catch (error) {
         if (error instanceof ApiError && error.statusCode === 401) {
@@ -453,7 +453,7 @@ export async function getProductWithContext(productId: number, warehouseId?: num
 
         const searchResult = await searchProducts({
             page: 0,
-            size: 100 // Limit search results
+            size: 100
         });
 
         const product = searchResult.content.find((p) => p.id === productId);

@@ -130,11 +130,9 @@ export function useTokenRefresh(): TokenRefreshState {
     const extendSession = useCallback(async () => {
         setShowWarning(false);
 
-        // First try to refresh using stored credentials
         const refreshSuccess = await attemptAutoRefresh();
 
         if (!refreshSuccess) {
-            // If auto-refresh fails (no stored credentials or API error), redirect to login
             const currentPath = window.location.pathname + window.location.search;
             router.push(`/login?redirect=${encodeURIComponent(currentPath)}&extend=true`);
         }

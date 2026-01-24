@@ -14,17 +14,14 @@ import { Spinner } from 'shadcn/spinner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'shadcn/select';
 import type { Product, Warehouse, Location } from '@/types';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const baseProductFormSchema = z.object({
-    name: z.string().min(2),
-    description: z.string().optional(),
-    price: z.number().positive(),
-    quantity: z.number().int().min(0),
-    warehouseId: z.number().nullable(),
-    locationId: z.number().nullable()
-});
-
-export type ProductFormData = z.infer<typeof baseProductFormSchema>;
+export type ProductFormData = {
+  name: string;
+  description?: string;
+  price: number;
+  quantity: number;
+  warehouseId: number | null;
+  locationId: number | null;
+};
 
 interface ProductFormProps {
   product?: Product | null;
@@ -118,8 +115,7 @@ export function ProductForm({ product, onSubmit, onCancel, isLoading = false, wa
         form.setValue('locationId', locationId);
     };
 
-    // eslint-disable-next-line react-hooks/incompatible-library
-    const currentWarehouseId = form.watch('warehouseId');
+    const currentWarehouseId = form.getValues('warehouseId');
     const isLocationDisabled = !currentWarehouseId || isLoadingLocations;
 
     return (

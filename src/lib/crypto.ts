@@ -54,7 +54,7 @@ function getDerivationSalt(): Uint8Array {
     let hash = 0;
     for (let i = 0; i < data.length; i++) {
         hash = (hash << 5) - hash + data[i];
-        hash = hash & hash; // Convert to 32-bit integer
+        hash = hash & hash;
     }
 
     const salt = new Uint8Array(SALT_LENGTH);
@@ -84,7 +84,7 @@ async function deriveEncryptionKey(secret: string, salt: Uint8Array): Promise<Cr
         },
         keyMaterial,
         { name: ALGORITHM, length: KEY_LENGTH },
-        true, // Allow export for caching
+        true,
         ['encrypt', 'decrypt']
     );
 }

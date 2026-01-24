@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Clock, X, Trash2 } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from 'shadcn/card';
@@ -24,9 +25,11 @@ export function SearchHistory({ history, isLoading, onSelectSearch, onRemoveSear
     const t = useTranslations('products.history');
     const locale = useLocale();
 
+    // Capture current time once on mount using lazy initialization to avoid impure Date.now() calls during render
+    const [currentTime] = useState(() => Date.now());
+
     const formatTimestamp = (timestamp: number): string => {
-    // eslint-disable-next-line react-hooks/purity
-        const now = Date.now();
+        const now = currentTime;
         const diff = now - timestamp;
         const minutes = Math.floor(diff / 60000);
         const hours = Math.floor(diff / 3600000);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'shadcn/card';
 import { toast } from 'sonner';
 import { getAllUsers } from '@/lib/api';
@@ -34,7 +34,7 @@ export default function UsersPage() {
         }
     }, [users]);
 
-    const loadUsers = async () => {
+    const loadUsers = useCallback(async () => {
         setIsLoading(true);
         setError(null);
         try {
@@ -46,12 +46,11 @@ export default function UsersPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [t]);
 
     useEffect(() => {
         loadUsers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [loadUsers]);
 
     const handleCreate = () => {
         setSelectedUser(null);

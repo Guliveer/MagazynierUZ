@@ -6,8 +6,7 @@ import type { Warehouse } from '@/types';
 import L from 'leaflet';
 import { useEffect } from 'react';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+delete (L.Icon.Default.prototype as { _getIconUrl?: () => string })._getIconUrl;
 
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: '/leaflet/marker-icon-2x.png',

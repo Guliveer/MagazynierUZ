@@ -47,18 +47,7 @@ export function Top10Chart({ data, sortBy, viewType = 'bar', onBarClick, locale 
         }
     };
 
-    const CHART_COLORS = [
-        'hsl(0, 84%, 60%)', // Red
-        'hsl(30, 100%, 55%)', // Orange
-        'hsl(60, 100%, 50%)', // Yellow
-        'hsl(120, 76%, 44%)', // Lime
-        'hsl(180, 100%, 35%)', // Cyan
-        'hsl(210, 100%, 40%)', // Sky Blue
-        'hsl(240, 100%, 50%)', // Blue
-        'hsl(280, 65%, 47%)', // Purple
-        'hsl(328, 85%, 70%)', // Magenta
-        'hsl(0, 0%, 50%)' // White
-    ];
+    const CHART_COLORS = ['hsl(0, 84%, 60%)', 'hsl(30, 100%, 55%)', 'hsl(60, 100%, 50%)', 'hsl(120, 76%, 44%)', 'hsl(180, 100%, 35%)', 'hsl(210, 100%, 40%)', 'hsl(240, 100%, 50%)', 'hsl(280, 65%, 47%)', 'hsl(328, 85%, 70%)', 'hsl(0, 0%, 50%)'];
 
     const handleBarClick = (data: { product?: Top10Product }) => {
         if (onBarClick && data.product) {

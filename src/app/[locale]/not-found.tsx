@@ -1,5 +1,5 @@
-import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/routing";
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 
 /**
  * Locale-specific 404 Not Found Page
@@ -9,13 +9,13 @@ import { Link } from "@/i18n/routing";
  * from the parent layout.
  */
 export default function LocaleNotFound() {
-  const t = useTranslations("notFound");
+    const t = useTranslations('notFound');
 
-  return (
-    <div className="not-found-wrapper">
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
+    return (
+        <div className="not-found-wrapper">
+            <style
+                dangerouslySetInnerHTML={{
+                    __html: `
             /* Force dark theme colors for not-found page */
             .not-found-wrapper {
               --bg-primary: #0a0a0b;
@@ -241,49 +241,45 @@ export default function LocaleNotFound() {
             .not-found-wrapper .secondary-link:hover {
               color: var(--accent-primary);
             }
-          `,
-        }}
-      />
+          `
+                }}
+            />
 
-      {/* Background effects */}
-      <div className="bg-gradient" />
-      <div className="bg-grid" />
+            <div className="bg-gradient" />
+            <div className="bg-grid" />
 
-      {/* Floating orbs */}
-      <div className="orb orb-1" />
-      <div className="orb orb-2" />
+            <div className="orb orb-1" />
+            <div className="orb orb-2" />
 
-      {/* Scanning lines */}
-      <div className="lines">
-        <div className="line" />
-        <div className="line" />
-        <div className="line" />
-        <div className="line" />
-      </div>
+            <div className="lines">
+                <div className="line" />
+                <div className="line" />
+                <div className="line" />
+                <div className="line" />
+            </div>
 
-      {/* Main content */}
-      <div className="container">
-        <div className="card">
-          <div className="error-code">404</div>
-          <h1 className="title">{t("title")}</h1>
-          <p className="description">{t("description")}</p>
-          <Link href="/" className="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
-            {t("goHome")}
-          </Link>
-          <div className="secondary-links">
-            <Link href="/dashboard" className="secondary-link">
-              {t("dashboard")}
-            </Link>
-            <Link href="/login" className="secondary-link">
-              {t("signIn")}
-            </Link>
-          </div>
+            <div className="container">
+                <div className="card">
+                    <div className="error-code">404</div>
+                    <h1 className="title">{t('title')}</h1>
+                    <p className="description">{t('description')}</p>
+                    <Link href="/" className="button">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                            <polyline points="9 22 9 12 15 12 15 22" />
+                        </svg>
+                        {t('goHome')}
+                    </Link>
+                    <div className="secondary-links">
+                        <Link href="/dashboard" className="secondary-link">
+                            {t('dashboard')}
+                        </Link>
+                        <Link href="/login" className="secondary-link">
+                            {t('signIn')}
+                        </Link>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

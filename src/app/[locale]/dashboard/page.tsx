@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Package, Warehouse as WarehouseIcon, TrendingUp, AlertTriangle, Plus, Search, BarChart3, ArrowRight, RefreshCw } from 'lucide-react';
@@ -34,17 +34,7 @@ export default function DashboardPage() {
         lowStockCount: 0
     });
 
-    useEffect(() => {
-        const token = getToken();
-        if (!token) {
-            router.push(`/${locale}/login`);
-            return;
-        }
-        fetchDashboardData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [router, locale]);
-
-    const fetchDashboardData = async () => {
+    const fetchDashboardData = useCallback(async () => {
         setLoading(true);
         setError(null);
 
@@ -69,7 +59,16 @@ export default function DashboardPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [t]);
+
+    useEffect(() => {
+        const token = getToken();
+        if (!token) {
+            router.push(`/${locale}/login`);
+            return;
+        }
+        fetchDashboardData();
+    }, [router, locale, fetchDashboardData]);
 
     const formatPrice = (price: number) =>
         new Intl.NumberFormat('pl-PL', {
