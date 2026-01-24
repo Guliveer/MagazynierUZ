@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
-import { Label } from 'shadcn/label';
-import { Input } from 'shadcn/input';
-import { Button } from 'shadcn/button';
-import { Checkbox } from 'shadcn/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'shadcn/select';
-import { Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react';
-import type { UserResponse, AdminCreateUserRequest, AdminUpdateUserRequest, OrganisationResponse } from '@/types';
-import { getAllOrganisations } from '@/lib/api';
+import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { Label } from "shadcn/label";
+import { Input } from "shadcn/input";
+import { Button } from "shadcn/button";
+import { Checkbox } from "shadcn/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "shadcn/select";
+import { Eye, EyeOff, AlertCircle, CheckCircle2 } from "lucide-react";
+import type { UserResponse, AdminCreateUserRequest, AdminUpdateUserRequest, OrganisationResponse } from "@/types";
+import { getAllOrganisations } from "@/lib/api";
 
 interface UserFormProps {
   user?: UserResponse | null;
@@ -18,284 +18,283 @@ interface UserFormProps {
 }
 
 export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
-    const t = useTranslations('admin.userForm');
-    const [username, setUsername] = useState(user?.username || '');
-    const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-    const [selectedRoles, setSelectedRoles] = useState<string[]>(user?.roles || ['ROLE_USER']);
-    const [organisationId, setOrganisationId] = useState<string>(user?.organisationId?.toString() || '');
-    const [organisations, setOrganisations] = useState<OrganisationResponse[]>([]);
-    const [loadingOrganisations, setLoadingOrganisations] = useState(false);
+  const t = useTranslations("admin.userForm");
+  const [username, setUsername] = useState(user?.username || "");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [selectedRoles, setSelectedRoles] = useState<string[]>(user?.roles || ["ROLE_USER"]);
+  const [organisationId, setOrganisationId] = useState<string>(user?.organisationId?.toString() || "");
+  const [organisations, setOrganisations] = useState<OrganisationResponse[]>([]);
+  const [loadingOrganisations, setLoadingOrganisations] = useState(false);
 
-    const [errors, setErrors] = useState<{
+  const [errors, setErrors] = useState<{
     username?: string;
     password?: string;
   }>({});
 
-    // Load organisations for organisation selection
-    useEffect(() => {
-        const loadOrganisations = async () => {
-            setLoadingOrganisations(true);
-            try {
-                const data = await getAllOrganisations();
-                setOrganisations(data);
-            } catch (error) {
-                console.error('Failed to load organisations:', error);
-            } finally {
-                setLoadingOrganisations(false);
-            }
-        };
-        loadOrganisations();
-    }, []);
-
-    const validateUsername = (value: string): string | undefined => {
-        if (!value) {
-            return t('usernameRequired');
-        }
-        if (value.length < 3) {
-            return t('usernameMinLength');
-        }
-        if (value.length > 50) {
-            return t('usernameMaxLength');
-        }
-        return undefined;
+  // Load organisations for organisation selection
+  useEffect(() => {
+    const loadOrganisations = async () => {
+      setLoadingOrganisations(true);
+      try {
+        const data = await getAllOrganisations();
+        setOrganisations(data);
+      } catch (error) {
+        console.error("Failed to load organisations:", error);
+      } finally {
+        setLoadingOrganisations(false);
+      }
     };
+    loadOrganisations();
+  }, []);
 
-    const validatePassword = (value: string, isEdit: boolean): string | undefined => {
-        if (!isEdit && !value) {
-            return t('passwordRequired');
-        }
-        if (value && value.length < 4) {
-            return t('passwordMinLength');
-        }
-        return undefined;
-    };
+  const validateUsername = (value: string): string | undefined => {
+    if (!value) {
+      return t("usernameRequired");
+    }
+    if (value.length < 3) {
+      return t("usernameMinLength");
+    }
+    if (value.length > 50) {
+      return t("usernameMaxLength");
+    }
+    return undefined;
+  };
 
-    const getPasswordStrength = (pwd: string): { strength: number; label: string; color: string } => {
-        if (!pwd) {
-            return { strength: 0, label: '', color: '' };
-        }
+  const validatePassword = (value: string, isEdit: boolean): string | undefined => {
+    if (!isEdit && !value) {
+      return t("passwordRequired");
+    }
+    if (value && value.length < 4) {
+      return t("passwordMinLength");
+    }
+    return undefined;
+  };
 
-        let strength = 0;
-        if (pwd.length >= 4) {
-            strength++;
-        }
-        if (pwd.length >= 8) {
-            strength++;
-        }
-        if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) {
-            strength++;
-        }
-        if (/\d/.test(pwd)) {
-            strength++;
-        }
-        if (/[^a-zA-Z0-9]/.test(pwd)) {
-            strength++;
-        }
+  const getPasswordStrength = (pwd: string): { strength: number; label: string; color: string } => {
+    if (!pwd) {
+      return { strength: 0, label: "", color: "" };
+    }
 
-        if (strength <= 1) {
-            return { strength, label: t('passwordStrength.weak'), color: 'text-red-500' };
-        }
-        if (strength <= 3) {
-            return { strength, label: t('passwordStrength.medium'), color: 'text-yellow-500' };
-        }
-        return { strength, label: t('passwordStrength.strong'), color: 'text-green-500' };
-    };
+    let strength = 0;
+    if (pwd.length >= 4) {
+      strength++;
+    }
+    if (pwd.length >= 8) {
+      strength++;
+    }
+    if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) {
+      strength++;
+    }
+    if (/\d/.test(pwd)) {
+      strength++;
+    }
+    if (/[^a-zA-Z0-9]/.test(pwd)) {
+      strength++;
+    }
 
-    const AVAILABLE_ROLES = [
-        { value: 'ROLE_USER', label: t('roleUser'), description: t('roleUserDesc') },
-        { value: 'ROLE_ADMIN', label: t('roleAdmin'), description: t('roleAdminDesc') },
-        { value: 'ROLE_MANAGER', label: t('roleManager'), description: t('roleManagerDesc') }
-    ];
+    if (strength <= 1) {
+      return { strength, label: t("passwordStrength.weak"), color: "text-red-500" };
+    }
+    if (strength <= 3) {
+      return { strength, label: t("passwordStrength.medium"), color: "text-yellow-500" };
+    }
+    return { strength, label: t("passwordStrength.strong"), color: "text-green-500" };
+  };
 
-    const passwordStrength = getPasswordStrength(password);
+  const AVAILABLE_ROLES = [
+    { value: "ROLE_USER", label: t("roleUser"), description: t("roleUserDesc") },
+    { value: "ROLE_ADMIN", label: t("roleAdmin"), description: t("roleAdminDesc") },
+    { value: "ROLE_MANAGER", label: t("roleManager"), description: t("roleManagerDesc") },
+  ];
 
-    const handleRoleToggle = (role: string) => {
-        setSelectedRoles((prev) => (prev.includes(role) ? prev.filter((r) => r !== role) : [...prev, role]));
-    };
+  const passwordStrength = getPasswordStrength(password);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+  const handleRoleToggle = (role: string) => {
+    setSelectedRoles((prev) => (prev.includes(role) ? prev.filter((r) => r !== role) : [...prev, role]));
+  };
 
-        const isEdit = !!user;
-        const usernameError = validateUsername(username);
-        const passwordError = validatePassword(password, isEdit);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
 
-        if (usernameError || passwordError) {
-            setErrors({
-                username: usernameError,
-                password: passwordError
-            });
-            return;
-        }
+    const isEdit = !!user;
+    const usernameError = validateUsername(username);
+    const passwordError = validatePassword(password, isEdit);
 
-        setErrors({});
+    if (usernameError || passwordError) {
+      setErrors({
+        username: usernameError,
+        password: passwordError,
+      });
+      return;
+    }
 
-        if (isEdit) {
-            // Update user - only include changed fields
-            const updateData: AdminUpdateUserRequest = {};
-            if (username !== user.username) {
-                updateData.username = username;
-            }
-            if (password) {
-                updateData.password = password;
-            }
-            if (JSON.stringify(selectedRoles) !== JSON.stringify(user.roles)) {
-                updateData.roleNames = selectedRoles;
-            }
-            if (organisationId !== user.organisationId?.toString()) {
-                updateData.organisationId = organisationId ? parseInt(organisationId) : null;
-            }
-            onSubmit(updateData);
-        } else {
-            // Create user
-            const createData: AdminCreateUserRequest = {
-                username,
-                password,
-                roleNames: selectedRoles,
-                organisationId: organisationId ? parseInt(organisationId) : undefined
-            };
-            onSubmit(createData);
-        }
-    };
+    setErrors({});
 
-    return (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Username */}
-            <div className="space-y-2">
-                <Label htmlFor="username">
-                    {t('username')} <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                    id="username"
-                    value={username}
-                    onChange={(e) => {
-                        setUsername(e.target.value);
-                        setErrors((prev) => ({ ...prev, username: undefined }));
-                    }}
-                    placeholder={t('usernamePlaceholder')}
-                    disabled={isLoading}
-                    className={errors.username ? 'border-destructive' : ''}
-                />
-                {errors.username && (
-                    <p className="text-sm text-destructive flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.username}
-                    </p>
-                )}
+    if (isEdit) {
+      // Update user - only include changed fields
+      const updateData: AdminUpdateUserRequest = {};
+      if (username !== user.username) {
+        updateData.username = username;
+      }
+      if (password) {
+        updateData.password = password;
+      }
+      if (JSON.stringify(selectedRoles) !== JSON.stringify(user.roles)) {
+        updateData.roleNames = selectedRoles;
+      }
+      if (organisationId !== user.organisationId?.toString()) {
+        updateData.organisationId = organisationId ? parseInt(organisationId) : null;
+      }
+      onSubmit(updateData);
+    } else {
+      // Create user
+      const createData: AdminCreateUserRequest = {
+        username,
+        password,
+        roleNames: selectedRoles,
+        organisationId: organisationId ? parseInt(organisationId) : undefined,
+      };
+      onSubmit(createData);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Username */}
+      <div className="space-y-2">
+        <Label htmlFor="username">
+          {t("username")} <span className="text-destructive">*</span>
+        </Label>
+        <Input
+          id="username"
+          value={username}
+          onChange={(e) => {
+            setUsername(e.target.value);
+            setErrors((prev) => ({ ...prev, username: undefined }));
+          }}
+          placeholder={t("usernamePlaceholder")}
+          disabled={isLoading}
+          className={errors.username ? "border-destructive" : ""}
+        />
+        {errors.username && (
+          <p className="text-sm text-destructive flex items-center gap-1">
+            <AlertCircle className="h-3 w-3" />
+            {errors.username}
+          </p>
+        )}
+      </div>
+
+      {/* Password */}
+      <div className="space-y-2">
+        <Label htmlFor="password">
+          {t("password")} {!user && <span className="text-destructive">*</span>}
+          {user && <span className="text-muted-foreground text-xs">{t("leaveBlankToKeep")}</span>}
+        </Label>
+        <div className="relative">
+          <Input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setErrors((prev) => ({ ...prev, password: undefined }));
+            }}
+            placeholder={user ? t("passwordPlaceholderNew") : t("passwordPlaceholderCreate")}
+            disabled={isLoading}
+            className={errors.password ? "border-destructive pr-10" : "pr-10"}
+          />
+          <Button type="button" variant="ghost" size="sm" className="absolute right-0 top-0 h-full px-3 hover:bg-transparent" onClick={() => setShowPassword(!showPassword)} disabled={isLoading}>
+            {showPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
+          </Button>
+        </div>
+        {errors.password && (
+          <p className="text-sm text-destructive flex items-center gap-1">
+            <AlertCircle className="h-3 w-3" />
+            {errors.password}
+          </p>
+        )}
+        {password && !errors.password && (
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                <div className={`h-full transition-all ${passwordStrength.strength <= 1 ? "bg-red-500 w-1/3" : passwordStrength.strength <= 3 ? "bg-yellow-500 w-2/3" : "bg-green-500 w-full"}`} />
+              </div>
+              <span className={`text-xs font-medium ${passwordStrength.color}`}>{passwordStrength.label}</span>
             </div>
+          </div>
+        )}
+      </div>
 
-            {/* Password */}
-            <div className="space-y-2">
-                <Label htmlFor="password">
-                    {t('password')} {!user && <span className="text-destructive">*</span>}
-                    {user && <span className="text-muted-foreground text-xs">{t('leaveBlankToKeep')}</span>}
-                </Label>
-                <div className="relative">
-                    <Input
-                        id="password"
-                        type={showPassword ? 'text' : 'password'}
-                        value={password}
-                        onChange={(e) => {
-                            setPassword(e.target.value);
-                            setErrors((prev) => ({ ...prev, password: undefined }));
-                        }}
-                        placeholder={user ? t('passwordPlaceholderNew') : t('passwordPlaceholderCreate')}
-                        disabled={isLoading}
-                        className={errors.password ? 'border-destructive pr-10' : 'pr-10'}
-                    />
-                    <Button type="button" variant="ghost" size="sm" className="absolute right-0 top-0 h-full px-3 hover:bg-transparent" onClick={() => setShowPassword(!showPassword)} disabled={isLoading}>
-                        {showPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
-                    </Button>
-                </div>
-                {errors.password && (
-                    <p className="text-sm text-destructive flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.password}
-                    </p>
-                )}
-                {password && !errors.password && (
-                    <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                            <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-                                <div className={`h-full transition-all ${passwordStrength.strength <= 1 ? 'bg-red-500 w-1/3' : passwordStrength.strength <= 3 ? 'bg-yellow-500 w-2/3' : 'bg-green-500 w-full'}`} />
-                            </div>
-                            <span className={`text-xs font-medium ${passwordStrength.color}`}>{passwordStrength.label}</span>
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* Roles */}
-            <div className="space-y-3">
-                <Label>
+      {/* Roles */}
+      <div className="space-y-3">
+        <Label>
           Roles <span className="text-destructive">*</span>
-                </Label>
-                <div className="space-y-3 border rounded-lg p-4">
-                    {AVAILABLE_ROLES.map((role) => (
-                        <div key={role.value} className="flex items-start space-x-3">
-                            <Checkbox id={role.value} checked={selectedRoles.includes(role.value)} onCheckedChange={() => handleRoleToggle(role.value)} disabled={isLoading} />
-                            <div className="grid gap-1 leading-none">
-                                <label htmlFor={role.value} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
-                                    {role.label}
-                                </label>
-                                <p className="text-sm text-muted-foreground">{role.description}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                {selectedRoles.length === 0 && (
-                    <p className="text-sm text-destructive flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
+        </Label>
+        <div className="space-y-3 border rounded-lg p-4">
+          {AVAILABLE_ROLES.map((role) => (
+            <div key={role.value} className="flex items-start space-x-3">
+              <Checkbox id={role.value} checked={selectedRoles.includes(role.value)} onCheckedChange={() => handleRoleToggle(role.value)} disabled={isLoading} />
+              <div className="grid gap-1 leading-none">
+                <label htmlFor={role.value} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
+                  {role.label}
+                </label>
+                <p className="text-sm text-muted-foreground">{role.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        {selectedRoles.length === 0 && (
+          <p className="text-sm text-destructive flex items-center gap-1">
+            <AlertCircle className="h-3 w-3" />
             At least one role must be selected
-                    </p>
-                )}
-            </div>
+          </p>
+        )}
+      </div>
 
-            {/* Organisation */}
-            <div className="space-y-2">
-                <Label htmlFor="organisation">Organisation (Optional)</Label>
-                <Select value={organisationId} onValueChange={setOrganisationId} disabled={isLoading || loadingOrganisations}>
-                    <SelectTrigger id="organisation">
-                        <SelectValue placeholder="Select organisation (optional)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="">No Organisation</SelectItem>
-                        {organisations.map((organisation) => (
-                            <SelectItem key={organisation.id} value={organisation.id.toString()}>
-                                {organisation.name} (TIN: {organisation.tin})
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">Assign user to a specific organisation</p>
-            </div>
+      {/* Organisation */}
+      <div className="space-y-2">
+        <Label htmlFor="organisation">Organisation (Optional)</Label>
+        <Select value={organisationId} onValueChange={setOrganisationId} disabled={isLoading || loadingOrganisations}>
+          <SelectTrigger id="organisation">
+            <SelectValue placeholder="No organisation" />
+          </SelectTrigger>
+          <SelectContent>
+            {organisations.map((organisation) => (
+              <SelectItem key={organisation.id} value={organisation.id.toString()}>
+                {organisation.name} (TIN: {organisation.tin})
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground">Assign user to a specific organisation</p>
+      </div>
 
-            {/* Submit Button */}
-            <div className="flex justify-end gap-3 pt-4">
-                <Button type="submit" disabled={isLoading || selectedRoles.length === 0} className="min-w-[120px]">
-                    {isLoading ? (
-                        <>
-                            <span className="mr-2">⏳</span>
-                            {user ? 'Updating...' : 'Creating...'}
-                        </>
-                    ) : (
-                        <>
-                            {user ? (
-                                <>
-                                    <CheckCircle2 className="mr-2 h-4 w-4" />
+      {/* Submit Button */}
+      <div className="flex justify-end gap-3 pt-4">
+        <Button type="submit" disabled={isLoading || selectedRoles.length === 0} className="min-w-[120px]">
+          {isLoading ? (
+            <>
+              <span className="mr-2">⏳</span>
+              {user ? "Updating..." : "Creating..."}
+            </>
+          ) : (
+            <>
+              {user ? (
+                <>
+                  <CheckCircle2 className="mr-2 h-4 w-4" />
                   Update User
-                                </>
-                            ) : (
-                                <>
-                                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="mr-2 h-4 w-4" />
                   Create User
-                                </>
-                            )}
-                        </>
-                    )}
-                </Button>
-            </div>
-        </form>
-    );
+                </>
+              )}
+            </>
+          )}
+        </Button>
+      </div>
+    </form>
+  );
 }
