@@ -127,12 +127,18 @@ export function useTokenRefresh(): TokenRefreshState {
         setShowWarning(false);
     }, []);
 
-    const extendSession = useCallback(() => {
+    const extendSession = useCallback(async () => {
         setShowWarning(false);
 
-        const currentPath = window.location.pathname + window.location.search;
-        router.push(`/login?redirect=${encodeURIComponent(currentPath)}&extend=true`);
-    }, [router]);
+        // First try to refresh using stored credentials
+        const refreshSuccess = await attemptAutoRefresh();
+
+        if (!refreshSuccess) {
+            // If auto-refresh fails (no stored credentials or API error), redirect to login
+            const currentPath = window.location.pathname + window.location.search;
+            router.push(`/login?redirect=${encodeURIComponent(currentPath)}&extend=true`);
+        }
+    }, [router, attemptAutoRefresh]);
 
     useEffect(() => {
         if (typeof window === 'undefined') {

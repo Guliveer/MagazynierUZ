@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams, useRouter, useParams } from 'next/navigation';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
@@ -15,6 +15,7 @@ import { DeleteProductDialog } from '@/components/products/DeleteProductDialog';
 import { searchProducts, createProduct, updateProduct, deleteProduct, ApiError, getWarehouse, getLocation, getWarehouses, getLocations } from '@/lib/api';
 import type { Product, ProductWithContext, CreateProductRequest, PaginatedResponse, Warehouse, Location } from '@/types';
 import { useDebounce } from '@/hooks/useDebounce';
+import { escapeRegex } from '@/lib/utils';
 
 export default function ProductsPage() {
     const router = useRouter();
@@ -425,6 +426,69 @@ export default function ProductsPage() {
         }
     };
 
+    // Client-side filtering for immediate feedback while typing
+    // This filters the already-loaded products based on the current search query
+    // without waiting for the debounced API call
+    const filteredProducts = useMemo(() => {
+        if (!paginatedData?.content) {
+            return [];
+        }
+
+        const searchQuery = filters.searchQuery.trim();
+
+        // If no search query, return all products
+        if (!searchQuery) {
+            return paginatedData.content;
+        }
+
+        // Create a case-insensitive regex pattern using escapeRegex for safety
+        const escapedQuery = escapeRegex(searchQuery);
+        const regex = new RegExp(escapedQuery, 'i');
+
+        // Filter products by checking multiple fields
+        return paginatedData.content.filter((product) => {
+            // Check name
+            if (product.name && regex.test(product.name)) {
+                return true;
+            }
+            // Check description
+            if (product.description && regex.test(product.description)) {
+                return true;
+            }
+            // Check ID (convert to string for matching)
+            if (product.id && regex.test(product.id.toString())) {
+                return true;
+            }
+            // Check warehouse name if available
+            if (product.warehouseName && regex.test(product.warehouseName)) {
+                return true;
+            }
+            // Check warehouse code if available
+            if (product.warehouseCode && regex.test(product.warehouseCode)) {
+                return true;
+            }
+            // Check location code if available
+            if (product.locationCode && regex.test(product.locationCode)) {
+                return true;
+            }
+            // Check zone name if available
+            if (product.zoneName && regex.test(product.zoneName)) {
+                return true;
+            }
+            return false;
+        });
+    }, [paginatedData?.content, filters.searchQuery]);
+
+    // Calculate the filtered total for display purposes
+    const filteredTotalResults = useMemo(() => {
+    // If the current search query matches the debounced query, use the API total
+    // Otherwise, use the filtered count for immediate feedback
+        if (filters.searchQuery === debouncedSearchQuery) {
+            return paginatedData?.totalElements ?? 0;
+        }
+        return filteredProducts.length;
+    }, [filters.searchQuery, debouncedSearchQuery, paginatedData?.totalElements, filteredProducts.length]);
+
     return (
         <div className="container mx-auto py-6 space-y-6">
             <div className="flex items-center justify-between">
@@ -440,9 +504,9 @@ export default function ProductsPage() {
 
             <ProductFilters filters={filters} onFiltersChange={handleFiltersChange} onSearch={handleSearch} isSearching={isSearching} />
 
-            {hasSearched && paginatedData && <ProductSearchResults products={paginatedData.content} isLoading={isSearching} searchTerm={filters.searchQuery} sortBy={sortBy} sortDirection={sortDirection} viewMode={viewMode} page={page} pageSize={pageSize} totalResults={paginatedData.totalElements} onSort={handleSort} onViewModeChange={handleViewModeChange} onPageChange={handlePageChange} onPageSizeChange={handlePageSizeChange} onEdit={handleEditClick} onDelete={handleDeleteClick} />}
+            {hasSearched && paginatedData && <ProductSearchResults products={filteredProducts} isLoading={isSearching} searchTerm={filters.searchQuery} sortBy={sortBy} sortDirection={sortDirection} viewMode={viewMode} page={page} pageSize={pageSize} totalResults={filteredTotalResults} onSort={handleSort} onViewModeChange={handleViewModeChange} onPageChange={handlePageChange} onPageSizeChange={handlePageSizeChange} onEdit={handleEditClick} onDelete={handleDeleteClick} />}
 
-            {hasSearched && paginatedData && paginatedData.content.length === 0 && (
+            {hasSearched && paginatedData && filteredProducts.length === 0 && (
                 <div className="text-center py-12 border rounded-lg bg-muted/50">
                     <p className="text-muted-foreground">{t('search.noResults')}</p>
                 </div>
