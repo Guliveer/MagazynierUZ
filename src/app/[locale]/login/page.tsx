@@ -67,7 +67,9 @@ function LoginForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!captchaToken) {
+        // Skip CAPTCHA validation in development mode
+        const isDevelopment = process.env.NODE_ENV === 'development';
+        if (!isDevelopment && !captchaToken) {
             setError(t('errors.captchaRequired'));
             return;
         }

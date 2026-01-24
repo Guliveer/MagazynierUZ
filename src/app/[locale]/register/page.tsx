@@ -81,7 +81,9 @@ export default function RegisterPage() {
             return;
         }
 
-        if (!captchaToken) {
+        // Skip CAPTCHA validation in development mode
+        const isDevelopment = process.env.NODE_ENV === 'development';
+        if (!isDevelopment && !captchaToken) {
             setAlert({ type: 'error', message: t('errors.captchaRequired') });
             return;
         }
